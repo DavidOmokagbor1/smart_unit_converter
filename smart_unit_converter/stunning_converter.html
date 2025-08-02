@@ -177,6 +177,34 @@
             transform: scale(1.1);
         }
 
+        .currency-status {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            z-index: 1000;
+            background: var(--glass);
+            -webkit-backdrop-filter: blur(10px);
+            backdrop-filter: blur(10px);
+            padding: 10px 15px;
+            border-radius: 25px;
+            border: 1px solid var(--glass);
+            color: var(--accent);
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .currency-status i {
+            animation: spin 2s linear infinite;
+        }
+
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
         .main-content {
             display: grid;
             grid-template-columns: 1fr 2fr;
@@ -481,11 +509,16 @@
     </style>
 </head>
 <body class="dark-mode">
-    <div class="floating-particles" id="particles"></div>
-    
-    <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle dark/light theme" title="Toggle dark/light theme">
-        <i class="fas fa-moon" id="theme-icon"></i>
-    </button>
+            <div class="floating-particles" id="particles"></div>
+        
+        <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle dark/light theme" title="Toggle dark/light theme">
+            <i class="fas fa-moon" id="theme-icon"></i>
+        </button>
+
+        <div id="currency-status" class="currency-status" style="display: none;">
+            <i class="fas fa-sync-alt"></i>
+            <span id="currency-status-text">Updating rates...</span>
+        </div>
 
     <div class="container">
         <div class="header">
@@ -745,24 +778,33 @@
                     "torr": 133.322
                 }
             },
-            "Currency (Static Rates)": {
+            "Currency (Real-time)": {
                 icon: "fas fa-dollar-sign",
                 units: {
                     "USD": 1.0,
-                    "EUR": 0.92,
-                    "GBP": 0.79,
-                    "JPY": 148.5,
-                    "CAD": 1.35,
-                    "AUD": 1.52,
-                    "CHF": 0.87,
-                    "CNY": 7.23,
-                    "INR": 83.15,
-                    "BRL": 4.95,
-                    "MXN": 17.25,
-                    "KRW": 1330.0,
-                    "SGD": 1.34,
-                    "HKD": 7.82,
-                    "NZD": 1.65
+                    "EUR": 1.0,
+                    "GBP": 1.0,
+                    "JPY": 1.0,
+                    "CAD": 1.0,
+                    "AUD": 1.0,
+                    "CHF": 1.0,
+                    "CNY": 1.0,
+                    "INR": 1.0,
+                    "BRL": 1.0,
+                    "MXN": 1.0,
+                    "KRW": 1.0,
+                    "SGD": 1.0,
+                    "HKD": 1.0,
+                    "NZD": 1.0,
+                    "RUB": 1.0,
+                    "TRY": 1.0,
+                    "ZAR": 1.0,
+                    "SEK": 1.0,
+                    "NOK": 1.0,
+                    "DKK": 1.0,
+                    "PLN": 1.0,
+                    "CZK": 1.0,
+                    "HUF": 1.0
                 }
             },
             "Cryptocurrency": {
@@ -814,12 +856,16 @@
 
         let conversionHistory = [];
         let currentTheme = 'dark';
+        let currencyRates = {};
+        let lastCurrencyUpdate = 0;
+        const CURRENCY_CACHE_DURATION = 5 * 60 * 1000; // 5 minutes
 
         // Initialize the app
         document.addEventListener('DOMContentLoaded', function() {
             createParticles();
             populateCategories();
             setupEventListeners();
+            fetchCurrencyRates(); // Fetch initial currency rates
         });
 
         function createParticles() {
@@ -897,7 +943,7 @@
             convert();
         }
 
-        function convert() {
+        async function convert() {
             const category = getSelectedCategory();
             const fromUnit = document.getElementById('fromUnit').value;
             const toUnit = document.getElementById('toUnit').value;
@@ -921,29 +967,37 @@
             }
 
             // Show loading for currency/crypto
-            if (category === 'Currency' || category === 'Cryptocurrency') {
+            if (category === 'Currency (Real-time)' || category === 'Cryptocurrency') {
                 showLoading();
-                setTimeout(() => {
-                    performConversion();
+                try {
+                    await performConversion();
+                } finally {
                     hideLoading();
-                }, 1000);
+                }
             } else {
                 performConversion();
             }
 
-            function performConversion() {
+            async function performConversion() {
                 let result;
-                if (category === "Temperature") {
-                    result = convertTemperature(value, fromUnit, toUnit);
-                } else {
-                    result = convertStandard(value, fromUnit, toUnit, category);
-                }
+                try {
+                    if (category === "Temperature") {
+                        result = convertTemperature(value, fromUnit, toUnit);
+                    } else if (category === "Currency (Real-time)") {
+                        result = await convertCurrency(value, fromUnit, toUnit);
+                    } else {
+                        result = convertStandard(value, fromUnit, toUnit, category);
+                    }
 
-                // Format result with appropriate precision
-                const formattedResult = formatResult(result, fromUnit, toUnit);
-                const resultText = `${value} ${fromUnit} = ${formattedResult} ${toUnit}`;
-                resultDiv.textContent = resultText;
-                addToHistory(resultText);
+                    // Format result with appropriate precision
+                    const formattedResult = formatResult(result, fromUnit, toUnit);
+                    const resultText = `${value} ${fromUnit} = ${formattedResult} ${toUnit}`;
+                    resultDiv.textContent = resultText;
+                    addToHistory(resultText);
+                } catch (error) {
+                    console.error('Conversion error:', error);
+                    resultDiv.textContent = `Error: ${error.message}`;
+                }
             }
         }
 
@@ -1051,6 +1105,105 @@
             if (category === "Pressure" && value < 0) return false;
             
             return true;
+        }
+
+        async function fetchCurrencyRates() {
+            const now = Date.now();
+            
+            // Check if we have recent cached rates
+            if (currencyRates.rates && (now - lastCurrencyUpdate) < CURRENCY_CACHE_DURATION) {
+                return currencyRates;
+            }
+
+            try {
+                showCurrencyStatus('Updating rates...');
+                const response = await fetch('https://api.exchangerate-api.com/v4/latest/USD');
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                
+                const data = await response.json();
+                currencyRates = data;
+                lastCurrencyUpdate = now;
+                
+                // Update the currency units with real rates
+                if (data.rates) {
+                    const currencyCategory = categories["Currency (Real-time)"];
+                    currencyCategory.units = data.rates;
+                    currencyCategory.units.USD = 1.0; // Base currency
+                }
+                
+                console.log('Currency rates updated:', data);
+                hideCurrencyStatus();
+                return data;
+                
+            } catch (error) {
+                console.error('Error fetching currency rates:', error);
+                
+                // Fallback to static rates if API fails
+                const fallbackRates = {
+                    USD: 1.0,
+                    EUR: 0.92,
+                    GBP: 0.79,
+                    JPY: 148.5,
+                    CAD: 1.35,
+                    AUD: 1.52,
+                    CHF: 0.87,
+                    CNY: 7.23,
+                    INR: 83.15,
+                    BRL: 4.95,
+                    MXN: 17.25,
+                    KRW: 1330.0,
+                    SGD: 1.34,
+                    HKD: 7.82,
+                    NZD: 1.65
+                };
+                
+                currencyRates = { rates: fallbackRates, base: 'USD' };
+                lastCurrencyUpdate = now;
+                
+                showCurrencyStatus('⚠️ Using cached rates', 'warning');
+                
+                return currencyRates;
+            }
+        }
+
+        function showCurrencyStatus(message, type = 'loading') {
+            const statusDiv = document.getElementById('currency-status');
+            const statusText = document.getElementById('currency-status-text');
+            const icon = statusDiv.querySelector('i');
+            
+            statusText.textContent = message;
+            statusDiv.style.display = 'flex';
+            
+            if (type === 'warning') {
+                icon.className = 'fas fa-exclamation-triangle';
+                statusDiv.style.color = '#ff6b6b';
+            } else {
+                icon.className = 'fas fa-sync-alt';
+                statusDiv.style.color = 'var(--accent)';
+            }
+        }
+
+        function hideCurrencyStatus() {
+            const statusDiv = document.getElementById('currency-status');
+            statusDiv.style.display = 'none';
+        }
+
+        async function convertCurrency(value, fromUnit, toUnit) {
+            // Ensure we have fresh rates
+            await fetchCurrencyRates();
+            
+            if (!currencyRates.rates || !currencyRates.rates[fromUnit] || !currencyRates.rates[toUnit]) {
+                throw new Error('Currency rates not available');
+            }
+            
+            // Convert to USD first, then to target currency
+            const usdValue = value / currencyRates.rates[fromUnit];
+            const result = usdValue * currencyRates.rates[toUnit];
+            
+            return result;
         }
 
         function clearAll() {
