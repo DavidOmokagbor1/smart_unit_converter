@@ -601,13 +601,17 @@
                     "kilometers": 1000.0,
                     "centimeters": 0.01,
                     "millimeters": 0.001,
-                    "miles": 1609.34,
+                    "micrometers": 0.000001,
+                    "nanometers": 1e-9,
+                    "miles": 1609.344,
                     "yards": 0.9144,
                     "feet": 0.3048,
                     "inches": 0.0254,
                     "nautical_miles": 1852.0,
                     "light_years": 9.461e15,
-                    "astronomical_units": 1.496e11
+                    "astronomical_units": 1.496e11,
+                    "parsecs": 3.086e16,
+                    "angstroms": 1e-10
                 }
             },
             "Weight": {
@@ -615,12 +619,15 @@
                 units: {
                     "kilograms": 1.0,
                     "grams": 0.001,
-                    "pounds": 0.453592,
-                    "ounces": 0.0283495,
+                    "milligrams": 0.000001,
+                    "micrograms": 1e-9,
+                    "pounds": 0.45359237,
+                    "ounces": 0.028349523125,
                     "tons": 1000.0,
                     "metric_tons": 1000.0,
-                    "stone": 6.35029,
-                    "carats": 0.0002
+                    "stone": 6.35029318,
+                    "carats": 0.0002,
+                    "atomic_mass_units": 1.66053907e-27
                 }
             },
             "Temperature": {
@@ -682,15 +689,26 @@
                     "centuries": 3153600000.0
                 }
             },
-            "Digital Storage": {
+            "Digital Storage (Binary)": {
                 icon: "fas fa-hdd",
                 units: {
                     "bytes": 1.0,
-                    "kilobytes": 1024.0,
-                    "megabytes": 1048576.0,
-                    "gigabytes": 1073741824.0,
-                    "terabytes": 1099511627776.0,
-                    "petabytes": 1125899906842624.0
+                    "kibibytes": 1024.0,
+                    "mebibytes": 1048576.0,
+                    "gibibytes": 1073741824.0,
+                    "tebibytes": 1099511627776.0,
+                    "pebibytes": 1125899906842624.0
+                }
+            },
+            "Digital Storage (Decimal)": {
+                icon: "fas fa-hdd",
+                units: {
+                    "bytes": 1.0,
+                    "kilobytes": 1000.0,
+                    "megabytes": 1000000.0,
+                    "gigabytes": 1000000000.0,
+                    "terabytes": 1000000000000.0,
+                    "petabytes": 1000000000000000.0
                 }
             },
             "Energy": {
@@ -727,17 +745,24 @@
                     "torr": 133.322
                 }
             },
-            "Currency": {
+            "Currency (Static Rates)": {
                 icon: "fas fa-dollar-sign",
                 units: {
                     "USD": 1.0,
-                    "EUR": 0.85,
-                    "GBP": 0.73,
-                    "JPY": 110.0,
-                    "CAD": 1.25,
-                    "AUD": 1.35,
-                    "CHF": 0.92,
-                    "CNY": 6.45
+                    "EUR": 0.92,
+                    "GBP": 0.79,
+                    "JPY": 148.5,
+                    "CAD": 1.35,
+                    "AUD": 1.52,
+                    "CHF": 0.87,
+                    "CNY": 7.23,
+                    "INR": 83.15,
+                    "BRL": 4.95,
+                    "MXN": 17.25,
+                    "KRW": 1330.0,
+                    "SGD": 1.34,
+                    "HKD": 7.82,
+                    "NZD": 1.65
                 }
             },
             "Cryptocurrency": {
@@ -889,6 +914,12 @@
                 return;
             }
 
+            // Validate input value
+            if (!validateInput(value, category, fromUnit)) {
+                resultDiv.textContent = 'Invalid input value for this unit';
+                return;
+            }
+
             // Show loading for currency/crypto
             if (category === 'Currency' || category === 'Cryptocurrency') {
                 showLoading();
@@ -908,7 +939,9 @@
                     result = convertStandard(value, fromUnit, toUnit, category);
                 }
 
-                const resultText = `${value} ${fromUnit} = ${result.toFixed(6)} ${toUnit}`;
+                // Format result with appropriate precision
+                const formattedResult = formatResult(result, fromUnit, toUnit);
+                const resultText = `${value} ${fromUnit} = ${formattedResult} ${toUnit}`;
                 resultDiv.textContent = resultText;
                 addToHistory(resultText);
             }
@@ -925,33 +958,99 @@
 
         function convertStandard(value, fromUnit, toUnit, category) {
             const units = categories[category].units;
-            const baseValue = value * units[fromUnit];
-            return baseValue / units[toUnit];
+            
+            // Handle edge cases
+            if (value === 0) return 0;
+            if (fromUnit === toUnit) return value;
+            
+            // Use higher precision for calculations
+            const baseValue = parseFloat((value * units[fromUnit]).toFixed(15));
+            const result = parseFloat((baseValue / units[toUnit]).toFixed(15));
+            
+            return result;
         }
 
         function convertTemperature(value, fromUnit, toUnit) {
-            // Convert to Celsius first
+            // Handle edge cases
+            if (fromUnit === toUnit) return value;
+            
+            // Convert to Celsius first with higher precision
             let celsius;
             if (fromUnit === "fahrenheit") {
-                celsius = (value - 32) * 5/9;
+                celsius = parseFloat(((value - 32) * 5/9).toFixed(10));
             } else if (fromUnit === "kelvin") {
-                celsius = value - 273.15;
+                celsius = parseFloat((value - 273.15).toFixed(10));
             } else if (fromUnit === "rankine") {
-                celsius = (value - 491.67) * 5/9;
+                celsius = parseFloat(((value - 491.67) * 5/9).toFixed(10));
             } else { // celsius
-                celsius = value;
+                celsius = parseFloat(value.toFixed(10));
             }
 
-            // Convert from Celsius to target unit
+            // Convert from Celsius to target unit with higher precision
             if (toUnit === "fahrenheit") {
-                return celsius * 9/5 + 32;
+                return parseFloat((celsius * 9/5 + 32).toFixed(10));
             } else if (toUnit === "kelvin") {
-                return celsius + 273.15;
+                return parseFloat((celsius + 273.15).toFixed(10));
             } else if (toUnit === "rankine") {
-                return celsius * 9/5 + 491.67;
+                return parseFloat((celsius * 9/5 + 491.67).toFixed(10));
             } else { // celsius
                 return celsius;
             }
+        }
+
+        function formatResult(result, fromUnit, toUnit) {
+            // Handle very large or small numbers with scientific notation
+            if (Math.abs(result) >= 1e6 || (Math.abs(result) < 1e-6 && result !== 0)) {
+                return result.toExponential(6);
+            }
+            
+            // Handle temperature with appropriate precision
+            if (fromUnit.includes('celsius') || fromUnit.includes('fahrenheit') || 
+                fromUnit.includes('kelvin') || fromUnit.includes('rankine') ||
+                toUnit.includes('celsius') || toUnit.includes('fahrenheit') || 
+                toUnit.includes('kelvin') || toUnit.includes('rankine')) {
+                return result.toFixed(2);
+            }
+            
+            // Handle currency with 2 decimal places
+            if (fromUnit.length === 3 || toUnit.length === 3) { // Currency codes
+                return result.toFixed(2);
+            }
+            
+            // Handle digital storage with appropriate precision
+            if (fromUnit.includes('byte') || toUnit.includes('byte') ||
+                fromUnit.includes('bit') || toUnit.includes('bit')) {
+                if (result >= 1e6) {
+                    return result.toFixed(2);
+                } else {
+                    return result.toFixed(6);
+                }
+            }
+            
+            // Default precision for other units
+            return result.toFixed(6);
+        }
+
+        function validateInput(value, category, unit) {
+            // Validate temperature ranges
+            if (category === "Temperature") {
+                if (unit === "kelvin" && value < 0) return false;
+                if (unit === "rankine" && value < 0) return false;
+            }
+            
+            // Validate digital storage (non-negative)
+            if (category.includes("Digital Storage") && value < 0) return false;
+            
+            // Validate data transfer (non-negative)
+            if (category === "Data Transfer" && value < 0) return false;
+            
+            // Validate frequency (non-negative)
+            if (category === "Frequency" && value < 0) return false;
+            
+            // Validate pressure (non-negative for most cases)
+            if (category === "Pressure" && value < 0) return false;
+            
+            return true;
         }
 
         function clearAll() {
