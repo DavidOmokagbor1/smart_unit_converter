@@ -1352,6 +1352,112 @@
             statusDiv.style.display = 'none';
         }
 
+        function getSelectedCategory() {
+            const activeCard = document.querySelector('.category-card.active');
+            if (activeCard) {
+                const categoryName = activeCard.querySelector('div:last-child').textContent;
+                return categoryName;
+            }
+            return null;
+        }
+
+        function convertStandard(value, fromUnit, toUnit, category) {
+            const units = categories[category].units;
+            
+            // Handle edge cases
+            if (value === 0) return 0;
+            if (fromUnit === toUnit) return value;
+            
+            // Use higher precision for calculations
+            const baseValue = parseFloat((value * units[fromUnit]).toFixed(15));
+            const result = parseFloat((baseValue / units[toUnit]).toFixed(15));
+            
+            return result;
+        }
+
+        function convertTemperature(value, fromUnit, toUnit) {
+            // Handle edge cases
+            if (fromUnit === toUnit) return value;
+            
+            // Convert to Celsius first with higher precision
+            let celsius;
+            if (fromUnit === "fahrenheit") {
+                celsius = parseFloat(((value - 32) * 5/9).toFixed(10));
+            } else if (fromUnit === "kelvin") {
+                celsius = parseFloat((value - 273.15).toFixed(10));
+            } else if (fromUnit === "rankine") {
+                celsius = parseFloat(((value - 491.67) * 5/9).toFixed(10));
+            } else { // celsius
+                celsius = parseFloat(value.toFixed(10));
+            }
+
+            // Convert from Celsius to target unit with higher precision
+            if (toUnit === "fahrenheit") {
+                return parseFloat((celsius * 9/5 + 32).toFixed(10));
+            } else if (toUnit === "kelvin") {
+                return parseFloat((celsius + 273.15).toFixed(10));
+            } else if (toUnit === "rankine") {
+                return parseFloat((celsius * 9/5 + 491.67).toFixed(10));
+            } else { // celsius
+                return celsius;
+            }
+        }
+
+        function formatResult(result, fromUnit, toUnit) {
+            // Handle very large or small numbers with scientific notation
+            if (Math.abs(result) >= 1e6 || (Math.abs(result) < 1e-6 && result !== 0)) {
+                return result.toExponential(6);
+            }
+            
+            // Handle temperature with appropriate precision
+            if (fromUnit.includes('celsius') || fromUnit.includes('fahrenheit') || 
+                fromUnit.includes('kelvin') || fromUnit.includes('rankine') ||
+                toUnit.includes('celsius') || toUnit.includes('fahrenheit') || 
+                toUnit.includes('kelvin') || toUnit.includes('rankine')) {
+                return result.toFixed(2);
+            }
+            
+            // Handle currency with 2 decimal places
+            if (fromUnit.length === 3 || toUnit.length === 3) { // Currency codes
+                return result.toFixed(2);
+            }
+            
+            // Handle digital storage with appropriate precision
+            if (fromUnit.includes('byte') || toUnit.includes('byte') ||
+                fromUnit.includes('bit') || toUnit.includes('bit')) {
+                if (result >= 1e6) {
+                    return result.toFixed(2);
+                } else {
+                    return result.toFixed(6);
+                }
+            }
+            
+            // Default precision for other units
+            return result.toFixed(6);
+        }
+
+        function validateInput(value, category, unit) {
+            // Validate temperature ranges
+            if (category === "Temperature") {
+                if (unit === "kelvin" && value < 0) return false;
+                if (unit === "rankine" && value < 0) return false;
+            }
+            
+            // Validate digital storage (non-negative)
+            if (category.includes("Digital Storage") && value < 0) return false;
+            
+            // Validate data transfer (non-negative)
+            if (category === "Data Transfer" && value < 0) return false;
+            
+            // Validate frequency (non-negative)
+            if (category === "Frequency" && value < 0) return false;
+            
+            // Validate pressure (non-negative for most cases)
+            if (category === "Pressure" && value < 0) return false;
+            
+            return true;
+        }
+
         async function convertCurrency(value, fromUnit, toUnit) {
             // Ensure we have fresh rates
             await fetchCurrencyRates();

@@ -23,31 +23,40 @@ class SmartUnitConverter:
             'error': '#f87171'
         }
         
-        # Conversion categories and their units
+        # Conversion categories and their units with improved accuracy
         self.categories = {
             "Length": {
                 "meters": 1.0,
                 "kilometers": 1000.0,
                 "centimeters": 0.01,
                 "millimeters": 0.001,
-                "miles": 1609.34,
+                "micrometers": 0.000001,
+                "nanometers": 1e-9,
+                "miles": 1609.344,
                 "yards": 0.9144,
                 "feet": 0.3048,
                 "inches": 0.0254,
-                "nautical_miles": 1852.0
+                "nautical_miles": 1852.0,
+                "light_years": 9.461e15,
+                "astronomical_units": 1.496e11
             },
             "Weight": {
                 "kilograms": 1.0,
                 "grams": 0.001,
-                "pounds": 0.453592,
-                "ounces": 0.0283495,
+                "milligrams": 0.000001,
+                "micrograms": 1e-9,
+                "pounds": 0.45359237,
+                "ounces": 0.028349523125,
                 "tons": 1000.0,
-                "metric_tons": 1000.0
+                "metric_tons": 1000.0,
+                "stone": 6.35029318,
+                "carats": 0.0002
             },
             "Temperature": {
                 "celsius": "C",
                 "fahrenheit": "F",
-                "kelvin": "K"
+                "kelvin": "K",
+                "rankine": "R"
             },
             "Volume": {
                 "liters": 1.0,
@@ -81,12 +90,19 @@ class SmartUnitConverter:
                 "weeks": 604800.0,
                 "years": 31536000.0
             },
-            "Digital Storage": {
+            "Digital Storage (Binary)": {
                 "bytes": 1.0,
-                "kilobytes": 1024.0,
-                "megabytes": 1048576.0,
-                "gigabytes": 1073741824.0,
-                "terabytes": 1099511627776.0
+                "kibibytes": 1024.0,
+                "mebibytes": 1048576.0,
+                "gibibytes": 1073741824.0,
+                "tebibytes": 1099511627776.0
+            },
+            "Digital Storage (Decimal)": {
+                "bytes": 1.0,
+                "kilobytes": 1000.0,
+                "megabytes": 1000000.0,
+                "gigabytes": 1000000000.0,
+                "terabytes": 1000000000000.0
             }
         }
         
@@ -405,25 +421,44 @@ class SmartUnitConverter:
             self.result_var.set(f"Error: {str(e)}")
             
     def convert_standard(self, value, from_unit, to_unit, category):
+        """Convert between units using standard multiplication factors with improved precision"""
         units = self.categories[category]
-        base_value = value * units[from_unit]
-        result = base_value / units[to_unit]
+        
+        # Handle edge cases
+        if value == 0:
+            return 0
+        if from_unit == to_unit:
+            return value
+            
+        # Use higher precision for calculations
+        base_value = round(value * units[from_unit], 15)
+        result = round(base_value / units[to_unit], 15)
+        
         return result
         
     def convert_temperature(self, value, from_unit, to_unit):
-        # Convert to Celsius first
-        if from_unit == "fahrenheit":
-            celsius = (value - 32) * 5/9
-        elif from_unit == "kelvin":
-            celsius = value - 273.15
-        else:  # celsius
-            celsius = value
+        """Convert temperature with improved precision and support for Rankine"""
+        # Handle edge cases
+        if from_unit == to_unit:
+            return value
             
-        # Convert from Celsius to target unit
+        # Convert to Celsius first with higher precision
+        if from_unit == "fahrenheit":
+            celsius = round((value - 32) * 5/9, 10)
+        elif from_unit == "kelvin":
+            celsius = round(value - 273.15, 10)
+        elif from_unit == "rankine":
+            celsius = round((value - 491.67) * 5/9, 10)
+        else:  # celsius
+            celsius = round(value, 10)
+            
+        # Convert from Celsius to target unit with higher precision
         if to_unit == "fahrenheit":
-            return celsius * 9/5 + 32
+            return round(celsius * 9/5 + 32, 10)
         elif to_unit == "kelvin":
-            return celsius + 273.15
+            return round(celsius + 273.15, 10)
+        elif to_unit == "rankine":
+            return round(celsius * 9/5 + 491.67, 10)
         else:  # celsius
             return celsius
             
