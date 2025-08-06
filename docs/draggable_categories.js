@@ -73,9 +73,9 @@ function renderQuickAccess() {
     }
     
     container.innerHTML = `
-        <h3 style="color: #f093fb; margin: 20px 0 15px 0; font-size: 1.2rem;">
+        <h4 style="color: #f093fb; margin: 15px 0 10px 0; font-size: 1rem;">
             ⭐ Quick Access
-        </h3>
+        </h4>
         <div class="quick-grid" style="
             display: grid; 
             grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); 
