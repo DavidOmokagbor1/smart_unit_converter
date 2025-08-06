@@ -2419,6 +2419,7 @@
                         Object.keys(rates).forEach(symbol => {
                             cryptoCategory.units[symbol] = rates[symbol];
                         });
+                        console.log('Updated crypto category units:', cryptoCategory.units);
                     }
                     
                     console.log(`Crypto rates updated via ${apiUsed}:`, rates);
@@ -2624,25 +2625,46 @@
                 
                 console.log('Crypto rates:', cryptoRates);
                 console.log('Converting:', { value, fromUnit, toUnit });
+                console.log('Available rates:', Object.keys(cryptoRates.rates || {}));
                 
                 // Check if we have the required rates
                 if (!cryptoRates || !cryptoRates.rates) {
                     throw new Error('Cryptocurrency rates not loaded');
                 }
                 
-                const fromRate = cryptoRates.rates[fromUnit];
-                const toRate = cryptoRates.rates[toUnit];
+                // Handle case sensitivity - try both upper and lower case
+                let fromRate = cryptoRates.rates[fromUnit];
+                let toRate = cryptoRates.rates[toUnit];
+                
+                // If not found, try lowercase
+                if (!fromRate) {
+                    fromRate = cryptoRates.rates[fromUnit.toLowerCase()];
+                }
+                if (!toRate) {
+                    toRate = cryptoRates.rates[toUnit.toLowerCase()];
+                }
+                
+                // If still not found, try uppercase
+                if (!fromRate) {
+                    fromRate = cryptoRates.rates[fromUnit.toUpperCase()];
+                }
+                if (!toRate) {
+                    toRate = cryptoRates.rates[toUnit.toUpperCase()];
+                }
+                
+                console.log('Found rates:', { fromRate, toRate });
                 
                 if (!fromRate || !toRate) {
                     console.error('Missing rates:', { fromUnit, toUnit, fromRate, toRate });
-                    throw new Error(`Rates not available for ${fromUnit} or ${toUnit}`);
+                    console.error('Available rates:', Object.keys(cryptoRates.rates));
+                    throw new Error(`Rates not available for ${fromUnit} or ${toUnit}. Available: ${Object.keys(cryptoRates.rates).join(', ')}`);
                 }
                 
                 // Convert to USD first, then to target crypto
                 const usdValue = value * fromRate;
                 const result = usdValue / toRate;
                 
-                console.log('Crypto conversion result:', { usdValue, result });
+                console.log('Crypto conversion result:', { usdValue, result, fromRate, toRate });
                 return result;
                 
             } catch (error) {
@@ -2854,6 +2876,34 @@
                 } else {
                     console.log('Missing test rates:', { testFrom, testTo, rates: cryptoRates.rates });
                 }
+            }
+        }
+        
+        // Test crypto conversion manually
+        async function testCryptoConversion() {
+            try {
+                console.log('Testing crypto conversion...');
+                await fetchCryptoRates();
+                
+                if (cryptoRates && cryptoRates.rates) {
+                    const testValue = 1;
+                    const testFrom = 'BTC';
+                    const testTo = 'ETH';
+                    
+                    console.log('Testing conversion:', testValue, testFrom, 'to', testTo);
+                    const result = await convertCrypto(testValue, testFrom, testTo);
+                    console.log('Conversion result:', result);
+                    
+                    // Also test the reverse
+                    const reverseResult = await convertCrypto(result, testTo, testFrom);
+                    console.log('Reverse conversion result:', reverseResult);
+                    
+                    return result;
+                } else {
+                    console.error('No crypto rates available');
+                }
+            } catch (error) {
+                console.error('Crypto conversion test failed:', error);
             }
         }
         
