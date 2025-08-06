@@ -1512,6 +1512,47 @@
 
         // populateCategories function is now handled by draggable_categories.js
 
+        function populateCategories() {
+            const categoryGrid = document.getElementById('categoryGrid');
+            categoryGrid.innerHTML = '';
+
+            // Smart category ordering by usage frequency
+            const categoryOrder = [
+                "Length", "Weight", "Temperature", "Currency (Real-time)", 
+                "Volume", "Area", "Speed", "Time", "Cryptocurrency (Real-time)",
+                "Digital Storage (Binary)", "Digital Storage (Decimal)", 
+                "Energy", "Power", "Pressure", "Data Transfer", "Frequency",
+                "Cooking Volume", "Cooking Weight", "Baking Temperature"
+            ];
+
+            // Add main categories section
+            const mainCategoriesSection = document.createElement('div');
+            mainCategoriesSection.className = 'main-categories-section';
+            mainCategoriesSection.innerHTML = '<h3 class="section-subtitle">All Categories</h3>';
+            
+            const mainCategoriesGrid = document.createElement('div');
+            mainCategoriesGrid.className = 'category-grid';
+
+            categoryOrder.forEach(category => {
+                if (categories[category]) {
+                    const card = document.createElement('div');
+                    card.className = 'category-card';
+                    card.setAttribute('data-category', category);
+                    card.onclick = () => selectCategory(category);
+                    card.innerHTML = `
+                        <div class="category-icon">
+                            <i class="${categories[category].icon}"></i>
+                        </div>
+                        <div>${category}</div>
+                    `;
+                    mainCategoriesGrid.appendChild(card);
+                }
+            });
+
+            mainCategoriesSection.appendChild(mainCategoriesGrid);
+            categoryGrid.appendChild(mainCategoriesSection);
+        }
+
         function selectCategory(category, event = null) {
             console.log('selectCategory called with:', category, event);
             
