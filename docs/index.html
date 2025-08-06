@@ -2932,6 +2932,32 @@
             }
         }
         
+        // Force refresh and test immediately
+        async function forceRefreshAndTest() {
+            console.log('=== FORCE REFRESH AND TEST ===');
+            
+            // Reset cache
+            lastCryptoUpdate = 0;
+            cryptoRates = {};
+            
+            // Force refresh
+            await fetchCryptoRates();
+            
+            // Show results
+            console.log('Final crypto rates:', cryptoRates);
+            console.log('Available currencies:', Object.keys(cryptoRates.rates || {}));
+            
+            // Test conversion
+            try {
+                const result = await convertCrypto(1, 'BTC', 'ETH');
+                console.log('BTC to ETH conversion result:', result);
+            } catch (error) {
+                console.error('Conversion failed:', error.message);
+            }
+            
+            console.log('=== END FORCE REFRESH ===');
+        }
+        
         // Force refresh crypto rates
         function refreshCryptoRates() {
             console.log('Force refreshing crypto rates...');
@@ -2963,6 +2989,52 @@
             }
             
             console.log('=== END TEST ===');
+        }
+        
+        // Debug crypto API step by step
+        async function debugCryptoAPI() {
+            console.log('=== DEBUGGING CRYPTO API ===');
+            
+            // Test Binance API directly
+            console.log('1. Testing Binance API...');
+            try {
+                const response = await fetch('https://api.binance.com/api/v3/ticker/price?symbol=BTCUSDT');
+                console.log('Binance BTC response status:', response.status);
+                if (response.ok) {
+                    const data = await response.json();
+                    console.log('Binance BTC data:', data);
+                }
+            } catch (e) {
+                console.log('Binance API error:', e.message);
+            }
+            
+            // Test CoinGecko API directly
+            console.log('2. Testing CoinGecko API...');
+            try {
+                const response = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=bitcoin,ethereum&vs_currencies=usd&x_cg_demo_api_key=CG-demo');
+                console.log('CoinGecko response status:', response.status);
+                if (response.ok) {
+                    const data = await response.json();
+                    console.log('CoinGecko data:', data);
+                }
+            } catch (e) {
+                console.log('CoinGecko API error:', e.message);
+            }
+            
+            // Test CryptoCompare API directly
+            console.log('3. Testing CryptoCompare API...');
+            try {
+                const response = await fetch('https://min-api.cryptocompare.com/data/pricemulti?fsyms=BTC,ETH&tsyms=USD');
+                console.log('CryptoCompare response status:', response.status);
+                if (response.ok) {
+                    const data = await response.json();
+                    console.log('CryptoCompare data:', data);
+                }
+            } catch (e) {
+                console.log('CryptoCompare API error:', e.message);
+            }
+            
+            console.log('=== END DEBUG ===');
         }
         
         // Show last update time
