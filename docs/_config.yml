@@ -9,7 +9,6 @@ markdown: kramdown
 highlighter: rouge
 plugins:
   - jekyll-seo-tag
-  - jekyll-sitemap
 
 # Exclude from processing
 exclude:
