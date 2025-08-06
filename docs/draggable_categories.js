@@ -153,14 +153,35 @@ function createDraggableQuickItem(item, index) {
 
 // Create normal quick access item
 function createQuickAccessItem(item) {
+    console.log('Creating quick access item:', item);
+    
     const quickItem = document.createElement('div');
     quickItem.className = 'quick-conversion';
-    quickItem.onclick = () => executeQuickConversion(item.from, item.to, item.category);
+    quickItem.style.cursor = 'pointer';
+    
+    // Add click event listener
+    quickItem.addEventListener('click', (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        console.log('Quick access item clicked:', item);
+        executeQuickConversion(item.from, item.to, item.category);
+    });
     
     quickItem.innerHTML = `
         <i class="${item.icon}"></i>
         <span>${item.label}</span>
     `;
+    
+    // Add hover effect
+    quickItem.addEventListener('mouseenter', () => {
+        quickItem.style.transform = 'translateY(-2px)';
+        quickItem.style.boxShadow = '0 4px 15px rgba(240, 147, 251, 0.3)';
+    });
+    
+    quickItem.addEventListener('mouseleave', () => {
+        quickItem.style.transform = '';
+        quickItem.style.boxShadow = '';
+    });
     
     return quickItem;
 }
@@ -269,14 +290,52 @@ function removeQuickAccessItem(index) {
 
 // Execute quick conversion
 function executeQuickConversion(from, to, category) {
-    if (category) {
-        selectCategory(category);
+    console.log('Executing quick conversion:', { from, to, category });
+    
+    if (!category) {
+        console.error('No category provided for quick conversion');
+        return;
+    }
+    
+    try {
+        // First, select the category
+        if (typeof selectCategory === 'function') {
+            selectCategory(category);
+            console.log('Category selected:', category);
+        } else {
+            console.error('selectCategory function not found');
+            return;
+        }
+        
+        // Wait a bit for the category to be selected, then set the units
         setTimeout(() => {
-            document.getElementById('fromUnit').value = from;
-            document.getElementById('toUnit').value = to;
-            document.getElementById('valueInput').value = 1;
-            convert();
-        }, 100);
+            const fromUnitSelect = document.getElementById('fromUnit');
+            const toUnitSelect = document.getElementById('toUnit');
+            const valueInput = document.getElementById('valueInput');
+            
+            if (fromUnitSelect && toUnitSelect && valueInput) {
+                fromUnitSelect.value = from;
+                toUnitSelect.value = to;
+                valueInput.value = 1;
+                
+                console.log('Units set:', { from, to });
+                
+                // Trigger the conversion
+                if (typeof convert === 'function') {
+                    convert();
+                    console.log('Conversion triggered');
+                    showNotification(`✅ Quick conversion: ${from} → ${to}`, 'success');
+                } else {
+                    console.error('convert function not found');
+                }
+            } else {
+                console.error('Required form elements not found');
+            }
+        }, 200); // Increased timeout for better reliability
+        
+    } catch (error) {
+        console.error('Error executing quick conversion:', error);
+        showNotification('❌ Error executing quick conversion', 'error');
     }
 }
 
@@ -380,6 +439,26 @@ document.addEventListener('DOMContentLoaded', function() {
     console.log('Draggable categories system loaded!');
     userQuickAccess = loadUserQuickAccess();
     
+    // Add a test function to the window for debugging
+    window.testQuickAccess = function() {
+        console.log('Testing quick access functionality...');
+        console.log('User quick access:', userQuickAccess);
+        console.log('Available functions:', {
+            selectCategory: typeof selectCategory,
+            convert: typeof convert,
+            executeQuickConversion: typeof executeQuickConversion
+        });
+        
+        // Test with a sample conversion
+        if (userQuickAccess.length > 0) {
+            const testItem = userQuickAccess[0];
+            console.log('Testing with item:', testItem);
+            executeQuickConversion(testItem.from, testItem.to, testItem.category);
+        } else {
+            console.log('No quick access items to test with');
+        }
+    };
+    
     // Add enhanced CSS styles
     const styles = `
         .quick-access-edit-btn {
@@ -441,6 +520,24 @@ document.addEventListener('DOMContentLoaded', function() {
             background: rgba(102, 126, 234, 0.1);
             transform: translateY(-2px);
             box-shadow: 0 4px 15px rgba(102, 126, 234, 0.2);
+        }
+
+        .quick-conversion {
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .quick-conversion:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(240, 147, 251, 0.3);
+            background: rgba(240, 147, 251, 0.1);
+        }
+
+        .quick-conversion:active {
+            transform: translateY(0px);
+            box-shadow: 0 2px 8px rgba(240, 147, 251, 0.2);
         }
 
         .drag-handle {
