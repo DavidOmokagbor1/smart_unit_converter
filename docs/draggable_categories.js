@@ -66,9 +66,25 @@ function renderQuickAccess() {
         helpText.className = 'edit-help-text';
         helpText.innerHTML = `
             <i class="fas fa-info-circle"></i>
-            <span>Drag categories from the main list to add them to your quick access</span>
+            <span><strong>Edit Mode Active:</strong> Drag categories from the main list below to add them to your quick access. You can also reorder existing items.</span>
         `;
         quickAccessSection.appendChild(helpText);
+        
+        // Add visual indicator that categories are draggable
+        const categoryCards = document.querySelectorAll('.category-card');
+        categoryCards.forEach(card => {
+            card.style.cursor = 'grab';
+            card.style.border = '2px dashed var(--accent)';
+            card.style.background = 'rgba(240, 147, 251, 0.1)';
+        });
+    } else {
+        // Remove visual indicators when not in edit mode
+        const categoryCards = document.querySelectorAll('.category-card');
+        categoryCards.forEach(card => {
+            card.style.cursor = 'pointer';
+            card.style.border = '';
+            card.style.background = '';
+        });
     }
     
     // Create quick access grid
@@ -91,6 +107,12 @@ function renderQuickAccess() {
             <span>Drop categories here to add to quick access</span>
         `;
         quickAccessGrid.appendChild(dropZone);
+        
+        // Make the entire grid a drop zone as well
+        quickAccessGrid.addEventListener('dragover', handleQuickAccessDragOver);
+        quickAccessGrid.addEventListener('drop', handleQuickAccessDrop);
+        quickAccessGrid.addEventListener('dragenter', handleQuickAccessDragEnter);
+        quickAccessGrid.addEventListener('dragleave', handleQuickAccessDragLeave);
         
         // Setup drag and drop
         setupQuickAccessDragAndDrop();
@@ -185,11 +207,17 @@ function handleQuickAccessDragLeave(e) {
 
 function handleQuickAccessDrop(e) {
     e.preventDefault();
-    const dropTarget = e.target.closest('.quick-conversion, .quick-access-drop-zone');
+    console.log('Drop event triggered');
+    
+    const dropTarget = e.target.closest('.quick-conversion, .quick-access-drop-zone, .quick-access-grid');
+    const categoryName = e.dataTransfer.getData('text/plain');
+    
+    console.log('Drop target:', dropTarget);
+    console.log('Category name:', categoryName);
     
     if (dropTarget && dropTarget.classList.contains('quick-access-drop-zone')) {
         // Handle category drop into quick access
-        const categoryName = e.dataTransfer.getData('text/plain');
+        console.log('Dropping into drop zone');
         if (categoryName && categories[categoryName]) {
             addCategoryToQuickAccess(categoryName);
         }
@@ -208,6 +236,14 @@ function handleQuickAccessDrop(e) {
             // Re-render with new order
             renderQuickAccess();
             showNotification('✅ Quick access item moved!', 'success');
+        }
+    }
+    
+    // Also check if dropping on the grid itself
+    if (dropTarget && dropTarget.classList.contains('quick-access-grid')) {
+        console.log('Dropping on grid');
+        if (categoryName && categories[categoryName]) {
+            addCategoryToQuickAccess(categoryName);
         }
     }
     
@@ -277,8 +313,12 @@ function addToQuickAccess(categoryName, fromUnit, toUnit) {
 
 // Add category to quick access when dropped
 function addCategoryToQuickAccess(categoryName) {
+    console.log('Adding category to quick access:', categoryName);
     const category = categories[categoryName];
-    if (!category) return;
+    if (!category) {
+        console.error('Category not found:', categoryName);
+        return;
+    }
     
     // Check if category is already in quick access
     const exists = userQuickAccess.find(item => item.category === categoryName);
@@ -306,7 +346,12 @@ function addCategoryToQuickAccess(categoryName) {
     
     userQuickAccess.push(newItem);
     renderQuickAccess();
-    showNotification(`✅ Added "${categoryName}" to quick access!`, 'success');
+    showNotification(`✅ Added "${categoryName}" to quick access! Click "Save Quick Access" when done.`, 'success');
+    
+    // Auto-save after a short delay
+    setTimeout(() => {
+        saveUserQuickAccess();
+    }, 1000);
 }
 
 // Show notification
@@ -473,11 +518,24 @@ document.addEventListener('DOMContentLoaded', function() {
             text-align: center;
             transition: all 0.3s ease;
             min-height: 80px;
+            cursor: pointer;
         }
 
         .quick-access-drop-zone:hover {
             background: rgba(240, 147, 251, 0.1);
             border-color: var(--primary);
+            transform: scale(1.02);
+        }
+
+        .quick-access-grid {
+            position: relative;
+            min-height: 120px;
+        }
+
+        .quick-access-grid.drag-over {
+            background: rgba(240, 147, 251, 0.1);
+            border: 2px dashed var(--accent);
+            border-radius: 8px;
         }
 
         .quick-access-drop-zone i {
