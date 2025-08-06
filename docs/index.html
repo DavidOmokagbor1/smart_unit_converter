@@ -953,6 +953,17 @@
 
             <div class="converter-main">
                 
+                <!-- Quick Access Section -->
+                <div class="quick-access-section" style="
+                    margin: 20px 0; 
+                    padding: 20px; 
+                    background: rgba(255, 255, 255, 0.05); 
+                    border-radius: 15px;
+                    border: 1px solid rgba(240, 147, 251, 0.2);
+                ">
+                    <!-- Quick access items will be rendered here -->
+                </div>
+                
                 <div class="loading" id="loading">
                     <div class="spinner"></div>
                     <p>Fetching real-time rates...</p>
@@ -1543,6 +1554,11 @@
             // Initialize live features
             updateMarketData();
             setInterval(updateMarketData, 30000); // Update market data every 30 seconds
+            
+            // Initialize quick access
+            quickAccessItems = loadQuickAccess();
+            renderQuickAccess();
+            setupDragDrop();
         });
 
         async function registerServiceWorker() {
