@@ -1,5 +1,5 @@
 [build]
-  publish = "smart_unit_converter"
+  publish = "docs"
   command = ""
 
 [[redirects]]
