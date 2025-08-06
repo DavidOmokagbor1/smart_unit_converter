@@ -125,14 +125,25 @@ function renderQuickAccess() {
             ${quickAccessItems.map(item => `
                 <div onclick="${isEditMode ? 'removeFromQuickAccess(\'' + item.category + '\')' : 'doQuickConvert(\'' + item.from + '\', \'' + item.to + '\', \'' + item.category + '\')'}" 
                      style="
-                         background: linear-gradient(135deg, #667eea, #f093fb);
-                         color: white; padding: 15px; border-radius: 10px;
-                         text-align: center; cursor: pointer; font-weight: bold;
-                         transition: transform 0.2s; box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+                         background: rgba(255, 255, 255, 0.1);
+                         color: inherit; 
+                         padding: 10px 6px; 
+                         border-radius: 8px;
+                         text-align: center; 
+                         cursor: pointer; 
+                         font-weight: bold;
+                         transition: all 0.3s ease; 
+                         border: 1px solid transparent;
+                         font-size: 0.8rem;
+                         height: 80px;
+                         display: flex;
+                         flex-direction: column;
+                         justify-content: center;
+                         align-items: center;
                          position: relative;
                      "
-                     onmouseover="this.style.transform='translateY(-3px)'"
-                     onmouseout="this.style.transform=''"
+                     onmouseover="this.style.transform='translateY(-5px)'; this.style.borderColor='#f093fb'; this.style.boxShadow='0 10px 30px rgba(240, 147, 251, 0.3)'"
+                     onmouseout="this.style.transform=''; this.style.borderColor='transparent'; this.style.boxShadow='none'"
                 >
                     ${item.name}
                     ${isEditMode ? '<div style="position: absolute; top: -5px; right: -5px; background: #ff4757; color: white; border-radius: 50%; width: 20px; height: 20px; display: flex; align-items: center; justify-content: center; font-size: 12px;">×</div>' : ''}
