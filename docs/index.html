@@ -59,6 +59,12 @@
             100% { background-position: 0% 50%; }
         }
 
+        @keyframes pulse {
+            0% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.5); opacity: 0.5; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
         .floating-particles {
             position: fixed;
             top: 0;
@@ -1038,11 +1044,24 @@
                                         display: flex;
                                         align-items: center;
                                         justify-content: center;
+                                        position: relative;
                                     "
                                     onmouseover="this.style.transform='scale(1.1)'"
                                     onmouseout="this.style.transform='scale(1)'"
+                                    title="Click to start voice input"
                             >
                                 🎤
+                                <div id="voiceIndicator" style="
+                                    position: absolute;
+                                    top: -2px;
+                                    right: -2px;
+                                    width: 8px;
+                                    height: 8px;
+                                    background: #10b981;
+                                    border-radius: 50%;
+                                    display: none;
+                                    animation: pulse 1s infinite;
+                                "></div>
                             </button>
                             <button onclick="executeAIQuery()" 
                                     style="
@@ -2670,29 +2689,82 @@
             const voiceBtn = document.getElementById('voiceBtn');
             const input = document.getElementById('aiConverter');
             
-            // Simulate voice input (in real implementation, this would use Web Speech API)
+            // Check if Web Speech API is supported
+            if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
+                alert('❌ Voice recognition not supported in this browser. Please use Chrome or Edge.');
+                return;
+            }
+            
+            // Create speech recognition
+            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+            const recognition = new SpeechRecognition();
+            
+            // Configure recognition
+            recognition.continuous = false;
+            recognition.interimResults = false;
+            recognition.lang = 'en-US';
+            
+            // Start listening
             voiceBtn.innerHTML = '🎙️';
             voiceBtn.style.background = 'linear-gradient(135deg, #ef4444, #dc2626)';
             
-            // Simulate voice recognition
-            setTimeout(() => {
-                const voiceQueries = [
-                    'Convert 50 dollars to euros',
-                    'What is 25 degrees Celsius in Fahrenheit?',
-                    'How many feet is 100 meters?',
-                    'Convert 5 kilograms to pounds'
-                ];
-                
-                const randomQuery = voiceQueries[Math.floor(Math.random() * voiceQueries.length)];
-                input.value = randomQuery;
+            // Show listening indicator
+            const indicator = document.getElementById('voiceIndicator');
+            if (indicator) {
+                indicator.style.display = 'block';
+            }
+            
+            recognition.start();
+            
+            // Handle results
+            recognition.onresult = function(event) {
+                const transcript = event.results[0][0].transcript;
+                input.value = transcript;
                 input.focus();
                 
                 voiceBtn.innerHTML = '🎤';
                 voiceBtn.style.background = 'linear-gradient(135deg, #667eea, #f093fb)';
                 
+                // Hide listening indicator
+                const indicator = document.getElementById('voiceIndicator');
+                if (indicator) {
+                    indicator.style.display = 'none';
+                }
+                
                 // Trigger AI processing
-                handleAIQuery(randomQuery);
-            }, 2000);
+                handleAIQuery(transcript);
+            };
+            
+            // Handle errors
+            recognition.onerror = function(event) {
+                console.error('Speech recognition error:', event.error);
+                voiceBtn.innerHTML = '🎤';
+                voiceBtn.style.background = 'linear-gradient(135deg, #667eea, #f093fb)';
+                
+                // Hide listening indicator
+                const indicator = document.getElementById('voiceIndicator');
+                if (indicator) {
+                    indicator.style.display = 'none';
+                }
+                
+                if (event.error === 'not-allowed') {
+                    alert('❌ Microphone access denied. Please allow microphone access and try again.');
+                } else {
+                    alert('❌ Voice recognition error: ' + event.error);
+                }
+            };
+            
+            // Handle end
+            recognition.onend = function() {
+                voiceBtn.innerHTML = '🎤';
+                voiceBtn.style.background = 'linear-gradient(135deg, #667eea, #f093fb)';
+                
+                // Hide listening indicator
+                const indicator = document.getElementById('voiceIndicator');
+                if (indicator) {
+                    indicator.style.display = 'none';
+                }
+            };
         }
 
         function executeAIQuery() {
