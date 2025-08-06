@@ -2785,7 +2785,7 @@
             
             const result = parseAIQuery(query);
             if (!result) {
-                alert('🤖 AI couldn\'t understand that. Try:\n\n• "Convert 50 dollars to euros"\n• "What is 25°C in Fahrenheit?"\n• "Convert 100 meters to kilometers"\n• "Convert 5 kilograms to pounds"\n• "Convert 10 liters to gallons"\n\nMake sure to speak clearly and use common unit names.');
+                alert('🤖 AI couldn\'t understand that. Try:\n\n• "Convert 50 dollars to euros"\n• "What is 25°C in Fahrenheit?"\n• "Convert 100 meters to kilometers"\n• "Convert 5 kilograms to pounds"\n• "Convert 10 liters to gallons"\n• "Convert 60 mph to kmh"\n• "Convert 2 hours to minutes"\n• "Convert 1 gb to mb"\n• "Convert 1000 joules to calories"\n• "Convert 1000 watts to horsepower"\n\nMake sure to speak clearly and use common unit names.');
                 return;
             }
             
@@ -2810,7 +2810,25 @@
                 { pattern: /(\d+(?:\.\d+)?)\s*(liters?|gallons?|l|gal|litre)\s*(?:to|in|convert\s+to)\s*(gallons?|liters?|gal|l|litre)/i, category: 'Volume', from: 'liters', to: 'gallons' },
                 
                 // Area patterns
-                { pattern: /(\d+(?:\.\d+)?)\s*(square\s*meters?|sq\s*m|sqm|acres?|hectares?)\s*(?:to|in|convert\s+to)\s*(acres?|square\s*meters?|sq\s*m|sqm|hectares?)/i, category: 'Area', from: 'square_meters', to: 'acres' }
+                { pattern: /(\d+(?:\.\d+)?)\s*(square\s*meters?|sq\s*m|sqm|acres?|hectares?|sq\s*ft)\s*(?:to|in|convert\s+to)\s*(acres?|square\s*meters?|sq\s*m|sqm|hectares?|sq\s*ft)/i, category: 'Area', from: 'square_meters', to: 'acres' },
+                
+                // Speed patterns
+                { pattern: /(\d+(?:\.\d+)?)\s*(meters?\s*per\s*second|km\s*per\s*hour|miles?\s*per\s*hour|mph|kmh|mps)\s*(?:to|in|convert\s+to)\s*(km\s*per\s*hour|miles?\s*per\s*hour|meters?\s*per\s*second|mph|kmh|mps)/i, category: 'Speed', from: 'meters_per_second', to: 'kilometers_per_hour' },
+                
+                // Time patterns
+                { pattern: /(\d+(?:\.\d+)?)\s*(seconds?|minutes?|hours?|days?|weeks?|years?|sec|min|hr|day|week|year)\s*(?:to|in|convert\s+to)\s*(minutes?|hours?|days?|weeks?|years?|seconds?|min|hr|day|week|year|sec)/i, category: 'Time', from: 'seconds', to: 'minutes' },
+                
+                // Digital Storage patterns
+                { pattern: /(\d+(?:\.\d+)?)\s*(bytes?|kilobytes?|megabytes?|gigabytes?|terabytes?|kb|mb|gb|tb)\s*(?:to|in|convert\s+to)\s*(kilobytes?|megabytes?|gigabytes?|terabytes?|bytes?|kb|mb|gb|tb)/i, category: 'Digital Storage (Decimal)', from: 'bytes', to: 'kilobytes' },
+                
+                // Energy patterns
+                { pattern: /(\d+(?:\.\d+)?)\s*(joules?|calories?|kilojoules?|kilocalories?|watt\s*hours?|kwh|j|cal)\s*(?:to|in|convert\s+to)\s*(calories?|joules?|kilojoules?|kilocalories?|watt\s*hours?|cal|j|kwh)/i, category: 'Energy', from: 'joules', to: 'calories' },
+                
+                // Power patterns
+                { pattern: /(\d+(?:\.\d+)?)\s*(watts?|kilowatts?|horsepower?|w|kw|hp)\s*(?:to|in|convert\s+to)\s*(kilowatts?|horsepower?|watts?|kw|hp|w)/i, category: 'Power', from: 'watts', to: 'kilowatts' },
+                
+                // Pressure patterns
+                { pattern: /(\d+(?:\.\d+)?)\s*(pascals?|bars?|psi|atmospheres?|pa|bar|atm)\s*(?:to|in|convert\s+to)\s*(bars?|psi|atmospheres?|pascals?|bar|atm|pa)/i, category: 'Pressure', from: 'pascals', to: 'bars' }
             ];
             
             for (const pattern of aiPatterns) {
@@ -2822,23 +2840,71 @@
                     
                     // Handle partial word mappings
                     const unitMappings = {
+                        // Length
                         'kilomet': 'kilometers',
                         'meter': 'meters',
                         'foot': 'feet',
                         'mile': 'miles',
-                        'kilo': 'kilograms',
-                        'pound': 'pounds',
-                        'litre': 'liters',
-                        'gal': 'gallons',
-                        'cel': 'celsius',
-                        'fahr': 'fahrenheit',
-                        'euro': 'EUR',
                         'm': 'meters',
                         'km': 'kilometers',
                         'ft': 'feet',
+                        
+                        // Weight
+                        'kilo': 'kilograms',
+                        'pound': 'pounds',
                         'kg': 'kilograms',
                         'lbs': 'pounds',
-                        'l': 'liters'
+                        
+                        // Volume
+                        'litre': 'liters',
+                        'gal': 'gallons',
+                        'l': 'liters',
+                        
+                        // Temperature
+                        'cel': 'celsius',
+                        'fahr': 'fahrenheit',
+                        
+                        // Currency
+                        'euro': 'EUR',
+                        
+                        // Area
+                        'sq ft': 'square_feet',
+                        'sq m': 'square_meters',
+                        'sqm': 'square_meters',
+                        
+                        // Speed
+                        'mph': 'miles_per_hour',
+                        'kmh': 'kilometers_per_hour',
+                        'mps': 'meters_per_second',
+                        
+                        // Time
+                        'sec': 'seconds',
+                        'min': 'minutes',
+                        'hr': 'hours',
+                        'day': 'days',
+                        'week': 'weeks',
+                        'year': 'years',
+                        
+                        // Digital Storage
+                        'kb': 'kilobytes',
+                        'mb': 'megabytes',
+                        'gb': 'gigabytes',
+                        'tb': 'terabytes',
+                        
+                        // Energy
+                        'j': 'joules',
+                        'cal': 'calories',
+                        'kwh': 'kilowatt_hours',
+                        
+                        // Power
+                        'w': 'watts',
+                        'kw': 'kilowatts',
+                        'hp': 'horsepower',
+                        
+                        // Pressure
+                        'pa': 'pascals',
+                        'bar': 'bars',
+                        'atm': 'atmospheres'
                     };
                     
                     // Check if we need to map the units
