@@ -66,6 +66,8 @@ function renderQuickAccess() {
     testButton.innerHTML = '<i class="fas fa-bug"></i> Test Quick Access';
     testButton.onclick = () => {
         console.log('Test button clicked');
+        checkSystemStatus(); // Run system check first
+        
         if (userQuickAccess.length > 0) {
             const testItem = userQuickAccess[0];
             console.log('Testing with:', testItem);
@@ -321,6 +323,20 @@ function executeQuickConversion(from, to, category) {
         return;
     }
     
+    // Check if categories are available
+    if (typeof categories === 'undefined') {
+        console.error('Categories object not available');
+        showNotification('❌ Categories not loaded', 'error');
+        return;
+    }
+    
+    // Check if the category exists
+    if (!categories[category]) {
+        console.error('Category not found:', category);
+        showNotification(`❌ Category "${category}" not found`, 'error');
+        return;
+    }
+    
     try {
         // First, select the category
         if (typeof selectCategory === 'function') {
@@ -328,6 +344,7 @@ function executeQuickConversion(from, to, category) {
             console.log('Category selected:', category);
         } else {
             console.error('selectCategory function not found');
+            showNotification('❌ selectCategory function not found', 'error');
             return;
         }
         
@@ -337,29 +354,42 @@ function executeQuickConversion(from, to, category) {
             const toUnitSelect = document.getElementById('toUnit');
             const valueInput = document.getElementById('valueInput');
             
+            console.log('Form elements:', { fromUnitSelect, toUnitSelect, valueInput });
+            
             if (fromUnitSelect && toUnitSelect && valueInput) {
-                fromUnitSelect.value = from;
-                toUnitSelect.value = to;
-                valueInput.value = 1;
+                // Check if the units exist in the category
+                const categoryUnits = Object.keys(categories[category].units);
+                console.log('Available units for category:', categoryUnits);
                 
-                console.log('Units set:', { from, to });
-                
-                // Trigger the conversion
-                if (typeof convert === 'function') {
-                    convert();
-                    console.log('Conversion triggered');
-                    showNotification(`✅ Quick conversion: ${from} → ${to}`, 'success');
+                if (categoryUnits.includes(from) && categoryUnits.includes(to)) {
+                    fromUnitSelect.value = from;
+                    toUnitSelect.value = to;
+                    valueInput.value = 1;
+                    
+                    console.log('Units set:', { from, to });
+                    
+                    // Trigger the conversion
+                    if (typeof convert === 'function') {
+                        convert();
+                        console.log('Conversion triggered');
+                        showNotification(`✅ Quick conversion: ${from} → ${to}`, 'success');
+                    } else {
+                        console.error('convert function not found');
+                        showNotification('❌ convert function not found', 'error');
+                    }
                 } else {
-                    console.error('convert function not found');
+                    console.error('Units not found in category:', { from, to, available: categoryUnits });
+                    showNotification(`❌ Units "${from}" or "${to}" not found in category`, 'error');
                 }
             } else {
                 console.error('Required form elements not found');
+                showNotification('❌ Form elements not found', 'error');
             }
-        }, 200); // Increased timeout for better reliability
+        }, 300); // Increased timeout for better reliability
         
     } catch (error) {
         console.error('Error executing quick conversion:', error);
-        showNotification('❌ Error executing quick conversion', 'error');
+        showNotification(`❌ Error executing quick conversion: ${error.message}`, 'error');
     }
 }
 
@@ -472,6 +502,10 @@ document.addEventListener('DOMContentLoaded', function() {
             convert: typeof convert,
             executeQuickConversion: typeof executeQuickConversion
         });
+        console.log('Categories available:', typeof categories !== 'undefined');
+        if (typeof categories !== 'undefined') {
+            console.log('Available categories:', Object.keys(categories));
+        }
         
         // Test with a sample conversion
         if (userQuickAccess.length > 0) {
@@ -480,7 +514,23 @@ document.addEventListener('DOMContentLoaded', function() {
             executeQuickConversion(testItem.from, testItem.to, testItem.category);
         } else {
             console.log('No quick access items to test with');
+            showNotification('No quick access items to test', 'warning');
         }
+    };
+    
+    // Add a function to check system status
+    window.checkSystemStatus = function() {
+        console.log('=== System Status Check ===');
+        console.log('Categories loaded:', typeof categories !== 'undefined');
+        console.log('selectCategory function:', typeof selectCategory);
+        console.log('convert function:', typeof convert);
+        console.log('Quick access items:', userQuickAccess.length);
+        console.log('Form elements exist:', {
+            fromUnit: !!document.getElementById('fromUnit'),
+            toUnit: !!document.getElementById('toUnit'),
+            valueInput: !!document.getElementById('valueInput')
+        });
+        console.log('=======================');
     };
     
     // Add enhanced CSS styles
