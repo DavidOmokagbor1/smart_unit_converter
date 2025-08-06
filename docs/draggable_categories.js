@@ -1,7 +1,6 @@
-// ULTRA-SIMPLE QUICK ACCESS SYSTEM
-// Direct approach - no complex logic, just works
+// Simple Quick Access System - Add-on to existing categories
+// This just adds quick access without breaking the original system
 
-// Simple storage
 let quickAccessItems = [];
 
 // Load saved items
@@ -185,75 +184,36 @@ function setupDragDrop() {
 
 // Initialize
 document.addEventListener('DOMContentLoaded', function() {
-    console.log('Ultra-simple quick access loaded!');
+    console.log('Quick access system loaded!');
     quickAccessItems = loadQuickAccess();
     
-    // Wait for categories to load, then setup
+    // Wait for original system to load, then add quick access
     setTimeout(() => {
+        addQuickAccessSection();
         setupDragDrop();
-    }, 1000);
+    }, 2000);
 });
 
-// Override populateCategories
-function populateCategories() {
-    console.log('Setting up ultra-simple categories');
+// Add quick access section to existing page
+function addQuickAccessSection() {
+    // Check if quick access section already exists
+    if (document.querySelector('.quick-access-section')) return;
     
-    const categoryGrid = document.getElementById('categoryGrid');
-    if (!categoryGrid) return;
+    // Find the search container to insert after
+    const searchContainer = document.querySelector('.search-container');
+    if (!searchContainer) return;
     
-    categoryGrid.innerHTML = '';
-    
-    // Add quick access section
+    // Create quick access section
     const quickSection = document.createElement('div');
     quickSection.className = 'quick-access-section';
     quickSection.style.margin = '20px 0';
-    categoryGrid.appendChild(quickSection);
+    
+    // Insert after search container
+    searchContainer.parentNode.insertBefore(quickSection, searchContainer.nextSibling);
     
     // Render quick access
     renderQuickAccess();
-    
-    // Add categories
-    const categoriesSection = document.createElement('div');
-    categoriesSection.innerHTML = '<h3 style="color: #f093fb; margin: 20px 0 15px 0;">All Categories</h3>';
-    
-    const categoriesGrid = document.createElement('div');
-    categoriesGrid.style.cssText = `
-        display: grid; 
-        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); 
-        gap: 15px;
-    `;
-    
-    const categoryOrder = [
-        "Length", "Weight", "Temperature", "Currency (Real-time)", 
-        "Volume", "Area", "Speed", "Time", "Cryptocurrency (Real-time)",
-        "Digital Storage (Binary)", "Digital Storage (Decimal)", 
-        "Energy", "Power", "Pressure", "Data Transfer", "Frequency",
-        "Cooking Volume", "Cooking Weight", "Baking Temperature"
-    ];
-    
-    categoryOrder.forEach(category => {
-        if (categories[category]) {
-            const card = document.createElement('div');
-            card.className = 'category-card';
-            card.dataset.category = category;
-            card.style.cssText = `
-                background: linear-gradient(135deg, #667eea, #f093fb);
-                color: white; padding: 20px; border-radius: 12px;
-                text-align: center; cursor: pointer; font-weight: bold;
-                transition: transform 0.2s; box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
-            `;
-            card.innerHTML = `
-                <div style="font-size: 2rem; margin-bottom: 10px;">${categories[category].icon}</div>
-                <div>${category}</div>
-            `;
-            card.onclick = () => selectCategory(category);
-            categoriesGrid.appendChild(card);
-        }
-    });
-    
-    categoriesSection.appendChild(categoriesGrid);
-    categoryGrid.appendChild(categoriesSection);
-    
-    // Setup drag and drop after rendering
-    setTimeout(setupDragDrop, 100);
-} 
+}
+
+// Don't override the original populateCategories - let it work normally
+// The original system will handle categories, we just add quick access on top 
