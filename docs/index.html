@@ -1985,13 +1985,25 @@
                     // Format result with appropriate precision
                     const formattedResult = formatResult(result, fromUnit, toUnit);
                     const resultText = `${value} ${fromUnit} = ${formattedResult} ${toUnit}`;
-                    resultDiv.textContent = resultText;
                     
-                    // Add to enhanced history
-                    addToHistoryEnhanced(value, fromUnit, toUnit, formattedResult, category);
+                    // Safely update result display
+                    if (resultDiv) {
+                        resultDiv.textContent = resultText;
+                    }
+                    
+                    // Add to enhanced history with error handling
+                    try {
+                        addToHistoryEnhanced(value, fromUnit, toUnit, formattedResult, category);
+                    } catch (e) {
+                        console.error('Error adding to enhanced history:', e);
+                    }
                     
                     // Also add to legacy history for compatibility
-                    addToHistory(resultText);
+                    try {
+                        addToHistory(resultText);
+                    } catch (e) {
+                        console.error('Error adding to legacy history:', e);
+                    }
                 } catch (error) {
                     console.error('Conversion error:', error);
                     resultDiv.textContent = `Error: ${error.message}`;
@@ -2593,56 +2605,87 @@
         
         // Enhanced Conversion History Functions
         function addToHistoryEnhanced(fromValue, fromUnit, toUnit, result, category) {
-            const historyItem = {
-                id: Date.now(),
-                fromValue: fromValue,
-                fromUnit: fromUnit,
-                toUnit: toUnit,
-                result: result,
-                category: category,
-                timestamp: new Date().toLocaleString()
-            };
-            
-            conversionHistory.unshift(historyItem); // Add to beginning
-            
-            // Keep only last 20 items
-            if (conversionHistory.length > 20) {
-                conversionHistory = conversionHistory.slice(0, 20);
+            try {
+                // Validate inputs
+                if (!fromValue || !fromUnit || !toUnit || !result) {
+                    console.log('Invalid history data, skipping:', { fromValue, fromUnit, toUnit, result });
+                    return;
+                }
+                
+                const historyItem = {
+                    id: Date.now(),
+                    fromValue: fromValue,
+                    fromUnit: fromUnit,
+                    toUnit: toUnit,
+                    result: result,
+                    category: category || 'Unknown',
+                    timestamp: new Date().toLocaleString()
+                };
+                
+                conversionHistory.unshift(historyItem); // Add to beginning
+                
+                // Keep only last 20 items
+                if (conversionHistory.length > 20) {
+                    conversionHistory = conversionHistory.slice(0, 20);
+                }
+                
+                // Save to localStorage
+                try {
+                    localStorage.setItem('conversionHistory', JSON.stringify(conversionHistory));
+                } catch (e) {
+                    console.error('Error saving to localStorage:', e);
+                }
+                
+                // Update display
+                renderHistory();
+            } catch (error) {
+                console.error('Error adding to enhanced history:', error);
             }
-            
-            // Save to localStorage
-            localStorage.setItem('conversionHistory', JSON.stringify(conversionHistory));
-            
-            // Update display
-            renderHistory();
         }
         
         function renderHistory() {
-            const historyContainer = document.getElementById('conversionHistory');
-            if (!historyContainer) return;
-            
-            if (conversionHistory.length === 0) {
-                historyContainer.innerHTML = '<div style="text-align: center; color: #888; padding: 10px;">No conversions yet</div>';
-                return;
+            try {
+                const historyContainer = document.getElementById('conversionHistory');
+                if (!historyContainer) {
+                    console.log('History container not found, skipping render');
+                    return;
+                }
+                
+                if (conversionHistory.length === 0) {
+                    historyContainer.innerHTML = '<div style="text-align: center; color: #888; padding: 10px;">No conversions yet</div>';
+                    return;
+                }
+                
+                // Filter out invalid entries
+                const validHistory = conversionHistory.filter(item => 
+                    item && item.fromValue && item.fromUnit && item.result && item.toUnit
+                );
+                
+                if (validHistory.length === 0) {
+                    historyContainer.innerHTML = '<div style="text-align: center; color: #888; padding: 10px;">No valid conversions yet</div>';
+                    return;
+                }
+                
+                historyContainer.innerHTML = validHistory.map(item => `
+                    <div style="
+                        background: rgba(255, 255, 255, 0.1); 
+                        border-radius: 6px; 
+                        padding: 8px; 
+                        margin-bottom: 6px;
+                        border-left: 3px solid #f093fb;
+                        font-size: 0.75rem;
+                    ">
+                        <div style="font-weight: bold; color: #f093fb; margin-bottom: 2px;">
+                            ${item.fromValue} ${item.fromUnit} → ${item.result} ${item.toUnit}
+                        </div>
+                        <div style="color: #888; font-size: 0.7rem;">
+                            ${item.category || 'Unknown'} • ${item.timestamp || 'Unknown time'}
+                        </div>
+                    </div>
+                `).join('');
+            } catch (error) {
+                console.error('Error rendering history:', error);
             }
-            
-            historyContainer.innerHTML = conversionHistory.map(item => `
-                <div style="
-                    background: rgba(255, 255, 255, 0.1); 
-                    border-radius: 6px; 
-                    padding: 8px; 
-                    margin-bottom: 6px;
-                    border-left: 3px solid #f093fb;
-                    font-size: 0.75rem;
-                ">
-                    <div style="font-weight: bold; color: #f093fb; margin-bottom: 2px;">
-                        ${item.fromValue} ${item.fromUnit} → ${item.result} ${item.toUnit}
-                    </div>
-                    <div style="color: #888; font-size: 0.7rem;">
-                        ${item.category} • ${item.timestamp}
-                    </div>
-                </div>
-            `).join('');
         }
         
         function clearHistory() {
@@ -2677,15 +2720,33 @@
         }
         
         function loadHistory() {
-            const saved = localStorage.getItem('conversionHistory');
-            if (saved) {
-                try {
-                    conversionHistory = JSON.parse(saved);
-                    renderHistory();
-                } catch (e) {
-                    console.error('Error loading history:', e);
+            try {
+                const saved = localStorage.getItem('conversionHistory');
+                if (saved) {
+                    try {
+                        const parsed = JSON.parse(saved);
+                        // Validate that it's an array
+                        if (Array.isArray(parsed)) {
+                            conversionHistory = parsed;
+                        } else {
+                            console.log('Invalid history format, starting fresh');
+                            conversionHistory = [];
+                        }
+                    } catch (e) {
+                        console.error('Error parsing history:', e);
+                        conversionHistory = [];
+                    }
+                } else {
                     conversionHistory = [];
                 }
+                
+                // Render history after loading
+                setTimeout(() => {
+                    renderHistory();
+                }, 100); // Small delay to ensure DOM is ready
+            } catch (error) {
+                console.error('Error loading history:', error);
+                conversionHistory = [];
             }
         }
 
