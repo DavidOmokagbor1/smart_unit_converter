@@ -944,8 +944,10 @@
                 
                 <!-- Search functionality -->
                 <div class="search-container">
-                    <input type="text" id="categorySearch" placeholder="Search categories..." class="search-input">
-                    <i class="fas fa-search search-icon"></i>
+                    <div class="search-box">
+                        <input type="text" id="categorySearch" placeholder="Search categories...">
+                        <i class="fas fa-search"></i>
+                    </div>
                 </div>
                 
                 <div class="category-grid" id="categoryGrid">
@@ -1107,6 +1109,115 @@
             </h2>
             <div class="history-list" id="historyList">
                 <div class="history-item">No conversions yet</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- GOOGLE-LIKE INSTANT CONVERTER -->
+    <div class="google-converter" style="
+        margin: 20px 0; 
+        padding: 20px; 
+        background: rgba(255, 255, 255, 0.1); 
+        border-radius: 15px;
+        border: 2px solid rgba(240, 147, 251, 0.3);
+    ">
+        <h3 style="color: #f093fb; margin-bottom: 15px; font-size: 1.3rem; text-align: center;">
+            🔍 Google-Style Instant Converter
+        </h3>
+        
+        <!-- Instant Search Bar -->
+        <div style="
+            display: flex; 
+            align-items: center; 
+            background: white; 
+            border-radius: 25px; 
+            padding: 5px; 
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            margin-bottom: 15px;
+        ">
+            <input type="text" 
+                   id="instantConverter" 
+                   placeholder="Type: '50 USD to EUR' or '25 celsius to fahrenheit'"
+                   style="
+                       flex: 1; 
+                       border: none; 
+                       padding: 15px 20px; 
+                       font-size: 1rem; 
+                       outline: none;
+                       border-radius: 20px;
+                   "
+                   onkeyup="handleInstantSearch(this.value)"
+            >
+            <button onclick="executeInstantConversion()" 
+                    style="
+                        background: linear-gradient(135deg, #667eea, #f093fb);
+                        color: white; 
+                        border: none; 
+                        padding: 15px 25px; 
+                        border-radius: 20px; 
+                        cursor: pointer; 
+                        font-weight: bold;
+                        margin-left: 10px;
+                    "
+            >
+                Convert
+            </button>
+        </div>
+        
+        <!-- Smart Suggestions -->
+        <div id="smartSuggestions" style="
+            display: grid; 
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); 
+            gap: 10px; 
+            margin-top: 15px;
+        ">
+            <!-- Suggestions will be populated here -->
+        </div>
+        
+        <!-- Quick Examples -->
+        <div style="
+            margin-top: 15px; 
+            padding: 10px; 
+            background: rgba(240, 147, 251, 0.1); 
+            border-radius: 10px;
+        ">
+            <div style="color: #f093fb; font-size: 0.9rem; margin-bottom: 8px;">
+                💡 Try these examples:
+            </div>
+            <div style="
+                display: flex; 
+                flex-wrap: wrap; 
+                gap: 8px; 
+                font-size: 0.8rem;
+            ">
+                <span onclick="setExample('50 USD to EUR')" style="
+                    background: rgba(102, 126, 234, 0.2); 
+                    padding: 5px 10px; 
+                    border-radius: 15px; 
+                    cursor: pointer;
+                    color: #667eea;
+                ">50 USD to EUR</span>
+                <span onclick="setExample('25 celsius to fahrenheit')" style="
+                    background: rgba(102, 126, 234, 0.2); 
+                    padding: 5px 10px; 
+                    border-radius: 15px; 
+                    cursor: pointer;
+                    color: #667eea;
+                ">25 celsius to fahrenheit</span>
+                <span onclick="setExample('100 meters to feet')" style="
+                    background: rgba(102, 126, 234, 0.2); 
+                    padding: 5px 10px; 
+                    border-radius: 15px; 
+                    cursor: pointer;
+                    color: #667eea;
+                ">100 meters to feet</span>
+                <span onclick="setExample('5 kilograms to pounds')" style="
+                    background: rgba(102, 126, 234, 0.2); 
+                    padding: 5px 10px; 
+                    border-radius: 15px; 
+                    cursor: pointer;
+                    color: #667eea;
+                ">5 kilograms to pounds</span>
             </div>
         </div>
     </div>
@@ -2357,6 +2468,152 @@
                     updateStatus.style.display = 'none';
                 }, 5000);
             }
+        }
+
+        // GOOGLE-LIKE INSTANT CONVERTER FUNCTIONS
+        function handleInstantSearch(query) {
+            if (query.length < 3) {
+                document.getElementById('smartSuggestions').innerHTML = '';
+                return;
+            }
+            
+            const suggestions = getSmartSuggestions(query);
+            displaySuggestions(suggestions);
+        }
+
+        function getSmartSuggestions(query) {
+            const suggestions = [];
+            const lowerQuery = query.toLowerCase();
+            
+            // Common patterns
+            const patterns = [
+                { pattern: /(\d+)\s*(usd|dollar|dollars)\s*to\s*(eur|euro|euros)/i, category: 'Currency (Real-time)', from: 'USD', to: 'EUR' },
+                { pattern: /(\d+)\s*(celsius|°c)\s*to\s*(fahrenheit|°f)/i, category: 'Temperature', from: 'celsius', to: 'fahrenheit' },
+                { pattern: /(\d+)\s*(meters|meter)\s*to\s*(feet|foot)/i, category: 'Length', from: 'meters', to: 'feet' },
+                { pattern: /(\d+)\s*(kilograms|kg)\s*to\s*(pounds|lbs)/i, category: 'Weight', from: 'kilograms', to: 'pounds' },
+                { pattern: /(\d+)\s*(miles|mile)\s*to\s*(kilometers|km)/i, category: 'Length', from: 'miles', to: 'kilometers' },
+                { pattern: /(\d+)\s*(gallons|gallon)\s*to\s*(liters|l)/i, category: 'Volume', from: 'gallons', to: 'liters' }
+            ];
+            
+            patterns.forEach(pattern => {
+                const match = query.match(pattern.pattern);
+                if (match) {
+                    suggestions.push({
+                        text: `${match[1]} ${pattern.from} to ${pattern.to}`,
+                        value: match[1],
+                        from: pattern.from,
+                        to: pattern.to,
+                        category: pattern.category
+                    });
+                }
+            });
+            
+            return suggestions;
+        }
+
+        function displaySuggestions(suggestions) {
+            const container = document.getElementById('smartSuggestions');
+            if (suggestions.length === 0) {
+                container.innerHTML = '';
+                return;
+            }
+            
+            container.innerHTML = suggestions.map(suggestion => `
+                <div onclick="setExample('${suggestion.text}')" style="
+                    background: rgba(102, 126, 234, 0.1); 
+                    border: 1px solid rgba(102, 126, 234, 0.3);
+                    padding: 10px; 
+                    border-radius: 8px; 
+                    cursor: pointer;
+                    transition: all 0.2s ease;
+                " onmouseover="this.style.background='rgba(102, 126, 234, 0.2)'" onmouseout="this.style.background='rgba(102, 126, 234, 0.1)'">
+                    <div style="font-weight: bold; color: #667eea;">${suggestion.text}</div>
+                    <div style="font-size: 0.8rem; color: #f093fb;">Click to convert</div>
+                </div>
+            `).join('');
+        }
+
+        function setExample(text) {
+            document.getElementById('instantConverter').value = text;
+            executeInstantConversion();
+        }
+
+        function executeInstantConversion() {
+            const query = document.getElementById('instantConverter').value.trim();
+            if (!query) return;
+            
+            // Parse the query
+            const result = parseConversionQuery(query);
+            if (!result) {
+                alert('❌ Could not understand the conversion. Try: "50 USD to EUR" or "25 celsius to fahrenheit"');
+                return;
+            }
+            
+            // Execute the conversion
+            performInstantConversion(result.value, result.from, result.to, result.category);
+        }
+
+        function parseConversionQuery(query) {
+            const patterns = [
+                { pattern: /(\d+(?:\.\d+)?)\s*(usd|dollar|dollars)\s*to\s*(eur|euro|euros)/i, category: 'Currency (Real-time)', from: 'USD', to: 'EUR' },
+                { pattern: /(\d+(?:\.\d+)?)\s*(celsius|°c)\s*to\s*(fahrenheit|°f)/i, category: 'Temperature', from: 'celsius', to: 'fahrenheit' },
+                { pattern: /(\d+(?:\.\d+)?)\s*(meters|meter)\s*to\s*(feet|foot)/i, category: 'Length', from: 'meters', to: 'feet' },
+                { pattern: /(\d+(?:\.\d+)?)\s*(kilograms|kg)\s*to\s*(pounds|lbs)/i, category: 'Weight', from: 'kilograms', to: 'pounds' },
+                { pattern: /(\d+(?:\.\d+)?)\s*(miles|mile)\s*to\s*(kilometers|km)/i, category: 'Length', from: 'miles', to: 'kilometers' },
+                { pattern: /(\d+(?:\.\d+)?)\s*(gallons|gallon)\s*to\s*(liters|l)/i, category: 'Volume', from: 'gallons', to: 'liters' },
+                { pattern: /(\d+(?:\.\d+)?)\s*(fahrenheit|°f)\s*to\s*(celsius|°c)/i, category: 'Temperature', from: 'fahrenheit', to: 'celsius' },
+                { pattern: /(\d+(?:\.\d+)?)\s*(feet|foot)\s*to\s*(meters|meter)/i, category: 'Length', from: 'feet', to: 'meters' },
+                { pattern: /(\d+(?:\.\d+)?)\s*(pounds|lbs)\s*to\s*(kilograms|kg)/i, category: 'Weight', from: 'pounds', to: 'kilograms' },
+                { pattern: /(\d+(?:\.\d+)?)\s*(kilometers|km)\s*to\s*(miles|mile)/i, category: 'Length', from: 'kilometers', to: 'miles' },
+                { pattern: /(\d+(?:\.\d+)?)\s*(liters|l)\s*to\s*(gallons|gallon)/i, category: 'Volume', from: 'liters', to: 'gallons' }
+            ];
+            
+            for (const pattern of patterns) {
+                const match = query.match(pattern.pattern);
+                if (match) {
+                    return {
+                        value: parseFloat(match[1]),
+                        from: pattern.from,
+                        to: pattern.to,
+                        category: pattern.category
+                    };
+                }
+            }
+            
+            return null;
+        }
+
+        function performInstantConversion(value, from, to, category) {
+            // Select the category first
+            if (typeof selectCategory === 'function') {
+                selectCategory(category);
+            }
+            
+            // Set the values and convert
+            setTimeout(() => {
+                const fromSelect = document.getElementById('fromUnit');
+                const toSelect = document.getElementById('toUnit');
+                const valueInput = document.getElementById('valueInput');
+                
+                if (fromSelect && toSelect && valueInput) {
+                    fromSelect.value = from;
+                    toSelect.value = to;
+                    valueInput.value = value;
+                    
+                    // Trigger conversion
+                    if (typeof convert === 'function') {
+                        convert();
+                        
+                        // Show success message
+                        const resultDiv = document.getElementById('result');
+                        if (resultDiv) {
+                            resultDiv.innerHTML += `<div style="margin-top: 10px; padding: 10px; background: rgba(16, 185, 129, 0.1); border-radius: 8px; color: #10b981; font-weight: bold;">
+                                ✅ Instant conversion: ${value} ${from} = ${resultDiv.textContent.split('=')[1]?.trim() || 'result'} ${to}
+                            </div>`;
+                        }
+                    }
+                }
+            }, 300);
         }
 
         // Live Features Functions
