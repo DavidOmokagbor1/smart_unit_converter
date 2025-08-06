@@ -2785,7 +2785,7 @@
             
             const result = parseAIQuery(query);
             if (!result) {
-                alert('🤖 AI couldn\'t understand that. Try: "Convert 50 dollars to euros" or "What is 25°C in Fahrenheit?"');
+                alert('🤖 AI couldn\'t understand that. Try:\n\n• "Convert 50 dollars to euros"\n• "What is 25°C in Fahrenheit?"\n• "Convert 100 meters to kilometers"\n• "Convert 5 kilograms to pounds"\n• "Convert 10 liters to gallons"\n\nMake sure to speak clearly and use common unit names.');
                 return;
             }
             
@@ -2794,19 +2794,61 @@
 
         function parseAIQuery(query) {
             const aiPatterns = [
-                { pattern: /(\d+(?:\.\d+)?)\s*(dollars?|usd|eur|euros?|pounds?|gbp)\s*(?:to|in|convert\s+to)\s*(eur|euros?|usd|dollars?|gbp|pounds?)/i, category: 'Currency (Real-time)', from: 'USD', to: 'EUR' },
-                { pattern: /(\d+(?:\.\d+)?)\s*(celsius|°c|fahrenheit|°f)\s*(?:to|in|convert\s+to)\s*(fahrenheit|°f|celsius|°c)/i, category: 'Temperature', from: 'celsius', to: 'fahrenheit' },
-                { pattern: /(\d+(?:\.\d+)?)\s*(meters?|feet|kilometers?|miles?)\s*(?:to|in|convert\s+to)\s*(feet|meters?|kilometers?|miles?)/i, category: 'Length', from: 'meters', to: 'feet' },
-                { pattern: /(\d+(?:\.\d+)?)\s*(kilograms?|pounds?|kg|lbs)\s*(?:to|in|convert\s+to)\s*(pounds?|kilograms?|lbs|kg)/i, category: 'Weight', from: 'kilograms', to: 'pounds' }
+                // Currency patterns - more flexible
+                { pattern: /(\d+(?:\.\d+)?)\s*(dollars?|usd|eur|euros?|pounds?|gbp|euro)\s*(?:to|in|convert\s+to)\s*(eur|euros?|usd|dollars?|gbp|pounds?|euro)/i, category: 'Currency (Real-time)', from: 'USD', to: 'EUR' },
+                
+                // Temperature patterns - more flexible
+                { pattern: /(\d+(?:\.\d+)?)\s*(celsius|°c|fahrenheit|°f|cel|fahr)\s*(?:to|in|convert\s+to)\s*(fahrenheit|°f|celsius|°c|fahr|cel)/i, category: 'Temperature', from: 'celsius', to: 'fahrenheit' },
+                
+                // Length patterns - more flexible with partial words
+                { pattern: /(\d+(?:\.\d+)?)\s*(meters?|feet|kilometers?|miles?|meter|foot|kilomet|mile|m|km|ft)\s*(?:to|in|convert\s+to)\s*(feet|meters?|kilometers?|miles?|foot|meter|kilomet|mile|ft|m|km)/i, category: 'Length', from: 'meters', to: 'feet' },
+                
+                // Weight patterns - more flexible
+                { pattern: /(\d+(?:\.\d+)?)\s*(kilograms?|pounds?|kg|lbs|kilo|pound)\s*(?:to|in|convert\s+to)\s*(pounds?|kilograms?|lbs|kg|pound|kilo)/i, category: 'Weight', from: 'kilograms', to: 'pounds' },
+                
+                // Volume patterns
+                { pattern: /(\d+(?:\.\d+)?)\s*(liters?|gallons?|l|gal|litre)\s*(?:to|in|convert\s+to)\s*(gallons?|liters?|gal|l|litre)/i, category: 'Volume', from: 'liters', to: 'gallons' },
+                
+                // Area patterns
+                { pattern: /(\d+(?:\.\d+)?)\s*(square\s*meters?|sq\s*m|sqm|acres?|hectares?)\s*(?:to|in|convert\s+to)\s*(acres?|square\s*meters?|sq\s*m|sqm|hectares?)/i, category: 'Area', from: 'square_meters', to: 'acres' }
             ];
             
             for (const pattern of aiPatterns) {
                 const match = query.match(pattern.pattern);
                 if (match) {
+                    // Map partial words to full unit names
+                    let fromUnit = pattern.from;
+                    let toUnit = pattern.to;
+                    
+                    // Handle partial word mappings
+                    const unitMappings = {
+                        'kilomet': 'kilometers',
+                        'meter': 'meters',
+                        'foot': 'feet',
+                        'mile': 'miles',
+                        'kilo': 'kilograms',
+                        'pound': 'pounds',
+                        'litre': 'liters',
+                        'gal': 'gallons',
+                        'cel': 'celsius',
+                        'fahr': 'fahrenheit',
+                        'euro': 'EUR',
+                        'm': 'meters',
+                        'km': 'kilometers',
+                        'ft': 'feet',
+                        'kg': 'kilograms',
+                        'lbs': 'pounds',
+                        'l': 'liters'
+                    };
+                    
+                    // Check if we need to map the units
+                    if (unitMappings[fromUnit]) fromUnit = unitMappings[fromUnit];
+                    if (unitMappings[toUnit]) toUnit = unitMappings[toUnit];
+                    
                     return {
                         value: parseFloat(match[1]),
-                        from: pattern.from,
-                        to: pattern.to,
+                        from: fromUnit,
+                        to: toUnit,
                         category: pattern.category
                     };
                 }
