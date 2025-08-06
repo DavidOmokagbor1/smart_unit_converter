@@ -1037,6 +1037,37 @@
                     </div>
                 </div>
 
+                <!-- Calculator Section - Right after conversion -->
+                <div class="live-calculator" style="
+                    margin: 20px 0; 
+                    padding: 20px; 
+                    background: linear-gradient(135deg, rgba(102, 126, 234, 0.1), rgba(240, 147, 251, 0.1)); 
+                    border-radius: 15px;
+                    border: 2px solid rgba(240, 147, 251, 0.3);
+                ">
+                    <div class="calculator-grid">
+                        <input type="text" id="calcInput" placeholder="Enter calculation..." class="calc-input">
+                        <div class="calc-buttons">
+                            <button class="calc-btn" onclick="calcInput('7')">7</button>
+                            <button class="calc-btn" onclick="calcInput('8')">8</button>
+                            <button class="calc-btn" onclick="calcInput('9')">9</button>
+                            <button class="calc-btn" onclick="calcInput('+')">+</button>
+                            <button class="calc-btn" onclick="calcInput('4')">4</button>
+                            <button class="calc-btn" onclick="calcInput('5')">5</button>
+                            <button class="calc-btn" onclick="calcInput('6')">6</button>
+                            <button class="calc-btn" onclick="calcInput('-')">-</button>
+                            <button class="calc-btn" onclick="calcInput('1')">1</button>
+                            <button class="calc-btn" onclick="calcInput('2')">2</button>
+                            <button class="calc-btn" onclick="calcInput('3')">3</button>
+                            <button class="calc-btn" onclick="calcInput('*')">×</button>
+                            <button class="calc-btn" onclick="calcInput('0')">0</button>
+                            <button class="calc-btn" onclick="calcInput('.')">.</button>
+                            <button class="calc-btn" onclick="calcInput('=')">=</button>
+                            <button class="calc-btn" onclick="calcInput('/')">÷</button>
+                        </div>
+                    </div>
+                </div>
+
                 <!-- Live Features Section -->
                 <div class="live-features">
                     <!-- Live Market Data -->
@@ -1079,31 +1110,6 @@
                             <div class="suggestion-item" onclick="quickSuggestion('liters', 'gallons', 1)">
                                 <i class="fas fa-tint"></i>
                                 <span>1L → 0.26gal</span>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Live Calculator -->
-                    <div class="live-calculator">
-                        <div class="calculator-grid">
-                            <input type="text" id="calcInput" placeholder="Enter calculation..." class="calc-input">
-                            <div class="calc-buttons">
-                                <button class="calc-btn" onclick="calcInput('7')">7</button>
-                                <button class="calc-btn" onclick="calcInput('8')">8</button>
-                                <button class="calc-btn" onclick="calcInput('9')">9</button>
-                                <button class="calc-btn" onclick="calcInput('+')">+</button>
-                                <button class="calc-btn" onclick="calcInput('4')">4</button>
-                                <button class="calc-btn" onclick="calcInput('5')">5</button>
-                                <button class="calc-btn" onclick="calcInput('6')">6</button>
-                                <button class="calc-btn" onclick="calcInput('-')">-</button>
-                                <button class="calc-btn" onclick="calcInput('1')">1</button>
-                                <button class="calc-btn" onclick="calcInput('2')">2</button>
-                                <button class="calc-btn" onclick="calcInput('3')">3</button>
-                                <button class="calc-btn" onclick="calcInput('*')">×</button>
-                                <button class="calc-btn" onclick="calcInput('0')">0</button>
-                                <button class="calc-btn" onclick="calcInput('.')">.</button>
-                                <button class="calc-btn" onclick="calcInput('=')">=</button>
-                                <button class="calc-btn" onclick="calcInput('/')">÷</button>
                             </div>
                         </div>
                     </div>
