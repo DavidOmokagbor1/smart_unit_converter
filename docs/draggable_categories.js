@@ -332,6 +332,7 @@ function showNotification(message, type = 'info') {
 
 // Initialize with enhanced CSS
 document.addEventListener('DOMContentLoaded', function() {
+    console.log('Draggable categories system loaded!');
     userQuickAccess = loadUserQuickAccess();
     
     // Add enhanced CSS styles
@@ -602,7 +603,12 @@ document.addEventListener('DOMContentLoaded', function() {
 
 // Override the original populateCategories function to add drag-to-quick-access functionality
 function populateCategories() {
+    console.log('Draggable populateCategories called!');
     const categoryGrid = document.getElementById('categoryGrid');
+    if (!categoryGrid) {
+        console.error('categoryGrid not found!');
+        return;
+    }
     categoryGrid.innerHTML = '';
 
     // Smart category ordering by usage frequency

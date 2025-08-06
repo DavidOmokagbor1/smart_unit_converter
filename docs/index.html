@@ -1416,8 +1416,17 @@
 
         // Initialize the app
         document.addEventListener('DOMContentLoaded', function() {
+            console.log('DOM loaded, initializing app...');
             createParticles();
-            populateCategories();
+            
+            // Check if draggable system is loaded
+            if (typeof populateCategories === 'function') {
+                console.log('Draggable system found, calling populateCategories...');
+                populateCategories();
+            } else {
+                console.error('Draggable system not loaded!');
+            }
+            
             setupEventListeners();
             
             // Register service worker for background updates
@@ -1501,47 +1510,7 @@
             }
         }
 
-        function populateCategories() {
-            const categoryGrid = document.getElementById('categoryGrid');
-            categoryGrid.innerHTML = '';
-
-            // Smart category ordering by usage frequency
-            const categoryOrder = [
-                "Length", "Weight", "Temperature", "Currency (Real-time)", 
-                "Volume", "Area", "Speed", "Time", "Cryptocurrency (Real-time)",
-                "Digital Storage (Binary)", "Digital Storage (Decimal)", 
-                "Energy", "Power", "Pressure", "Data Transfer", "Frequency",
-                "Cooking Volume", "Cooking Weight", "Baking Temperature"
-            ];
-
-            // Quick access section will be created by the draggable system
-
-            // Add main categories section
-            const mainCategoriesSection = document.createElement('div');
-            mainCategoriesSection.className = 'main-categories-section';
-            mainCategoriesSection.innerHTML = '<h3 class="section-subtitle">All Categories</h3>';
-            
-            const mainCategoriesGrid = document.createElement('div');
-            mainCategoriesGrid.className = 'category-grid';
-
-            categoryOrder.forEach(category => {
-                if (categories[category]) {
-                    const card = document.createElement('div');
-                    card.className = 'category-card';
-                    card.onclick = () => selectCategory(category);
-                    card.innerHTML = `
-                        <div class="category-icon">
-                            <i class="${categories[category].icon}"></i>
-                        </div>
-                        <div>${category}</div>
-                    `;
-                    mainCategoriesGrid.appendChild(card);
-                }
-            });
-
-            mainCategoriesSection.appendChild(mainCategoriesGrid);
-            categoryGrid.appendChild(mainCategoriesSection);
-        }
+        // populateCategories function is now handled by draggable_categories.js
 
         function selectCategory(category) {
             // Remove active class from all cards
