@@ -1105,6 +1105,70 @@
                         ">
                             🤖 AI is processing your request...
                         </div>
+                        
+                        <!-- Conversion History - Under AI Voice -->
+                        <div style="
+                            margin-top: 20px; 
+                            padding: 15px; 
+                            background: linear-gradient(135deg, rgba(102, 126, 234, 0.1), rgba(240, 147, 251, 0.1)); 
+                            border-radius: 12px;
+                            border: 2px solid rgba(240, 147, 251, 0.3);
+                        ">
+                            <h4 style="
+                                color: #f093fb; 
+                                margin-bottom: 12px; 
+                                font-size: 1rem; 
+                                text-align: center;
+                                font-weight: bold;
+                            ">
+                                📚 Conversion History
+                            </h4>
+                            
+                            <div id="conversionHistory" style="
+                                max-height: 150px; 
+                                overflow-y: auto; 
+                                background: rgba(255, 255, 255, 0.05); 
+                                border-radius: 8px; 
+                                padding: 8px;
+                                font-size: 0.8rem;
+                            ">
+                                <!-- History items will be added here -->
+                            </div>
+                            
+                            <div style="
+                                display: flex; 
+                                justify-content: space-between; 
+                                margin-top: 12px;
+                            ">
+                                <button onclick="clearHistory()" style="
+                                    background: linear-gradient(135deg, #ef4444, #dc2626);
+                                    color: white; 
+                                    border: none; 
+                                    padding: 6px 12px; 
+                                    border-radius: 6px; 
+                                    cursor: pointer; 
+                                    font-size: 0.7rem;
+                                    font-weight: bold;
+                                    transition: all 0.3s ease;
+                                " onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
+                                    🗑️ Clear
+                                </button>
+                                
+                                <button onclick="exportHistory()" style="
+                                    background: linear-gradient(135deg, #10b981, #059669);
+                                    color: white; 
+                                    border: none; 
+                                    padding: 6px 12px; 
+                                    border-radius: 6px; 
+                                    cursor: pointer; 
+                                    font-size: 0.7rem;
+                                    font-weight: bold;
+                                    transition: all 0.3s ease;
+                                " onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
+                                    📥 Export
+                                </button>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -1634,6 +1698,8 @@
         let cryptoRates = {};
         let lastCryptoUpdate = 0;
         const CRYPTO_CACHE_DURATION = 2 * 60 * 1000; // 2 minutes (crypto changes faster)
+        
+
 
         // Initialize the app
         document.addEventListener('DOMContentLoaded', function() {
@@ -1671,6 +1737,9 @@
             quickAccessItems = loadQuickAccess();
             renderQuickAccess();
             setupDragDrop();
+            
+            // Load conversion history
+            loadHistory();
         });
 
         async function registerServiceWorker() {
@@ -1917,6 +1986,11 @@
                     const formattedResult = formatResult(result, fromUnit, toUnit);
                     const resultText = `${value} ${fromUnit} = ${formattedResult} ${toUnit}`;
                     resultDiv.textContent = resultText;
+                    
+                    // Add to enhanced history
+                    addToHistoryEnhanced(value, fromUnit, toUnit, formattedResult, category);
+                    
+                    // Also add to legacy history for compatibility
                     addToHistory(resultText);
                 } catch (error) {
                     console.error('Conversion error:', error);
@@ -2514,6 +2588,104 @@
                 historyList.innerHTML = conversionHistory
                     .map(conversion => `<div class="history-item">${conversion}</div>`)
                     .join('');
+            }
+        }
+        
+        // Enhanced Conversion History Functions
+        function addToHistoryEnhanced(fromValue, fromUnit, toUnit, result, category) {
+            const historyItem = {
+                id: Date.now(),
+                fromValue: fromValue,
+                fromUnit: fromUnit,
+                toUnit: toUnit,
+                result: result,
+                category: category,
+                timestamp: new Date().toLocaleString()
+            };
+            
+            conversionHistory.unshift(historyItem); // Add to beginning
+            
+            // Keep only last 20 items
+            if (conversionHistory.length > 20) {
+                conversionHistory = conversionHistory.slice(0, 20);
+            }
+            
+            // Save to localStorage
+            localStorage.setItem('conversionHistory', JSON.stringify(conversionHistory));
+            
+            // Update display
+            renderHistory();
+        }
+        
+        function renderHistory() {
+            const historyContainer = document.getElementById('conversionHistory');
+            if (!historyContainer) return;
+            
+            if (conversionHistory.length === 0) {
+                historyContainer.innerHTML = '<div style="text-align: center; color: #888; padding: 10px;">No conversions yet</div>';
+                return;
+            }
+            
+            historyContainer.innerHTML = conversionHistory.map(item => `
+                <div style="
+                    background: rgba(255, 255, 255, 0.1); 
+                    border-radius: 6px; 
+                    padding: 8px; 
+                    margin-bottom: 6px;
+                    border-left: 3px solid #f093fb;
+                    font-size: 0.75rem;
+                ">
+                    <div style="font-weight: bold; color: #f093fb; margin-bottom: 2px;">
+                        ${item.fromValue} ${item.fromUnit} → ${item.result} ${item.toUnit}
+                    </div>
+                    <div style="color: #888; font-size: 0.7rem;">
+                        ${item.category} • ${item.timestamp}
+                    </div>
+                </div>
+            `).join('');
+        }
+        
+        function clearHistory() {
+            conversionHistory = [];
+            localStorage.removeItem('conversionHistory');
+            renderHistory();
+            alert('🗑️ History cleared!');
+        }
+        
+        function exportHistory() {
+            if (conversionHistory.length === 0) {
+                alert('📚 No history to export!');
+                return;
+            }
+            
+            const csvContent = [
+                'From Value,From Unit,To Unit,Result,Category,Timestamp',
+                ...conversionHistory.map(item => 
+                    `${item.fromValue},${item.fromUnit},${item.toUnit},${item.result},${item.category},${item.timestamp}`
+                )
+            ].join('\n');
+            
+            const blob = new Blob([csvContent], { type: 'text/csv' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `conversion_history_${new Date().toISOString().split('T')[0]}.csv`;
+            a.click();
+            window.URL.revokeObjectURL(url);
+            
+            alert('📥 History exported successfully!');
+        }
+        
+        function loadHistory() {
+            const saved = localStorage.getItem('conversionHistory');
+            if (saved) {
+                try {
+                    conversionHistory = JSON.parse(saved);
+                    renderHistory();
+                } catch (e) {
+                    console.error('Error loading history:', e);
+                    conversionHistory = [];
+                }
             }
         }
 
