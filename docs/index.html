@@ -970,6 +970,124 @@
                 <div class="category-grid" id="categoryGrid">
                     <!-- Categories will be populated by JavaScript -->
                 </div>
+                
+                <!-- Voice-Activated AI Converter - Under Categories -->
+                <div style="
+                    margin: 20px 0; 
+                    padding: 20px; 
+                    background: linear-gradient(135deg, rgba(102, 126, 234, 0.1), rgba(240, 147, 251, 0.1)); 
+                    border-radius: 15px;
+                    border: 2px solid rgba(240, 147, 251, 0.3);
+                    position: relative;
+                    overflow: hidden;
+                ">
+                    <!-- Animated Background -->
+                    <div style="
+                        position: absolute; 
+                        top: 0; 
+                        left: 0; 
+                        width: 100%; 
+                        height: 100%; 
+                        background: linear-gradient(45deg, transparent 30%, rgba(240, 147, 251, 0.1) 50%, transparent 70%);
+                        animation: shimmer 3s infinite;
+                        pointer-events: none;
+                    "></div>
+                    
+                    <div style="position: relative; z-index: 2;">
+                        <!-- Voice-Activated Search -->
+                        <div style="
+                            display: flex; 
+                            align-items: center; 
+                            background: rgba(255, 255, 255, 0.95); 
+                            border-radius: 20px; 
+                            padding: 5px; 
+                            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+                            margin-bottom: 15px;
+                            backdrop-filter: blur(10px);
+                        ">
+                            <input type="text" 
+                                   id="aiConverter" 
+                                   placeholder="🎤 Say or type conversion..."
+                                   style="
+                                       flex: 1; 
+                                       border: none; 
+                                       padding: 12px 15px; 
+                                       font-size: 0.9rem; 
+                                       outline: none;
+                                       border-radius: 15px;
+                                       background: transparent;
+                                   "
+                                   onkeyup="handleAIQuery(this.value)"
+                                   onfocus="this.style.boxShadow='0 0 0 2px rgba(240, 147, 251, 0.3)'"
+                                   onblur="this.style.boxShadow='none'"
+                            >
+                            <button onclick="startVoiceInput()" 
+                                    id="voiceBtn"
+                                    style="
+                                        background: linear-gradient(135deg, #667eea, #f093fb);
+                                        color: white; 
+                                        border: none; 
+                                        padding: 10px; 
+                                        border-radius: 50%; 
+                                        cursor: pointer; 
+                                        font-size: 1rem;
+                                        margin-right: 8px;
+                                        transition: all 0.3s ease;
+                                        width: 35px;
+                                        height: 35px;
+                                        display: flex;
+                                        align-items: center;
+                                        justify-content: center;
+                                    "
+                                    onmouseover="this.style.transform='scale(1.1)'"
+                                    onmouseout="this.style.transform='scale(1)'"
+                            >
+                                🎤
+                            </button>
+                            <button onclick="executeAIQuery()" 
+                                    style="
+                                        background: linear-gradient(135deg, #10b981, #059669);
+                                        color: white; 
+                                        border: none; 
+                                        padding: 10px 15px; 
+                                        border-radius: 15px; 
+                                        cursor: pointer; 
+                                        font-weight: bold;
+                                        font-size: 0.8rem;
+                                        transition: all 0.3s ease;
+                                    "
+                                    onmouseover="this.style.transform='translateY(-2px)'"
+                                    onmouseout="this.style.transform='translateY(0)'"
+                            >
+                                Convert
+                            </button>
+                        </div>
+                        
+                        <!-- AI Suggestions -->
+                        <div id="aiSuggestions" style="
+                            display: grid; 
+                            grid-template-columns: 1fr; 
+                            gap: 8px; 
+                            margin-top: 10px;
+                        ">
+                            <!-- AI suggestions will appear here -->
+                        </div>
+                        
+                        <!-- AI Status -->
+                        <div id="aiStatus" style="
+                            margin-top: 10px; 
+                            padding: 8px; 
+                            background: rgba(16, 185, 129, 0.1); 
+                            border-radius: 8px; 
+                            text-align: center;
+                            color: #10b981;
+                            font-size: 0.8rem;
+                            display: none;
+                        ">
+                            🤖 AI is processing your request...
+                        </div>
+                    </div>
+                </div>
             </div>
 
             <div class="converter-main">
@@ -1138,127 +1256,7 @@
 
 
 
-    <!-- FUTURE-PROOF CONVERTER INTERFACE -->
-    <div class="future-converter" style="
-        margin: 30px 0; 
-        padding: 30px; 
-        background: linear-gradient(135deg, rgba(102, 126, 234, 0.1), rgba(240, 147, 251, 0.1)); 
-        border-radius: 20px;
-        border: 2px solid rgba(240, 147, 251, 0.3);
-        position: relative;
-        overflow: hidden;
-    ">
-        <!-- Animated Background -->
-        <div style="
-            position: absolute; 
-            top: 0; 
-            left: 0; 
-            width: 100%; 
-            height: 100%; 
-            background: linear-gradient(45deg, transparent 30%, rgba(240, 147, 251, 0.1) 50%, transparent 70%);
-            animation: shimmer 3s infinite;
-            pointer-events: none;
-        "></div>
-        
-        <div style="position: relative; z-index: 2;">
 
-            
-            <!-- Voice-Activated Search -->
-            <div style="
-                display: flex; 
-                align-items: center; 
-                background: rgba(255, 255, 255, 0.95); 
-                border-radius: 30px; 
-                padding: 8px; 
-                box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
-                margin-bottom: 20px;
-                backdrop-filter: blur(10px);
-            ">
-                <input type="text" 
-                       id="aiConverter" 
-                       placeholder="🎤 Say or type: 'Convert 50 dollars to euros' or 'What is 25°C in Fahrenheit?'"
-                       style="
-                           flex: 1; 
-                           border: none; 
-                           padding: 20px 25px; 
-                           font-size: 1.1rem; 
-                           outline: none;
-                           border-radius: 25px;
-                           background: transparent;
-                       "
-                       onkeyup="handleAIQuery(this.value)"
-                       onfocus="this.style.boxShadow='0 0 0 3px rgba(240, 147, 251, 0.3)'"
-                       onblur="this.style.boxShadow='none'"
-                >
-                <button onclick="startVoiceInput()" 
-                        id="voiceBtn"
-                        style="
-                            background: linear-gradient(135deg, #667eea, #f093fb);
-                            color: white; 
-                            border: none; 
-                            padding: 15px; 
-                            border-radius: 50%; 
-                            cursor: pointer; 
-                            font-size: 1.2rem;
-                            margin-right: 10px;
-                            transition: all 0.3s ease;
-                            width: 50px;
-                            height: 50px;
-                            display: flex;
-                            align-items: center;
-                            justify-content: center;
-                        "
-                        onmouseover="this.style.transform='scale(1.1)'"
-                        onmouseout="this.style.transform='scale(1)'"
-                >
-                    🎤
-                </button>
-                <button onclick="executeAIQuery()" 
-                        style="
-                            background: linear-gradient(135deg, #10b981, #059669);
-                            color: white; 
-                            border: none; 
-                            padding: 15px 30px; 
-                            border-radius: 25px; 
-                            cursor: pointer; 
-                            font-weight: bold;
-                            font-size: 1rem;
-                            transition: all 0.3s ease;
-                        "
-                        onmouseover="this.style.transform='translateY(-2px)'"
-                        onmouseout="this.style.transform='translateY(0)'"
-                >
-                    Convert
-                </button>
-            </div>
-            
-            <!-- AI Suggestions -->
-            <div id="aiSuggestions" style="
-                display: grid; 
-                grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); 
-                gap: 15px; 
-                margin-top: 20px;
-            ">
-                <!-- AI suggestions will appear here -->
-            </div>
-            
-
-            
-            <!-- AI Status -->
-            <div id="aiStatus" style="
-                margin-top: 20px; 
-                padding: 10px; 
-                background: rgba(16, 185, 129, 0.1); 
-                border-radius: 10px; 
-                text-align: center;
-                color: #10b981;
-                font-size: 0.9rem;
-                display: none;
-            ">
-                🤖 AI is processing your request...
-            </div>
-        </div>
-    </div>
 
     <script>
         // Comprehensive conversion data with 15+ categories and 120+ units
