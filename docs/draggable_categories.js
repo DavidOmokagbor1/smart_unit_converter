@@ -2,6 +2,7 @@
 // Focus on core functionality that works
 
 let quickAccessItems = [];
+let isEditMode = false;
 
 // Load saved items
 function loadQuickAccess() {
@@ -64,6 +65,23 @@ function addToQuickAccess(categoryName) {
     alert(`✅ Added ${categoryName} to quick access!`);
 }
 
+// Remove from quick access
+function removeFromQuickAccess(categoryName) {
+    const index = quickAccessItems.findIndex(item => item.category === categoryName);
+    if (index > -1) {
+        quickAccessItems.splice(index, 1);
+        saveQuickAccess();
+        renderQuickAccess();
+        alert(`🗑️ Removed ${categoryName} from quick access!`);
+    }
+}
+
+// Toggle edit mode
+function toggleQuickAccessMode() {
+    isEditMode = !isEditMode;
+    renderQuickAccess();
+}
+
 // Render quick access
 function renderQuickAccess() {
     const container = document.querySelector('.quick-access-section');
@@ -73,9 +91,29 @@ function renderQuickAccess() {
     }
     
     container.innerHTML = `
-        <h4 style="color: #f093fb; margin: 15px 0 10px 0; font-size: 1rem;">
-            ⭐ Quick Access
-        </h4>
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+            <h4 style="color: #f093fb; margin: 0; font-size: 1rem;">
+                ⭐ Quick Access
+            </h4>
+            <button onclick="toggleQuickAccessMode()" 
+                    id="toggleModeBtn"
+                    style="
+                        background: linear-gradient(135deg, #667eea, #f093fb);
+                        color: white; 
+                        border: none; 
+                        padding: 8px 15px; 
+                        border-radius: 20px; 
+                        cursor: pointer; 
+                        font-size: 0.8rem;
+                        font-weight: bold;
+                        transition: all 0.3s ease;
+                    "
+                    onmouseover="this.style.transform='scale(1.05)'"
+                    onmouseout="this.style.transform='scale(1)'"
+            >
+                ${isEditMode ? '✕ Done' : '✏️ Edit'}
+            </button>
+        </div>
         <div class="quick-grid" style="
             display: grid; 
             grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); 
@@ -83,17 +121,19 @@ function renderQuickAccess() {
             margin: 15px 0;
         ">
             ${quickAccessItems.map(item => `
-                <div onclick="doQuickConvert('${item.from}', '${item.to}', '${item.category}')" 
+                <div onclick="${isEditMode ? 'removeFromQuickAccess(\'' + item.category + '\')' : 'doQuickConvert(\'' + item.from + '\', \'' + item.to + '\', \'' + item.category + '\')'}" 
                      style="
                          background: linear-gradient(135deg, #667eea, #f093fb);
                          color: white; padding: 15px; border-radius: 10px;
                          text-align: center; cursor: pointer; font-weight: bold;
                          transition: transform 0.2s; box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+                         position: relative;
                      "
                      onmouseover="this.style.transform='translateY(-3px)'"
                      onmouseout="this.style.transform=''"
                 >
                     ${item.name}
+                    ${isEditMode ? '<div style="position: absolute; top: -5px; right: -5px; background: #ff4757; color: white; border-radius: 50%; width: 20px; height: 20px; display: flex; align-items: center; justify-content: center; font-size: 12px;">×</div>' : ''}
                 </div>
             `).join('')}
         </div>

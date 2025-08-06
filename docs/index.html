@@ -940,29 +940,50 @@
                 
                 <!-- Search functionality -->
                 <div class="search-container">
-                    <div class="search-box">
-                        <input type="text" id="categorySearch" placeholder="Search categories...">
-                        <i class="fas fa-search"></i>
+                    <div class="search-box" style="
+                        display: flex; 
+                        align-items: center; 
+                        background: rgba(255, 255, 255, 0.1); 
+                        border-radius: 25px; 
+                        padding: 5px; 
+                        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+                        margin-bottom: 15px;
+                    ">
+                        <input type="text" 
+                               id="categorySearch" 
+                               placeholder="Search categories..." 
+                               style="
+                                   flex: 1; 
+                                   border: none; 
+                                   padding: 15px 20px; 
+                                   font-size: 1rem; 
+                                   outline: none;
+                                   border-radius: 20px;
+                                   background: transparent;
+                                   color: inherit;
+                               "
+                        >
+                        <i class="fas fa-search" style="margin-right: 15px; color: #f093fb;"></i>
                     </div>
                 </div>
                 
                 <div class="category-grid" id="categoryGrid">
                     <!-- Categories will be populated by JavaScript -->
                 </div>
-            </div>
-
-            <div class="converter-main">
                 
                 <!-- Quick Access Section -->
                 <div class="quick-access-section" style="
                     margin: 20px 0; 
-                    padding: 20px; 
+                    padding: 15px; 
                     background: rgba(255, 255, 255, 0.05); 
-                    border-radius: 15px;
+                    border-radius: 10px;
                     border: 1px solid rgba(240, 147, 251, 0.2);
                 ">
                     <!-- Quick access items will be rendered here -->
                 </div>
+            </div>
+
+            <div class="converter-main">
                 
                 <div class="loading" id="loading">
                     <div class="spinner"></div>
