@@ -1174,6 +1174,75 @@
                     </div>
                 </div>
 
+                <!-- Control Buttons - Right after conversion box for easy access -->
+                <div style="
+                    margin: 20px 0; 
+                    padding: 15px; 
+                    background: linear-gradient(135deg, rgba(102, 126, 234, 0.1), rgba(240, 147, 251, 0.1)); 
+                    border-radius: 15px;
+                    border: 2px solid rgba(240, 147, 251, 0.3);
+                ">
+                    <div style="
+                        display: grid; 
+                        grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); 
+                        gap: 10px;
+                    ">
+                        <button onclick="convert()" style="
+                            background: linear-gradient(135deg, #10b981, #059669);
+                            color: white; 
+                            border: none; 
+                            padding: 12px 20px; 
+                            border-radius: 10px; 
+                            cursor: pointer; 
+                            font-weight: bold;
+                            font-size: 0.9rem;
+                            transition: all 0.3s ease;
+                            display: flex;
+                            align-items: center;
+                            justify-content: center;
+                            gap: 8px;
+                        " onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform='translateY(0)'">
+                            <i class="fas fa-sync-alt"></i> Convert
+                        </button>
+                        
+                        <button onclick="swapUnits()" style="
+                            background: linear-gradient(135deg, #667eea, #f093fb);
+                            color: white; 
+                            border: none; 
+                            padding: 12px 20px; 
+                            border-radius: 10px; 
+                            cursor: pointer; 
+                            font-weight: bold;
+                            font-size: 0.9rem;
+                            transition: all 0.3s ease;
+                            display: flex;
+                            align-items: center;
+                            justify-content: center;
+                            gap: 8px;
+                        " onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform='translateY(0)'">
+                            <i class="fas fa-exchange-alt"></i> Swap
+                        </button>
+                        
+                        <button onclick="clearAll()" style="
+                            background: linear-gradient(135deg, #ef4444, #dc2626);
+                            color: white; 
+                            border: none; 
+                            padding: 12px 20px; 
+                            border-radius: 10px; 
+                            cursor: pointer; 
+                            font-weight: bold;
+                            font-size: 0.9rem;
+                            transition: all 0.3s ease;
+                            display: flex;
+                            align-items: center;
+                            justify-content: center;
+                            gap: 8px;
+                        " onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform='translateY(0)'">
+                            <i class="fas fa-trash"></i> Clear
+                        </button>
+                    </div>
+                </div>
+
                 <!-- Calculator Section - Right after conversion -->
                 <div class="live-calculator" style="
                     margin: 20px 0; 
@@ -1250,21 +1319,7 @@
                             </div>
                         </div>
                     </div>
-                </div>
 
-                <div class="compact-controls">
-                    <div class="buttons">
-                        <button class="btn btn-convert" onclick="convert()">
-                            <i class="fas fa-sync-alt"></i> Convert
-                        </button>
-                        <button class="btn btn-clear" onclick="clearAll()">
-                            <i class="fas fa-trash"></i> Clear
-                        </button>
-                        <button class="btn btn-swap" onclick="swapUnits()">
-                            <i class="fas fa-exchange-alt"></i> Swap
-                        </button>
-                    </div>
-                </div>
 
 
             </div>
@@ -2638,49 +2693,63 @@
         }
 
         function performAIConversion(value, from, to, category) {
-            // Select the category first
-            if (typeof selectCategory === 'function') {
-                selectCategory(category);
-            }
-            
-            // Set the values and convert
-            setTimeout(() => {
-                const fromSelect = document.getElementById('fromUnit');
-                const toSelect = document.getElementById('toUnit');
-                const valueInput = document.getElementById('valueInput');
-                
-                if (fromSelect && toSelect && valueInput) {
-                    fromSelect.value = from;
-                    toSelect.value = to;
-                    valueInput.value = value;
-                    
-                    // Trigger conversion
-                    if (typeof convert === 'function') {
-                        convert();
-                        
-                        // Show AI success message
-                        const resultDiv = document.getElementById('result');
-                        if (resultDiv) {
-                            // Get the actual conversion result
-                            let conversionResult = 'result';
-                            try {
-                                const resultText = resultDiv.textContent || resultDiv.innerText || '';
-                                const match = resultText.match(/=?\s*([\d.,]+)/);
-                                if (match) {
-                                    conversionResult = match[1];
-                                }
-                            } catch (e) {
-                                console.log('Could not parse result, using default');
-                            }
-                            
-                            resultDiv.innerHTML += `<div style="margin-top: 15px; padding: 15px; background: linear-gradient(135deg, rgba(16, 185, 129, 0.1), rgba(5, 150, 105, 0.1)); border-radius: 12px; color: #10b981; font-weight: bold; border: 2px solid rgba(16, 185, 129, 0.3);">
-                                🤖 AI Conversion Complete: ${value} ${from} = ${conversionResult} ${to}
-                                <br><span style="font-size: 0.8rem; opacity: 0.8;">Confidence: 95% | Processing time: 1.2s</span>
-                            </div>`;
-                        }
-                    }
+            try {
+                // Select the category first
+                if (typeof selectCategory === 'function') {
+                    selectCategory(category);
                 }
-            }, 300);
+                
+                // Set the values and convert
+                setTimeout(() => {
+                    try {
+                        const fromSelect = document.getElementById('fromUnit');
+                        const toSelect = document.getElementById('toUnit');
+                        const valueInput = document.getElementById('valueInput');
+                        
+                        if (fromSelect && toSelect && valueInput) {
+                            fromSelect.value = from;
+                            toSelect.value = to;
+                            valueInput.value = value;
+                            
+                            // Trigger conversion
+                            if (typeof convert === 'function') {
+                                convert();
+                                
+                                // Show AI success message after a short delay
+                                setTimeout(() => {
+                                    try {
+                                        const resultDiv = document.getElementById('result');
+                                        if (resultDiv) {
+                                            // Get the actual conversion result
+                                            let conversionResult = 'result';
+                                            try {
+                                                const resultText = resultDiv.textContent || resultDiv.innerText || '';
+                                                const match = resultText.match(/=?\s*([\d.,]+)/);
+                                                if (match) {
+                                                    conversionResult = match[1];
+                                                }
+                                            } catch (e) {
+                                                console.log('Could not parse result, using default');
+                                            }
+                                            
+                                            resultDiv.innerHTML += `<div style="margin-top: 15px; padding: 15px; background: linear-gradient(135deg, rgba(16, 185, 129, 0.1), rgba(5, 150, 105, 0.1)); border-radius: 12px; color: #10b981; font-weight: bold; border: 2px solid rgba(16, 185, 129, 0.3);">
+                                                🤖 AI Conversion Complete: ${value} ${from} = ${conversionResult} ${to}
+                                                <br><span style="font-size: 0.8rem; opacity: 0.8;">Confidence: 95% | Processing time: 1.2s</span>
+                                            </div>`;
+                                        }
+                                    } catch (e) {
+                                        console.error('Error showing AI result:', e);
+                                    }
+                                }, 500);
+                            }
+                        }
+                    } catch (e) {
+                        console.error('Error in AI conversion setup:', e);
+                    }
+                }, 300);
+            } catch (e) {
+                console.error('Error in performAIConversion:', e);
+            }
         }
 
         function aiConvert(type, defaultConversion) {
