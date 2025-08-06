@@ -2661,8 +2661,20 @@
                         // Show AI success message
                         const resultDiv = document.getElementById('result');
                         if (resultDiv) {
+                            // Get the actual conversion result
+                            let conversionResult = 'result';
+                            try {
+                                const resultText = resultDiv.textContent || resultDiv.innerText || '';
+                                const match = resultText.match(/=?\s*([\d.,]+)/);
+                                if (match) {
+                                    conversionResult = match[1];
+                                }
+                            } catch (e) {
+                                console.log('Could not parse result, using default');
+                            }
+                            
                             resultDiv.innerHTML += `<div style="margin-top: 15px; padding: 15px; background: linear-gradient(135deg, rgba(16, 185, 129, 0.1), rgba(5, 150, 105, 0.1)); border-radius: 12px; color: #10b981; font-weight: bold; border: 2px solid rgba(16, 185, 129, 0.3);">
-                                🤖 AI Conversion Complete: ${value} ${from} = ${resultDiv.textContent.split('=')[1]?.trim() || 'result'} ${to}
+                                🤖 AI Conversion Complete: ${value} ${from} = ${conversionResult} ${to}
                                 <br><span style="font-size: 0.8rem; opacity: 0.8;">Confidence: 95% | Processing time: 1.2s</span>
                             </div>`;
                         }
@@ -2951,8 +2963,20 @@
                         // Show success message
                         const resultDiv = document.getElementById('result');
                         if (resultDiv) {
+                            // Get the actual conversion result
+                            let conversionResult = 'result';
+                            try {
+                                const resultText = resultDiv.textContent || resultDiv.innerText || '';
+                                const match = resultText.match(/=?\s*([\d.,]+)/);
+                                if (match) {
+                                    conversionResult = match[1];
+                                }
+                            } catch (e) {
+                                console.log('Could not parse result, using default');
+                            }
+                            
                             resultDiv.innerHTML += `<div style="margin-top: 10px; padding: 10px; background: rgba(16, 185, 129, 0.1); border-radius: 8px; color: #10b981; font-weight: bold;">
-                                ✅ Instant conversion: ${value} ${from} = ${resultDiv.textContent.split('=')[1]?.trim() || 'result'} ${to}
+                                ✅ Instant conversion: ${value} ${from} = ${conversionResult} ${to}
                             </div>`;
                         }
                     }
