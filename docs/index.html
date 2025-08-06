@@ -2316,10 +2316,8 @@
                 }
                 
                 if (data) {
-                    cryptoRates = { rates: data, base: 'USD' };
-                    lastCryptoUpdate = now;
-                    
-                    // Update the crypto units with real rates
+                    // Convert API data to our expected format
+                    const rates = {};
                     const cryptoCategory = categories["Cryptocurrency (Real-time)"];
                     const cryptoMapping = {
                         'bitcoin': 'BTC',
@@ -2349,19 +2347,29 @@
                         'compound': 'COMP'
                     };
                     
-                    // Update rates in the category
+                    // Convert API data to our format
                     Object.keys(cryptoMapping).forEach(apiId => {
                         const symbol = cryptoMapping[apiId];
                         if (data[apiId] && data[apiId].usd) {
-                            cryptoCategory.units[symbol] = data[apiId].usd;
+                            rates[symbol] = data[apiId].usd;
                         }
                     });
                     
-                    console.log(`Crypto rates updated via ${apiUsed}:`, data);
+                    cryptoRates = { rates: rates, base: 'USD' };
+                    lastCryptoUpdate = now;
+                    
+                    // Update rates in the category
+                    if (cryptoCategory && cryptoCategory.units) {
+                        Object.keys(rates).forEach(symbol => {
+                            cryptoCategory.units[symbol] = rates[symbol];
+                        });
+                    }
+                    
+                    console.log(`Crypto rates updated via ${apiUsed}:`, rates);
                     showCryptoStatus(`✅ Crypto updated via ${apiUsed}`, 'success');
                     updateLastUpdateStatus();
                     setTimeout(() => hideCryptoStatus(), 3000);
-                    return data;
+                    return rates;
                 } else {
                     throw new Error('All crypto APIs failed');
                 }
@@ -2554,18 +2562,37 @@
         }
 
         async function convertCrypto(value, fromUnit, toUnit) {
-            // Ensure we have fresh rates
-            await fetchCryptoRates();
-            
-            if (!cryptoRates.rates || !cryptoRates.rates[fromUnit] || !cryptoRates.rates[toUnit]) {
-                throw new Error('Cryptocurrency rates not available');
+            try {
+                // Ensure we have fresh rates
+                await fetchCryptoRates();
+                
+                console.log('Crypto rates:', cryptoRates);
+                console.log('Converting:', { value, fromUnit, toUnit });
+                
+                // Check if we have the required rates
+                if (!cryptoRates || !cryptoRates.rates) {
+                    throw new Error('Cryptocurrency rates not loaded');
+                }
+                
+                const fromRate = cryptoRates.rates[fromUnit];
+                const toRate = cryptoRates.rates[toUnit];
+                
+                if (!fromRate || !toRate) {
+                    console.error('Missing rates:', { fromUnit, toUnit, fromRate, toRate });
+                    throw new Error(`Rates not available for ${fromUnit} or ${toUnit}`);
+                }
+                
+                // Convert to USD first, then to target crypto
+                const usdValue = value * fromRate;
+                const result = usdValue / toRate;
+                
+                console.log('Crypto conversion result:', { usdValue, result });
+                return result;
+                
+            } catch (error) {
+                console.error('Crypto conversion error:', error);
+                throw new Error(`Cryptocurrency conversion failed: ${error.message}`);
             }
-            
-            // Convert to USD first, then to target crypto
-            const usdValue = value * cryptoRates.rates[fromUnit];
-            const result = usdValue / cryptoRates.rates[toUnit];
-            
-            return result;
         }
 
         function clearAll() {
@@ -2747,6 +2774,30 @@
             } catch (error) {
                 console.error('Error loading history:', error);
                 conversionHistory = [];
+            }
+        }
+        
+        // Debug function for cryptocurrency
+        function testCrypto() {
+            console.log('Testing cryptocurrency functionality...');
+            console.log('Crypto rates:', cryptoRates);
+            console.log('Categories:', categories);
+            
+            if (categories["Cryptocurrency (Real-time)"]) {
+                console.log('Crypto category units:', categories["Cryptocurrency (Real-time)"].units);
+            } else {
+                console.log('Crypto category not found!');
+            }
+            
+            // Test a simple conversion
+            if (cryptoRates && cryptoRates.rates) {
+                const testFrom = 'BTC';
+                const testTo = 'ETH';
+                if (cryptoRates.rates[testFrom] && cryptoRates.rates[testTo]) {
+                    console.log(`Test conversion: 1 ${testFrom} = ${cryptoRates.rates[testFrom] / cryptoRates.rates[testTo]} ${testTo}`);
+                } else {
+                    console.log('Missing test rates:', { testFrom, testTo, rates: cryptoRates.rates });
+                }
             }
         }
 
