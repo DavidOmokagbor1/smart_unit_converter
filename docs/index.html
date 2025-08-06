@@ -937,10 +937,6 @@
 
         <div class="main-content">
             <div class="sidebar">
-                <h2 class="section-title">
-                    <i class="fas fa-th-large"></i>
-                    Categories
-                </h2>
                 
                 <!-- Search functionality -->
                 <div class="search-container">
@@ -956,10 +952,6 @@
             </div>
 
             <div class="converter-main">
-                <h2 class="section-title">
-                    <i class="fas fa-exchange-alt"></i>
-                    Conversion
-                </h2>
                 
                 <div class="loading" id="loading">
                     <div class="spinner"></div>
@@ -1004,10 +996,6 @@
                 <div class="live-features">
                     <!-- Live Market Data -->
                     <div class="live-market-data">
-                        <h3 class="feature-title">
-                            <i class="fas fa-chart-line"></i>
-                            Live Market Data
-                        </h3>
                         <div class="market-grid" id="marketGrid">
                             <div class="market-item">
                                 <span class="market-label">USD/EUR</span>
@@ -1030,10 +1018,6 @@
 
                     <!-- Smart Suggestions -->
                     <div class="smart-suggestions">
-                        <h3 class="feature-title">
-                            <i class="fas fa-lightbulb"></i>
-                            Smart Suggestions
-                        </h3>
                         <div class="suggestions-grid" id="suggestionsGrid">
                             <div class="suggestion-item" onclick="quickSuggestion('meters', 'feet', 1)">
                                 <i class="fas fa-ruler"></i>
@@ -1056,10 +1040,6 @@
 
                     <!-- Live Calculator -->
                     <div class="live-calculator">
-                        <h3 class="feature-title">
-                            <i class="fas fa-calculator"></i>
-                            Quick Calculator
-                        </h3>
                         <div class="calculator-grid">
                             <input type="text" id="calcInput" placeholder="Enter calculation..." class="calc-input">
                             <div class="calc-buttons">
@@ -1130,16 +1110,7 @@
         "></div>
         
         <div style="position: relative; z-index: 2;">
-            <h2 style="
-                color: #f093fb; 
-                margin-bottom: 25px; 
-                font-size: 2rem; 
-                text-align: center;
-                font-weight: 800;
-                text-shadow: 0 0 20px rgba(240, 147, 251, 0.5);
-            ">
-                🚀 AI-Powered Unit Converter
-            </h2>
+
             
             <!-- Voice-Activated Search -->
             <div style="
@@ -1655,7 +1626,7 @@
             // Add main categories section
             const mainCategoriesSection = document.createElement('div');
             mainCategoriesSection.className = 'main-categories-section';
-            mainCategoriesSection.innerHTML = '<h4 style="color: #667eea; margin: 15px 0 10px 0; font-size: 1rem;">📋 All Categories</h4>';
+            mainCategoriesSection.innerHTML = '';
             
             const mainCategoriesGrid = document.createElement('div');
             mainCategoriesGrid.className = 'category-grid';
