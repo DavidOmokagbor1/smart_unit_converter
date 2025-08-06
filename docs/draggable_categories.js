@@ -98,20 +98,22 @@ function renderQuickAccess() {
             <button onclick="toggleQuickAccessMode()" 
                     id="toggleModeBtn"
                     style="
-                        background: linear-gradient(135deg, #667eea, #f093fb);
+                        background: linear-gradient(135deg, #ff6b6b, #ee5a52);
                         color: white; 
                         border: none; 
-                        padding: 8px 15px; 
-                        border-radius: 20px; 
+                        padding: 8px 12px; 
+                        border-radius: 8px; 
                         cursor: pointer; 
-                        font-size: 0.8rem;
+                        font-size: 0.75rem;
                         font-weight: bold;
                         transition: all 0.3s ease;
+                        box-shadow: 0 2px 8px rgba(255, 107, 107, 0.3);
+                        border: 2px solid rgba(255, 255, 255, 0.2);
                     "
-                    onmouseover="this.style.transform='scale(1.05)'"
-                    onmouseout="this.style.transform='scale(1)'"
+                    onmouseover="this.style.transform='scale(1.1)'; this.style.boxShadow='0 4px 12px rgba(255, 107, 107, 0.4)'"
+                    onmouseout="this.style.transform='scale(1)'; this.style.boxShadow='0 2px 8px rgba(255, 107, 107, 0.3)'"
             >
-                ${isEditMode ? '✕ Done' : '✏️ Edit'}
+                ${isEditMode ? '✓ Done' : '⚙️ Edit'}
             </button>
         </div>
         <div class="quick-grid" style="
