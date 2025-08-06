@@ -2446,14 +2446,34 @@
                     }
                 }
                 
-                // FALLBACK: Use reliable cached rates if APIs fail
+                // FALLBACK: Use reliable cached rates if APIs fail (CURRENT MARKET PRICES - Dec 2024)
                 console.log('⚠️ Using fallback rates due to API issues');
                 const fallbackRates = {
-                    BTC: 43250.0, ETH: 2250.0, USDT: 1.0, BNB: 245.0, ADA: 0.48,
-                    SOL: 98.0, DOT: 7.2, DOGE: 0.078, XRP: 0.62, MATIC: 0.85,
-                    LTC: 68.0, BCH: 235.0, LINK: 15.5, UNI: 7.8, ATOM: 9.2,
-                    ETC: 18.5, XLM: 0.11, VET: 0.028, FIL: 5.2, TRX: 0.085,
-                    EOS: 0.72, AAVE: 95.0, ALGO: 0.18, MKR: 1850.0, COMP: 45.0
+                    BTC: 115105.0,    // Current BTC price
+                    ETH: 3672.94,     // Current ETH price
+                    USDT: 1.0,        // Stable at $1
+                    BNB: 770.31,      // Current BNB price
+                    ADA: 0.740914,    // Current ADA price
+                    SOL: 168.04,      // Current SOL price
+                    DOT: 3.68,        // Current DOT price
+                    DOGE: 0.205343,   // Current DOGE price
+                    XRP: 3.0,         // Current XRP price
+                    MATIC: 0.223746,  // Current MATIC price
+                    LTC: 118.72,      // Current LTC price
+                    BCH: 569.72,      // Current BCH price
+                    LINK: 16.75,      // Current LINK price
+                    UNI: 9.7,         // Current UNI price
+                    ATOM: 4.3,        // Current ATOM price
+                    ETC: 20.32,       // Current ETC price
+                    XLM: 0.399241,    // Current XLM price
+                    VET: 0.02346127,  // Current VET price
+                    FIL: 2.38,        // Current FIL price
+                    TRX: 0.337107,    // Current TRX price
+                    EOS: 0.507645,    // Current EOS price
+                    AAVE: 263.34,     // Current AAVE price
+                    ALGO: 0.242196,   // Current ALGO price
+                    MKR: 1915.54,     // Current MKR price
+                    COMP: 45.0        // Current COMP price (estimated)
                 };
                 
                 cryptoRates = { rates: fallbackRates, base: 'USD' };
@@ -2944,31 +2964,31 @@
             console.log('=== EMERGENCY CRYPTO FIX ===');
             
             const emergencyRates = {
-                BTC: 43250.0,    // Current BTC price
-                ETH: 2250.0,     // Current ETH price
-                USDT: 1.0,       // Stable at $1
-                BNB: 245.0,      // Current BNB price
-                ADA: 0.48,       // Current ADA price
-                SOL: 98.0,       // Current SOL price
-                DOT: 7.2,        // Current DOT price
-                DOGE: 0.078,     // Current DOGE price
-                XRP: 0.62,       // Current XRP price
-                MATIC: 0.85,     // Current MATIC price
-                LTC: 68.0,       // Current LTC price
-                BCH: 235.0,      // Current BCH price
-                LINK: 15.5,      // Current LINK price
-                UNI: 7.8,        // Current UNI price
-                ATOM: 9.2,       // Current ATOM price
-                ETC: 18.5,       // Current ETC price
-                XLM: 0.11,       // Current XLM price
-                VET: 0.028,      // Current VET price
-                FIL: 5.2,        // Current FIL price
-                TRX: 0.085,      // Current TRX price
-                EOS: 0.72,       // Current EOS price
-                AAVE: 95.0,      // Current AAVE price
-                ALGO: 0.18,      // Current ALGO price
-                MKR: 1850.0,     // Current MKR price
-                COMP: 45.0       // Current COMP price
+                BTC: 115105.0,    // Current BTC price
+                ETH: 3672.94,     // Current ETH price
+                USDT: 1.0,        // Stable at $1
+                BNB: 770.31,      // Current BNB price
+                ADA: 0.740914,    // Current ADA price
+                SOL: 168.04,      // Current SOL price
+                DOT: 3.68,        // Current DOT price
+                DOGE: 0.205343,   // Current DOGE price
+                XRP: 3.0,         // Current XRP price
+                MATIC: 0.223746,  // Current MATIC price
+                LTC: 118.72,      // Current LTC price
+                BCH: 569.72,      // Current BCH price
+                LINK: 16.75,      // Current LINK price
+                UNI: 9.7,         // Current UNI price
+                ATOM: 4.3,        // Current ATOM price
+                ETC: 20.32,       // Current ETC price
+                XLM: 0.399241,    // Current XLM price
+                VET: 0.02346127,  // Current VET price
+                FIL: 2.38,        // Current FIL price
+                TRX: 0.337107,    // Current TRX price
+                EOS: 0.507645,    // Current EOS price
+                AAVE: 263.34,     // Current AAVE price
+                ALGO: 0.242196,   // Current ALGO price
+                MKR: 1915.54,     // Current MKR price
+                COMP: 45.0        // Current COMP price (estimated)
             };
             
             cryptoRates = { rates: emergencyRates, base: 'USD' };
@@ -3034,13 +3054,13 @@
                 const rates = cryptoRates.rates;
                 const factCheckResults = [];
                 
-                // Check major currency ratios against known values
+                // Check major currency ratios against known values (CURRENT MARKET PRICES)
                 const checks = [
-                    { name: 'BTC/ETH Ratio', actual: rates.BTC / rates.ETH, expected: 19.22, tolerance: 0.5 },
-                    { name: 'BTC/USDT Ratio', actual: rates.BTC / rates.USDT, expected: 43250, tolerance: 1000 },
-                    { name: 'ETH/USDT Ratio', actual: rates.ETH / rates.USDT, expected: 2250, tolerance: 100 },
-                    { name: 'SOL/USDT Ratio', actual: rates.SOL / rates.USDT, expected: 98, tolerance: 5 },
-                    { name: 'BNB/USDT Ratio', actual: rates.BNB / rates.USDT, expected: 245, tolerance: 10 }
+                    { name: 'BTC/ETH Ratio', actual: rates.BTC / rates.ETH, expected: 31.34, tolerance: 1.0 },
+                    { name: 'BTC/USDT Ratio', actual: rates.BTC / rates.USDT, expected: 115105, tolerance: 2000 },
+                    { name: 'ETH/USDT Ratio', actual: rates.ETH / rates.USDT, expected: 3672.94, tolerance: 200 },
+                    { name: 'SOL/USDT Ratio', actual: rates.SOL / rates.USDT, expected: 168.04, tolerance: 10 },
+                    { name: 'BNB/USDT Ratio', actual: rates.BNB / rates.USDT, expected: 770.31, tolerance: 20 }
                 ];
                 
                 checks.forEach(check => {
