@@ -60,6 +60,22 @@ function renderQuickAccess() {
     editButton.onclick = toggleQuickAccessEditMode;
     quickAccessSection.appendChild(editButton);
     
+    // Add test button for debugging
+    const testButton = document.createElement('button');
+    testButton.className = 'test-btn';
+    testButton.innerHTML = '<i class="fas fa-bug"></i> Test Quick Access';
+    testButton.onclick = () => {
+        console.log('Test button clicked');
+        if (userQuickAccess.length > 0) {
+            const testItem = userQuickAccess[0];
+            console.log('Testing with:', testItem);
+            executeQuickConversion(testItem.from, testItem.to, testItem.category);
+        } else {
+            showNotification('No quick access items to test', 'warning');
+        }
+    };
+    quickAccessSection.appendChild(testButton);
+    
     // Add help text in edit mode
     if (isEditMode) {
         const helpText = document.createElement('div');
@@ -164,6 +180,14 @@ function createQuickAccessItem(item) {
         e.preventDefault();
         e.stopPropagation();
         console.log('Quick access item clicked:', item);
+        
+        // Add visual feedback
+        quickItem.style.transform = 'scale(0.95)';
+        setTimeout(() => {
+            quickItem.style.transform = '';
+        }, 150);
+        
+        // Execute the conversion
         executeQuickConversion(item.from, item.to, item.category);
     });
     
@@ -300,7 +324,7 @@ function executeQuickConversion(from, to, category) {
     try {
         // First, select the category
         if (typeof selectCategory === 'function') {
-            selectCategory(category);
+            selectCategory(category, null); // Pass null for programmatic call
             console.log('Category selected:', category);
         } else {
             console.error('selectCategory function not found');
@@ -492,6 +516,30 @@ document.addEventListener('DOMContentLoaded', function() {
 
         .quick-access-edit-btn.save-mode:hover {
             box-shadow: 0 6px 20px rgba(79, 172, 254, 0.4);
+        }
+
+        .test-btn {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: linear-gradient(135deg, var(--warning), #f59e0b);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            padding: 8px 16px;
+            margin: 10px 0;
+            cursor: pointer;
+            font-size: 0.85rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            width: 100%;
+            justify-content: center;
+            box-shadow: 0 4px 15px rgba(245, 158, 11, 0.3);
+        }
+
+        .test-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(245, 158, 11, 0.4);
         }
 
         .edit-help-text {

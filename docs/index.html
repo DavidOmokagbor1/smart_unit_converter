@@ -1512,19 +1512,35 @@
 
         // populateCategories function is now handled by draggable_categories.js
 
-        function selectCategory(category) {
+        function selectCategory(category, event = null) {
+            console.log('selectCategory called with:', category, event);
+            
             // Remove active class from all cards
             document.querySelectorAll('.category-card').forEach(card => {
                 card.classList.remove('active');
             });
 
-            // Add active class to selected card
-            event.target.closest('.category-card').classList.add('active');
+            // Add active class to selected card (only if event exists)
+            if (event && event.target) {
+                const selectedCard = event.target.closest('.category-card');
+                if (selectedCard) {
+                    selectedCard.classList.add('active');
+                }
+            } else {
+                // Programmatic call - find the card by category name
+                const categoryCards = document.querySelectorAll('.category-card');
+                categoryCards.forEach(card => {
+                    const cardText = card.querySelector('div:last-child').textContent;
+                    if (cardText === category) {
+                        card.classList.add('active');
+                    }
+                });
+            }
 
             const fromUnit = document.getElementById('fromUnit');
             const toUnit = document.getElementById('toUnit');
 
-            if (category) {
+            if (category && categories[category]) {
                 const units = Object.keys(categories[category].units);
                 
                 // Populate unit dropdowns
@@ -1545,6 +1561,10 @@
                     fromUnit.value = units[0];
                     toUnit.value = units.length > 1 ? units[1] : units[0];
                 }
+                
+                console.log('Category selected successfully:', category);
+            } else {
+                console.error('Category not found:', category);
             }
         }
 
