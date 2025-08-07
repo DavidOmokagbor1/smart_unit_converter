@@ -2,7 +2,11 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="theme-color" content="#667eea">
     <title>AI Smart Unit Converter - 15+ Categories, 120+ Units</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <script src="draggable_categories.js"></script>
@@ -898,6 +902,192 @@
                 max-height: 100px;
             }
         }
+        
+        /* ENHANCED MOBILE COMPATIBILITY */
+        @media (max-width: 768px) {
+            /* Touch-friendly improvements */
+            .category-card, .quick-conversion {
+                min-height: 44px; /* Apple's recommended touch target size */
+                cursor: pointer;
+                -webkit-tap-highlight-color: rgba(0,0,0,0.1);
+            }
+            
+            /* Better spacing for mobile */
+            .main-content {
+                gap: 15px;
+            }
+            
+            /* Improved input fields */
+            .input-group input,
+            .input-group select {
+                font-size: 16px; /* Prevents zoom on iOS */
+                -webkit-appearance: none;
+                border-radius: 8px;
+            }
+            
+            /* Touch-friendly buttons */
+            .btn {
+                min-height: 44px;
+                touch-action: manipulation;
+            }
+            
+            /* Better grid layouts */
+            .category-grid {
+                grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
+                gap: 8px;
+            }
+            
+            .quick-access-grid {
+                grid-template-columns: repeat(auto-fit, minmax(70px, 1fr));
+                gap: 8px;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            /* Ultra-compact mobile design */
+            .container {
+                padding: 5px;
+            }
+            
+            .header {
+                padding: 8px;
+                margin-bottom: 8px;
+            }
+            
+            .title {
+                font-size: 1.1rem;
+                line-height: 1.2;
+            }
+            
+            .subtitle {
+                font-size: 0.7rem;
+            }
+            
+            /* Single column layout for very small screens */
+            .main-content {
+                grid-template-columns: 1fr;
+                gap: 10px;
+            }
+            
+            .sidebar, .converter-main {
+                padding: 8px;
+            }
+            
+            /* Compact category grid */
+            .category-grid {
+                grid-template-columns: repeat(auto-fit, minmax(65px, 1fr));
+                gap: 6px;
+            }
+            
+            .category-card {
+                padding: 8px 4px;
+                font-size: 0.65rem;
+                height: 65px;
+            }
+            
+            .category-icon {
+                font-size: 0.8rem;
+            }
+            
+            /* Compact quick access */
+            .quick-access-grid {
+                grid-template-columns: repeat(auto-fit, minmax(60px, 1fr));
+                gap: 6px;
+            }
+            
+            .quick-conversion {
+                padding: 6px;
+                font-size: 0.65rem;
+                height: 55px;
+            }
+            
+            /* Improved conversion section */
+            .conversion-section {
+                gap: 10px;
+            }
+            
+            .input-group {
+                padding: 8px;
+            }
+            
+            .input-group input,
+            .input-group select {
+                padding: 10px;
+                font-size: 16px;
+            }
+            
+            /* Touch-friendly buttons */
+            .btn {
+                padding: 12px 16px;
+                font-size: 0.9rem;
+                min-height: 44px;
+            }
+            
+            /* Compact history */
+            .history-list {
+                max-height: 80px;
+                font-size: 0.75rem;
+            }
+            
+            /* Better result display */
+            .result-display {
+                padding: 10px;
+                font-size: 0.9rem;
+                margin: 8px 0;
+            }
+        }
+        
+        /* LANDSCAPE MOBILE OPTIMIZATION */
+        @media (max-width: 768px) and (orientation: landscape) {
+            .main-content {
+                grid-template-columns: 1fr 1fr;
+                gap: 10px;
+            }
+            
+            .category-grid {
+                grid-template-columns: repeat(auto-fit, minmax(70px, 1fr));
+            }
+            
+            .quick-access-grid {
+                grid-template-columns: repeat(auto-fit, minmax(60px, 1fr));
+            }
+        }
+        
+        /* TABLET OPTIMIZATION */
+        @media (min-width: 769px) and (max-width: 1024px) {
+            .main-content {
+                grid-template-columns: 1fr 1fr;
+                gap: 20px;
+            }
+            
+            .category-grid {
+                grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+            }
+            
+            .quick-access-grid {
+                grid-template-columns: repeat(auto-fit, minmax(90px, 1fr));
+            }
+        }
+        
+        /* ACCESSIBILITY IMPROVEMENTS */
+        @media (prefers-reduced-motion: reduce) {
+            * {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+            }
+        }
+        
+        /* HIGH CONTRAST MODE */
+        @media (prefers-contrast: high) {
+            .category-card, .quick-conversion {
+                border: 2px solid #000;
+            }
+            
+            .btn {
+                border: 2px solid #000;
+            }
+        }
     </style>
 </head>
 <body class="dark-mode">
@@ -1753,6 +1943,83 @@
                 comprehensiveFactCheck();
             }, 2000);
         }, 1000);
+        
+        // MOBILE OPTIMIZATIONS
+        function initMobileOptimizations() {
+            console.log('📱 Initializing mobile optimizations...');
+            
+            // Prevent zoom on input focus (iOS)
+            const inputs = document.querySelectorAll('input, select');
+            inputs.forEach(input => {
+                input.addEventListener('focus', function() {
+                    if (window.innerWidth <= 768) {
+                        setTimeout(() => {
+                            this.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                        }, 300);
+                    }
+                });
+            });
+            
+            // Touch-friendly category selection
+            const categoryCards = document.querySelectorAll('.category-card');
+            categoryCards.forEach(card => {
+                card.addEventListener('touchstart', function(e) {
+                    this.style.transform = 'scale(0.95)';
+                });
+                
+                card.addEventListener('touchend', function(e) {
+                    this.style.transform = 'scale(1)';
+                });
+            });
+            
+            // Swipe gesture support for quick access
+            let touchStartX = 0;
+            let touchEndX = 0;
+            
+            document.addEventListener('touchstart', function(e) {
+                touchStartX = e.changedTouches[0].screenX;
+            });
+            
+            document.addEventListener('touchend', function(e) {
+                touchEndX = e.changedTouches[0].screenX;
+                handleSwipe();
+            });
+            
+            function handleSwipe() {
+                const swipeThreshold = 50;
+                const diff = touchStartX - touchEndX;
+                
+                if (Math.abs(diff) > swipeThreshold) {
+                    if (diff > 0) {
+                        // Swipe left - could be used for navigation
+                        console.log('📱 Swipe left detected');
+                    } else {
+                        // Swipe right - could be used for navigation
+                        console.log('📱 Swipe right detected');
+                    }
+                }
+            }
+            
+            // Optimize for mobile performance
+            if (window.innerWidth <= 768) {
+                // Reduce animations on mobile for better performance
+                document.body.style.setProperty('--animation-duration', '0.2s');
+                
+                // Add mobile-specific event listeners
+                document.addEventListener('touchmove', function(e) {
+                    // Prevent default only for specific elements if needed
+                }, { passive: true });
+            }
+            
+            console.log('✅ Mobile optimizations initialized');
+        }
+        
+        // Initialize mobile optimizations
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', initMobileOptimizations);
+        } else {
+            initMobileOptimizations();
+        }
         });
 
         async function registerServiceWorker() {
