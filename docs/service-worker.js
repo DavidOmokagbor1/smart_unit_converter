@@ -23,7 +23,7 @@ self.addEventListener('fetch', (event) => {
     // Handle API requests
     if (event.request.url.includes('api.exchangerate-api.com') || 
         event.request.url.includes('api.coingecko.com') ||
-        event.request.request.url.includes('api.coincap.io') ||
+        event.request.url.includes('api.coincap.io') ||
         event.request.url.includes('api.fixer.io')) {
         
         event.respondWith(
@@ -35,8 +35,13 @@ self.addEventListener('fetch', (event) => {
                         const now = new Date();
                         const ageInMinutes = (now - cacheTime) / (1000 * 60);
                         
-                        // Use cache if less than 5 minutes old
-                        if (ageInMinutes < 5) {
+                        // Use cache if less than 1 minute old for crypto, 2 minutes for currency
+                        const isCrypto = event.request.url.includes('coingecko.com') || 
+                                       event.request.url.includes('coincap.io') || 
+                                       event.request.url.includes('binance.com');
+                        const maxAge = isCrypto ? 1 : 2; // Crypto: 1 min, Currency: 2 min
+                        
+                        if (ageInMinutes < maxAge) {
                             return response;
                         }
                     }
