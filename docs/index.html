@@ -188,11 +188,12 @@ async function updateExchangeRates() {
   content.innerHTML = '<div class="loading">Loading exchange rates...</div>';
   setUpdateStatus('⟳ Updating...', '#fbbf24');
   
-  // Multiple API endpoints for better reliability
+  // Multiple API endpoints for better reliability (CORS-friendly)
   const apiEndpoints = [
+    'https://api.exchangerate.host/latest?base=USD',
     'https://api.exchangerate-api.com/v4/latest/USD',
-    'https://api.fixer.io/latest?access_key=YOUR_FIXER_KEY&base=USD', // Add your API key
-    'https://api.exchangerate.host/latest?base=USD'
+    'https://cdn.jsdelivr.net/gh/fawazahmed0/currency-api@1/latest/currencies/usd.json',
+    'https://cors-anywhere.herokuapp.com/https://api.exchangerate-api.com/v4/latest/USD'
   ];
   
   let data = null;
@@ -212,16 +213,23 @@ async function updateExchangeRates() {
       if (response.ok) {
         data = await response.json();
         // Normalize data format for different APIs
-        if (endpoint.includes('fixer.io')) {
-          data.rates = data.rates || data.quotes;
-        } else if (endpoint.includes('exchangerate.host')) {
+        if (endpoint.includes('exchangerate.host')) {
           data.rates = data.rates;
+        } else if (endpoint.includes('exchangerate-api.com')) {
+          data.rates = data.rates;
+        } else if (endpoint.includes('jsdelivr.net')) {
+          // Convert from {usd: {eur: 0.85, gbp: 0.74}} to {rates: {EUR: 0.85, GBP: 0.74}}
+          data.rates = {};
+          Object.keys(data.usd).forEach(currency => {
+            data.rates[currency.toUpperCase()] = data.usd[currency];
+          });
         }
         break; // Success, exit loop
       }
     } catch (error) {
       lastError = error;
       console.log(`API ${endpoint} failed:`, error);
+      console.log('Error details:', error.message);
       continue; // Try next API
     }
   }
@@ -273,7 +281,7 @@ async function updateCryptoPrices() {
   content.innerHTML = '<div class="loading">Loading crypto prices...</div>';
   setUpdateStatus('⟳ Updating...', '#fbbf24');
   
-  // Multiple crypto API endpoints for better reliability
+  // Multiple crypto API endpoints for better reliability (CORS-friendly)
   const cryptoEndpoints = [
     'https://api.coingecko.com/api/v3/simple/price?ids=bitcoin,ethereum,cardano,solana,polkadot&vs_currencies=usd&include_24hr_change=true',
     'https://api.coincap.io/v2/assets?limit=5',
@@ -501,7 +509,31 @@ function refreshAllData() {
   else if (currentTab === 'weather') updateWeatherData();
 }
 
+// Test API connectivity
+async function testAPIs() {
+  console.log('Testing API connectivity...');
+  
+  // Test currency API
+  try {
+    const response = await fetch('https://api.exchangerate.host/latest?base=USD');
+    const data = await response.json();
+    console.log('Currency API test:', data.rates ? 'SUCCESS' : 'FAILED');
+  } catch (error) {
+    console.log('Currency API test FAILED:', error.message);
+  }
+  
+  // Test crypto API
+  try {
+    const response = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=usd');
+    const data = await response.json();
+    console.log('Crypto API test:', data.bitcoin ? 'SUCCESS' : 'FAILED');
+  } catch (error) {
+    console.log('Crypto API test FAILED:', error.message);
+  }
+}
+
 // Initial load with auto-refresh
+testAPIs();
 updateExchangeRates();
 startAutoRefresh();
 </script>
