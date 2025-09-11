@@ -1,0 +1,16 @@
+# GitHub Pages Configuration
+# This is a static HTML site, minimal Jekyll config
+title: AI Smart Unit Converter
+description: A modern, drag-and-drop unit converter with 15+ categories and 120+ units
+
+# Disable all Jekyll processing
+plugins: []
+markdown: kramdown
+highlighter: rouge
+
+# Exclude everything to prevent processing
+exclude:
+  - README.md
+  - .gitignore
+  - .github
+  - _config.yml 

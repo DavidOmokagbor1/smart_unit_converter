@@ -1,0 +1,507 @@
+<!-- Enhanced Floating Live Info Panel -->
+<div id="liveInfoPanel">
+  <div class="live-header">
+    <h4>🌍 Live Data</h4>
+    <div class="live-tabs">
+      <button class="tab-btn active" onclick="switchTab('rates')">💱 Rates</button>
+      <button class="tab-btn" onclick="switchTab('crypto')">₿ Crypto</button>
+      <button class="tab-btn" onclick="switchTab('weather')">🌤️ Weather</button>
+    </div>
+  </div>
+  <div id="liveRatesContent" class="tab-content active">Loading exchange rates...</div>
+  <div id="liveCryptoContent" class="tab-content">Loading crypto prices...</div>
+  <div id="liveWeatherContent" class="tab-content">Loading weather data...</div>
+  <div class="live-footer">
+    <span id="lastUpdate">Last update: --</span>
+    <div style="display: flex; align-items: center; gap: 10px;">
+      <span id="updateStatus" style="font-size: 0.7rem; color: #4ade80;">● Live</span>
+      <button onclick="refreshAllData()" class="refresh-btn">🔄</button>
+    </div>
+  </div>
+</div>
+
+<style>
+#liveInfoPanel {
+  position: fixed;
+  bottom: 30px;
+  right: 30px;
+  background: rgba(22, 33, 62, 0.98);
+  color: #fff;
+  border-radius: 20px;
+  box-shadow: 0 12px 40px rgba(0,0,0,0.3);
+  padding: 20px;
+  z-index: 9999;
+  min-width: 280px;
+  max-width: 350px;
+  font-family: 'Segoe UI', sans-serif;
+  transition: all 0.3s ease;
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255,255,255,0.1);
+}
+
+#liveInfoPanel:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 16px 50px rgba(0,0,0,0.4);
+}
+
+.live-header h4 {
+  margin: 0 0 15px 0;
+  font-size: 1.2rem;
+  color: #fbbf24;
+  text-align: center;
+}
+
+.live-tabs {
+  display: flex;
+  gap: 5px;
+  margin-bottom: 15px;
+}
+
+.tab-btn {
+  flex: 1;
+  padding: 8px 12px;
+  border: none;
+  border-radius: 8px;
+  background: rgba(255,255,255,0.1);
+  color: #fff;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.tab-btn.active {
+  background: #e94560;
+  color: #fff;
+}
+
+.tab-btn:hover {
+  background: rgba(255,255,255,0.2);
+}
+
+.tab-content {
+  display: none;
+  font-size: 0.9rem;
+  line-height: 1.6;
+  min-height: 80px;
+}
+
+.tab-content.active {
+  display: block;
+  animation: fadeIn 0.3s ease;
+}
+
+.live-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 15px;
+  padding-top: 10px;
+  border-top: 1px solid rgba(255,255,255,0.1);
+  font-size: 0.8rem;
+  color: #b8b8b8;
+}
+
+.refresh-btn {
+  background: none;
+  border: none;
+  color: #fbbf24;
+  font-size: 1.1rem;
+  cursor: pointer;
+  padding: 5px;
+  border-radius: 50%;
+  transition: transform 0.2s;
+}
+
+.refresh-btn:hover {
+  transform: rotate(180deg);
+}
+
+.data-item {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 8px;
+  padding: 5px 0;
+}
+
+.data-label {
+  font-weight: 500;
+  color: #e2e8f0;
+}
+
+.data-value {
+  font-weight: bold;
+  color: #4ade80;
+}
+
+.data-change {
+  font-size: 0.8rem;
+  margin-left: 5px;
+}
+
+.data-change.positive { color: #4ade80; }
+.data-change.negative { color: #f87171; }
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.7; }
+}
+
+.loading {
+  animation: pulse 1.5s infinite;
+}
+</style>
+
+<script>
+let currentTab = 'rates';
+let lastUpdateTime = new Date();
+
+// Enhanced tab switching with auto-refresh
+function switchTab(tab) {
+  currentTab = tab;
+  document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+  document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+  
+  event.target.classList.add('active');
+  document.getElementById(`live${tab.charAt(0).toUpperCase() + tab.slice(1)}Content`).classList.add('active');
+  
+  // Refresh data for the selected tab and start auto-refresh
+  if (tab === 'rates') {
+    updateExchangeRates();
+    startAutoRefresh();
+  } else if (tab === 'crypto') {
+    updateCryptoPrices();
+    startAutoRefresh();
+  } else if (tab === 'weather') {
+    updateWeatherData();
+    startAutoRefresh();
+  }
+}
+
+// Enhanced Exchange Rates with multiple API fallbacks
+async function updateExchangeRates() {
+  const content = document.getElementById('liveRatesContent');
+  content.innerHTML = '<div class="loading">Loading exchange rates...</div>';
+  setUpdateStatus('⟳ Updating...', '#fbbf24');
+  
+  // Multiple API endpoints for better reliability
+  const apiEndpoints = [
+    'https://api.exchangerate-api.com/v4/latest/USD',
+    'https://api.fixer.io/latest?access_key=YOUR_FIXER_KEY&base=USD', // Add your API key
+    'https://api.exchangerate.host/latest?base=USD'
+  ];
+  
+  let data = null;
+  let lastError = null;
+  
+  // Try each API endpoint until one succeeds
+  for (const endpoint of apiEndpoints) {
+    try {
+      const response = await fetch(endpoint, {
+        method: 'GET',
+        headers: {
+          'Accept': 'application/json',
+          'Cache-Control': 'no-cache'
+        }
+      });
+      
+      if (response.ok) {
+        data = await response.json();
+        // Normalize data format for different APIs
+        if (endpoint.includes('fixer.io')) {
+          data.rates = data.rates || data.quotes;
+        } else if (endpoint.includes('exchangerate.host')) {
+          data.rates = data.rates;
+        }
+        break; // Success, exit loop
+      }
+    } catch (error) {
+      lastError = error;
+      console.log(`API ${endpoint} failed:`, error);
+      continue; // Try next API
+    }
+  }
+  
+  if (data && data.rates) {
+    const rates = data.rates;
+    content.innerHTML = `
+      <div class="data-item">
+        <span class="data-label">USD → EUR</span>
+        <span class="data-value">€${rates.EUR ? rates.EUR.toFixed(4) : 'N/A'}</span>
+      </div>
+      <div class="data-item">
+        <span class="data-label">USD → GBP</span>
+        <span class="data-value">£${rates.GBP ? rates.GBP.toFixed(4) : 'N/A'}</span>
+      </div>
+      <div class="data-item">
+        <span class="data-label">USD → JPY</span>
+        <span class="data-value">¥${rates.JPY ? rates.JPY.toFixed(2) : 'N/A'}</span>
+      </div>
+      <div class="data-item">
+        <span class="data-label">USD → CAD</span>
+        <span class="data-value">C$${rates.CAD ? rates.CAD.toFixed(4) : 'N/A'}</span>
+      </div>
+      <div class="data-item">
+        <span class="data-label">USD → AUD</span>
+        <span class="data-value">A$${rates.AUD ? rates.AUD.toFixed(4) : 'N/A'}</span>
+      </div>
+      <div class="data-item">
+        <span class="data-label">USD → CHF</span>
+        <span class="data-value">CHF${rates.CHF ? rates.CHF.toFixed(4) : 'N/A'}</span>
+      </div>
+    `;
+    updateTimestamp();
+  } else {
+    setUpdateStatus('⚠️ Error', '#f87171');
+    content.innerHTML = `
+      <div style="color: #f87171; text-align: center;">
+        <div>⚠️ Unable to fetch exchange rates</div>
+        <div style="font-size: 0.8rem; margin-top: 5px;">All APIs are currently unavailable</div>
+        <button onclick="updateExchangeRates()" style="margin-top: 10px; padding: 5px 10px; background: #e94560; color: white; border: none; border-radius: 5px; cursor: pointer;">Retry</button>
+      </div>
+    `;
+  }
+}
+
+// Enhanced Cryptocurrency Prices with multiple API fallbacks
+async function updateCryptoPrices() {
+  const content = document.getElementById('liveCryptoContent');
+  content.innerHTML = '<div class="loading">Loading crypto prices...</div>';
+  setUpdateStatus('⟳ Updating...', '#fbbf24');
+  
+  // Multiple crypto API endpoints for better reliability
+  const cryptoEndpoints = [
+    'https://api.coingecko.com/api/v3/simple/price?ids=bitcoin,ethereum,cardano,solana,polkadot&vs_currencies=usd&include_24hr_change=true',
+    'https://api.coincap.io/v2/assets?limit=5',
+    'https://api.binance.com/api/v3/ticker/24hr?symbols=["BTCUSDT","ETHUSDT","ADAUSDT","SOLUSDT","DOTUSDT"]'
+  ];
+  
+  let data = null;
+  let lastError = null;
+  
+  // Try each API endpoint until one succeeds
+  for (const endpoint of cryptoEndpoints) {
+    try {
+      const response = await fetch(endpoint, {
+        method: 'GET',
+        headers: {
+          'Accept': 'application/json',
+          'Cache-Control': 'no-cache'
+        }
+      });
+      
+      if (response.ok) {
+        data = await response.json();
+        break; // Success, exit loop
+      }
+    } catch (error) {
+      lastError = error;
+      console.log(`Crypto API ${endpoint} failed:`, error);
+      continue; // Try next API
+    }
+  }
+  
+  if (data) {
+    let cryptoHTML = '';
+    
+    // Handle different API response formats
+    if (data.bitcoin) {
+      // CoinGecko format
+      const cryptos = [
+        { key: 'bitcoin', symbol: 'BTC', name: 'Bitcoin' },
+        { key: 'ethereum', symbol: 'ETH', name: 'Ethereum' },
+        { key: 'cardano', symbol: 'ADA', name: 'Cardano' },
+        { key: 'solana', symbol: 'SOL', name: 'Solana' },
+        { key: 'polkadot', symbol: 'DOT', name: 'Polkadot' }
+      ];
+      
+      cryptos.forEach(crypto => {
+        if (data[crypto.key]) {
+          const price = data[crypto.key].usd;
+          const change = data[crypto.key].usd_24h_change || 0;
+          cryptoHTML += `
+            <div class="data-item">
+              <span class="data-label">${crypto.name} (${crypto.symbol})</span>
+              <span class="data-value">$${price.toLocaleString()}</span>
+              <span class="data-change ${change > 0 ? 'positive' : 'negative'}">
+                ${change > 0 ? '+' : ''}${change.toFixed(2)}%
+              </span>
+            </div>
+          `;
+        }
+      });
+    } else if (data.data) {
+      // CoinCap format
+      data.data.slice(0, 5).forEach(crypto => {
+        const change = parseFloat(crypto.changePercent24Hr) || 0;
+        cryptoHTML += `
+          <div class="data-item">
+            <span class="data-label">${crypto.name} (${crypto.symbol})</span>
+            <span class="data-value">$${parseFloat(crypto.priceUsd).toLocaleString()}</span>
+            <span class="data-change ${change > 0 ? 'positive' : 'negative'}">
+              ${change > 0 ? '+' : ''}${change.toFixed(2)}%
+            </span>
+          </div>
+        `;
+      });
+    } else if (Array.isArray(data)) {
+      // Binance format
+      const symbolMap = {
+        'BTCUSDT': { name: 'Bitcoin', symbol: 'BTC' },
+        'ETHUSDT': { name: 'Ethereum', symbol: 'ETH' },
+        'ADAUSDT': { name: 'Cardano', symbol: 'ADA' },
+        'SOLUSDT': { name: 'Solana', symbol: 'SOL' },
+        'DOTUSDT': { name: 'Polkadot', symbol: 'DOT' }
+      };
+      
+      data.forEach(crypto => {
+        const info = symbolMap[crypto.symbol];
+        if (info) {
+          const price = parseFloat(crypto.lastPrice);
+          const change = parseFloat(crypto.priceChangePercent) || 0;
+          cryptoHTML += `
+            <div class="data-item">
+              <span class="data-label">${info.name} (${info.symbol})</span>
+              <span class="data-value">$${price.toLocaleString()}</span>
+              <span class="data-change ${change > 0 ? 'positive' : 'negative'}">
+                ${change > 0 ? '+' : ''}${change.toFixed(2)}%
+              </span>
+            </div>
+          `;
+        }
+      });
+    }
+    
+    content.innerHTML = cryptoHTML || '<div style="color: #f87171;">No crypto data available</div>';
+    updateTimestamp();
+  } else {
+    setUpdateStatus('⚠️ Error', '#f87171');
+    content.innerHTML = `
+      <div style="color: #f87171; text-align: center;">
+        <div>⚠️ Unable to fetch crypto prices</div>
+        <div style="font-size: 0.8rem; margin-top: 5px;">All APIs are currently unavailable</div>
+        <button onclick="updateCryptoPrices()" style="margin-top: 10px; padding: 5px 10px; background: #e94560; color: white; border: none; border-radius: 5px; cursor: pointer;">Retry</button>
+      </div>
+    `;
+  }
+}
+
+// Weather Data (using a free weather API)
+async function updateWeatherData() {
+  const content = document.getElementById('liveWeatherContent');
+  content.innerHTML = '<div class="loading">Loading weather data...</div>';
+  
+  try {
+    // Using OpenWeatherMap API (you'll need to get a free API key)
+    // For demo purposes, showing sample data
+    const weatherData = {
+      temp: Math.floor(Math.random() * 30) + 10, // Random temp for demo
+      condition: 'Partly Cloudy',
+      humidity: Math.floor(Math.random() * 40) + 40,
+      wind: Math.floor(Math.random() * 20) + 5
+    };
+    
+    content.innerHTML = `
+      <div class="data-item">
+        <span class="data-label">Temperature</span>
+        <span class="data-value">${weatherData.temp}°C</span>
+      </div>
+      <div class="data-item">
+        <span class="data-label">Condition</span>
+        <span class="data-value">${weatherData.condition}</span>
+      </div>
+      <div class="data-item">
+        <span class="data-label">Humidity</span>
+        <span class="data-value">${weatherData.humidity}%</span>
+      </div>
+      <div class="data-item">
+        <span class="data-label">Wind Speed</span>
+        <span class="data-value">${weatherData.wind} km/h</span>
+      </div>
+      <div style="font-size: 0.8rem; color: #b8b8b8; margin-top: 10px; text-align: center;">
+        Demo data - Add API key for real weather
+      </div>
+    `;
+    updateTimestamp();
+  } catch (error) {
+    content.innerHTML = '<div style="color: #f87171;">Unable to fetch weather data</div>';
+  }
+}
+
+function updateTimestamp() {
+  lastUpdateTime = new Date();
+  document.getElementById('lastUpdate').textContent = 
+    `Last update: ${lastUpdateTime.toLocaleTimeString()}`;
+  
+  // Update status indicator
+  const statusEl = document.getElementById('updateStatus');
+  if (statusEl) {
+    statusEl.textContent = '● Live';
+    statusEl.style.color = '#4ade80';
+  }
+}
+
+function setUpdateStatus(status, color = '#f87171') {
+  const statusEl = document.getElementById('updateStatus');
+  if (statusEl) {
+    statusEl.textContent = status;
+    statusEl.style.color = color;
+  }
+}
+
+function refreshAllData() {
+  if (currentTab === 'rates') updateExchangeRates();
+  else if (currentTab === 'crypto') updateCryptoPrices();
+  else if (currentTab === 'weather') updateWeatherData();
+}
+
+// Enhanced auto-refresh system with different intervals for different data types
+let refreshIntervals = {
+  rates: null,
+  crypto: null,
+  weather: null
+};
+
+// Start auto-refresh for current tab
+function startAutoRefresh() {
+  // Clear existing intervals
+  Object.values(refreshIntervals).forEach(interval => {
+    if (interval) clearInterval(interval);
+  });
+  
+  // Set different refresh rates for different data types
+  if (currentTab === 'rates') {
+    // Currency rates: every 30 seconds (more frequent for accuracy)
+    refreshIntervals.rates = setInterval(updateExchangeRates, 30000);
+  } else if (currentTab === 'crypto') {
+    // Crypto prices: every 15 seconds (very frequent for real-time feel)
+    refreshIntervals.crypto = setInterval(updateCryptoPrices, 15000);
+  } else if (currentTab === 'weather') {
+    // Weather: every 5 minutes (less frequent, weather doesn't change much)
+    refreshIntervals.weather = setInterval(updateWeatherData, 300000);
+  }
+}
+
+// Enhanced refresh function with visual feedback
+function refreshAllData() {
+  const refreshBtn = document.querySelector('.refresh-btn');
+  if (refreshBtn) {
+    refreshBtn.style.transform = 'rotate(180deg)';
+    setTimeout(() => {
+      refreshBtn.style.transform = 'rotate(0deg)';
+    }, 500);
+  }
+  
+  if (currentTab === 'rates') updateExchangeRates();
+  else if (currentTab === 'crypto') updateCryptoPrices();
+  else if (currentTab === 'weather') updateWeatherData();
+}
+
+// Initial load with auto-refresh
+updateExchangeRates();
+startAutoRefresh();
+</script>
