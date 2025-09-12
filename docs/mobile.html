@@ -215,6 +215,116 @@
             align-items: center;
         }
 
+        .mobile-voice-btn {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            border: none;
+            color: white;
+            padding: 10px 12px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 14px;
+            min-width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 2px 4px rgba(102, 126, 234, 0.2);
+        }
+
+        .mobile-voice-btn:hover {
+            background: linear-gradient(135deg, #5a67d8, #6b46c1);
+            transform: translateY(-1px);
+            box-shadow: 0 3px 6px rgba(102, 126, 234, 0.3);
+        }
+
+        .mobile-voice-btn:active {
+            transform: scale(0.95);
+        }
+
+        .mobile-voice-btn.listening {
+            background: linear-gradient(135deg, #f56565, #e53e3e);
+            animation: pulse 1s infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
+        /* Voice Recording Section */
+        .mobile-voice-section {
+            margin-top: 16px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .mobile-voice-help {
+            text-align: center;
+            color: var(--dark-text-secondary);
+            opacity: 0.8;
+        }
+
+        .mobile-voice-help small {
+            font-size: 12px;
+            line-height: 1.4;
+        }
+
+        .mobile-voice-record-btn {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            border: none;
+            color: white;
+            padding: 16px 24px;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 16px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+            min-width: 180px;
+            justify-content: center;
+            user-select: none;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+        }
+
+        .mobile-voice-record-btn:hover {
+            background: linear-gradient(135deg, #5a67d8, #6b46c1);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(102, 126, 234, 0.4);
+        }
+
+        .mobile-voice-record-btn:active {
+            transform: scale(0.95);
+        }
+
+        .mobile-voice-record-btn.recording {
+            background: linear-gradient(135deg, #f56565, #e53e3e);
+            animation: recordingPulse 1s infinite;
+            box-shadow: 0 6px 20px rgba(245, 101, 101, 0.4);
+        }
+
+        .mobile-voice-record-btn.recording #voiceIcon {
+            animation: microphoneBounce 0.5s infinite alternate;
+        }
+
+        @keyframes recordingPulse {
+            0% { transform: scale(1); box-shadow: 0 6px 20px rgba(245, 101, 101, 0.4); }
+            50% { transform: scale(1.05); box-shadow: 0 8px 25px rgba(245, 101, 101, 0.6); }
+            100% { transform: scale(1); box-shadow: 0 6px 20px rgba(245, 101, 101, 0.4); }
+        }
+
+        @keyframes microphoneBounce {
+            0% { transform: scale(1); }
+            100% { transform: scale(1.2); }
+        }
+
         .mobile-input {
             flex: 1;
             background: rgba(255, 255, 255, 0.1);
@@ -443,11 +553,12 @@
         }
 
         .mobile-setting-group h4 {
-            font-size: 16px;
-            font-weight: 600;
-            margin-bottom: 12px;
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 8px;
             color: var(--dark-text);
         }
+
 
         .mobile-setting-options {
             display: flex;
@@ -456,27 +567,41 @@
         }
 
         .mobile-setting-btn {
-            background: rgba(255, 255, 255, 0.1);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            color: var(--dark-text);
-            padding: 10px 16px;
+            background: linear-gradient(135deg, #a0aec0, #718096);
+            border: 1px solid #cbd5e0;
+            color: #2d3748;
+            padding: 14px 18px;
             border-radius: 8px;
-            font-size: 14px;
-            font-weight: 500;
+            font-size: 15px;
+            font-weight: 600;
             cursor: pointer;
             transition: all 0.3s ease;
             flex: 1;
             min-width: 120px;
+            margin: 4px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
         }
 
         .mobile-setting-btn:hover {
-            background: rgba(255, 255, 255, 0.2);
+            background: linear-gradient(135deg, #90a3b8, #6b7c93);
+            transform: translateY(-1px);
+            box-shadow: 0 3px 6px rgba(0, 0, 0, 0.15);
         }
 
         .mobile-setting-btn.active {
-            background: linear-gradient(45deg, var(--primary), var(--secondary));
-            border-color: var(--accent);
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            border: 1px solid #5a67d8;
             color: white;
+            transform: scale(1.01);
+            box-shadow: 0 3px 8px rgba(102, 126, 234, 0.3);
+        }
+
+        .mobile-setting-btn:active {
+            transform: scale(0.98);
         }
 
         /* About Section */
@@ -586,14 +711,9 @@
     <!-- Mobile Header -->
     <div class="mobile-header">
         <div class="mobile-title">Unit Converter</div>
-        <div style="display: flex; gap: 8px;">
-            <button class="mobile-menu-btn" onclick="debugTest()" style="background: #28a745;">
-                <i class="fas fa-bug"></i>
-            </button>
-            <button class="mobile-menu-btn" onclick="toggleMobileMenu()">
-                <i class="fas fa-bars"></i>
-            </button>
-        </div>
+        <button class="mobile-menu-btn" onclick="toggleMobileMenu()">
+            <i class="fas fa-bars"></i>
+        </button>
     </div>
 
     <!-- Main Content -->
@@ -625,6 +745,22 @@
             <div class="mobile-result" id="mobileResult">
                 Enter values to convert
             </div>
+            
+            <!-- Voice Recording Button -->
+            <div class="mobile-voice-section">
+                <button class="mobile-voice-record-btn" id="voiceRecordBtn" 
+                        onmousedown="startVoiceRecording()" 
+                        onmouseup="stopVoiceRecording()"
+                        ontouchstart="startVoiceRecording()" 
+                        ontouchend="stopVoiceRecording()"
+                        title="Hold to record voice input">
+                    <i class="fas fa-microphone" id="voiceIcon"></i>
+                    <span id="voiceText">Hold to Record</span>
+                </button>
+                <div class="mobile-voice-help">
+                    <small>💡 Tip: Say "5 meters" or "10 pounds" - Works best on HTTPS</small>
+                </div>
+            </div>
         </div>
 
         <!-- Category Selector - Moved to Bottom -->
@@ -644,10 +780,10 @@
                     <h4>Theme</h4>
                     <div class="mobile-setting-options">
                         <button class="mobile-setting-btn active" onclick="setTheme('dark')">
-                            🌙 Dark
+                            Dark
                         </button>
                         <button class="mobile-setting-btn" onclick="setTheme('light')">
-                            ☀️ Light
+                            Light
                         </button>
                     </div>
                 </div>
@@ -656,10 +792,10 @@
                     <h4>Currency Updates</h4>
                     <div class="mobile-setting-options">
                         <button class="mobile-setting-btn active" onclick="setUpdateFrequency('auto')">
-                            🔄 Auto (5 min)
+                            Auto (5 min)
                         </button>
                         <button class="mobile-setting-btn" onclick="setUpdateFrequency('manual')">
-                            ✋ Manual
+                            Manual
                         </button>
                     </div>
                 </div>
@@ -668,10 +804,22 @@
                     <h4>Notifications</h4>
                     <div class="mobile-setting-options">
                         <button class="mobile-setting-btn active" onclick="toggleNotifications(true)">
-                            🔔 On
+                            On
                         </button>
                         <button class="mobile-setting-btn" onclick="toggleNotifications(false)">
-                            🔕 Off
+                            Off
+                        </button>
+                    </div>
+                </div>
+
+                <div class="mobile-setting-group">
+                    <h4>Accessibility</h4>
+                    <div class="mobile-setting-options">
+                        <button class="mobile-setting-btn" onclick="toggleVoiceInput()">
+                            Voice Input
+                        </button>
+                        <button class="mobile-setting-btn" onclick="testVoiceInput()">
+                            Test Voice
                         </button>
                     </div>
                 </div>
@@ -680,10 +828,10 @@
                     <h4>Data & Privacy</h4>
                     <div class="mobile-setting-options">
                         <button class="mobile-setting-btn" onclick="clearHistory()">
-                            🗑️ Clear History
+                            Clear History
                         </button>
                         <button class="mobile-setting-btn" onclick="exportData()">
-                            📤 Export Data
+                            Export Data
                         </button>
                     </div>
                 </div>
@@ -1404,13 +1552,68 @@
                 event.target.classList.add('active');
             }
             
-            // Apply theme (simplified for demo)
+            // Apply theme with reduced whiteness
             if (theme === 'light') {
-                document.body.style.background = 'linear-gradient(-45deg, #f8fafc, #e2e8f0, #cbd5e0, #a0aec0)';
+                document.body.style.background = 'linear-gradient(-45deg, #f1f5f9, #e2e8f0, #cbd5e0, #a0aec0)';
                 document.body.style.color = '#1a202c';
+                
+                // Update mobile elements for better contrast
+                document.querySelectorAll('.mobile-converter, .mobile-category-selector, .mobile-settings, .mobile-about').forEach(el => {
+                    el.style.background = 'rgba(248, 250, 252, 0.95)';
+                    el.style.color = '#1a202c';
+                    el.style.border = '1px solid #d1d5db';
+                    el.style.boxShadow = '0 2px 8px rgba(0, 0, 0, 0.08)';
+                });
+                
+                // Update input fields
+                document.querySelectorAll('.mobile-input, .mobile-unit-select').forEach(el => {
+                    el.style.background = '#f9fafb';
+                    el.style.color = '#1a202c';
+                    el.style.border = '1px solid #d1d5db';
+                });
+                
+                // Update buttons
+                document.querySelectorAll('.mobile-btn, .mobile-category-btn').forEach(el => {
+                    el.style.background = '#667eea';
+                    el.style.color = '#ffffff';
+                    el.style.border = '1px solid #5a67d8';
+                });
+                
+                // Update header
+                document.querySelector('.mobile-header').style.background = 'rgba(248, 250, 252, 0.95)';
+                document.querySelector('.mobile-header').style.color = '#1a202c';
+                document.querySelector('.mobile-header').style.borderBottom = '1px solid #d1d5db';
+                
             } else {
                 document.body.style.background = 'linear-gradient(-45deg, #0a0a0a, #1a1a2e, #16213e, #0f3460)';
                 document.body.style.color = '#ffffff';
+                
+                // Update mobile elements
+                document.querySelectorAll('.mobile-converter, .mobile-category-selector, .mobile-settings, .mobile-about').forEach(el => {
+                    el.style.background = 'rgba(26, 32, 44, 0.95)';
+                    el.style.color = '#f7fafc';
+                    el.style.border = '2px solid #4a5568';
+                    el.style.boxShadow = '0 4px 12px rgba(0, 0, 0, 0.3)';
+                });
+                
+                // Update input fields
+                document.querySelectorAll('.mobile-input, .mobile-unit-select').forEach(el => {
+                    el.style.background = '#2d3748';
+                    el.style.color = '#f7fafc';
+                    el.style.border = '2px solid #4a5568';
+                });
+                
+                // Update buttons
+                document.querySelectorAll('.mobile-btn, .mobile-category-btn').forEach(el => {
+                    el.style.background = '#667eea';
+                    el.style.color = '#ffffff';
+                    el.style.border = '2px solid #5a67d8';
+                });
+                
+                // Update header
+                document.querySelector('.mobile-header').style.background = 'rgba(26, 32, 44, 0.95)';
+                document.querySelector('.mobile-header').style.color = '#f7fafc';
+                document.querySelector('.mobile-header').style.borderBottom = '2px solid #4a5568';
             }
             
             // Save preference
@@ -1515,6 +1718,218 @@
             setTimeout(() => {
                 notification.remove();
             }, 3000);
+        }
+
+        // Voice Recording Functions
+        let recognition = null;
+        let isRecording = false;
+
+        function initVoiceRecognition() {
+            if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
+                const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+                recognition = new SpeechRecognition();
+                
+                recognition.continuous = false;
+                recognition.interimResults = false;
+                recognition.lang = 'en-US';
+
+                recognition.onstart = function() {
+                    isRecording = true;
+                    updateVoiceButton(true);
+                    console.log('Voice recording started');
+                };
+
+                recognition.onresult = function(event) {
+                    const transcript = event.results[0][0].transcript.toLowerCase();
+                    console.log('Voice input:', transcript);
+                    processVoiceInput(transcript);
+                    updateVoiceButton(false);
+                };
+
+                recognition.onerror = function(event) {
+                    console.error('Voice recognition error:', event.error);
+                    updateVoiceButton(false);
+                    
+                    // Handle specific errors
+                    switch(event.error) {
+                        case 'not-allowed':
+                            showNotification('Microphone access denied. Please allow microphone access and try again.', 'error');
+                            break;
+                        case 'no-speech':
+                            showNotification('No speech detected. Please try again.', 'error');
+                            break;
+                        case 'network':
+                            showNotification('Network error. Please check your connection.', 'error');
+                            break;
+                        case 'service-not-allowed':
+                            showNotification('Voice service not available. Please use HTTPS or try a different browser.', 'error');
+                            break;
+                        default:
+                            showNotification('Voice recognition error: ' + event.error, 'error');
+                    }
+                };
+
+                recognition.onend = function() {
+                    isRecording = false;
+                    updateVoiceButton(false);
+                    console.log('Voice recording ended');
+                };
+            } else {
+                console.log('Voice recognition not supported');
+                showNotification('Voice recognition not supported in this browser', 'error');
+            }
+        }
+
+        function startVoiceRecording() {
+            if (!recognition) {
+                initVoiceRecognition();
+            }
+
+            if (!recognition) {
+                showNotification('Voice recognition not supported in this browser', 'error');
+                return;
+            }
+
+            if (isRecording) {
+                return; // Already recording
+            }
+
+            try {
+                recognition.start();
+                showNotification('Recording... Speak now', 'info');
+            } catch (error) {
+                console.error('Error starting voice recognition:', error);
+                showNotification('Error starting voice recording', 'error');
+                updateVoiceButton(false);
+            }
+        }
+
+        function stopVoiceRecording() {
+            if (recognition && isRecording) {
+                recognition.stop();
+            }
+        }
+
+        function updateVoiceButton(recording) {
+            const button = document.getElementById('voiceRecordBtn');
+            const icon = document.getElementById('voiceIcon');
+            const text = document.getElementById('voiceText');
+            
+            if (recording) {
+                button.classList.add('recording');
+                text.textContent = 'Recording...';
+            } else {
+                button.classList.remove('recording');
+                text.textContent = 'Hold to Record';
+            }
+        }
+
+        function processVoiceInput(transcript) {
+            console.log('Processing voice input:', transcript);
+
+            // Extract number and unit from speech
+            const numberMatch = transcript.match(/(\d+(?:\.\d+)?)/);
+            const number = numberMatch ? parseFloat(numberMatch[1]) : null;
+
+            // Common unit mappings
+            const unitMappings = {
+                // Length
+                'meter': 'm', 'meters': 'm', 'metre': 'm', 'metres': 'm',
+                'kilometer': 'km', 'kilometers': 'km', 'kilometre': 'km', 'kilometres': 'km',
+                'centimeter': 'cm', 'centimeters': 'cm', 'centimetre': 'cm', 'centimetres': 'cm',
+                'millimeter': 'mm', 'millimeters': 'mm', 'millimetre': 'mm', 'millimetres': 'mm',
+                'inch': 'in', 'inches': 'in',
+                'foot': 'ft', 'feet': 'ft',
+                'yard': 'yd', 'yards': 'yd',
+                'mile': 'mi', 'miles': 'mi',
+                
+                // Weight
+                'kilogram': 'kg', 'kilograms': 'kg', 'kilo': 'kg', 'kilos': 'kg',
+                'gram': 'g', 'grams': 'g',
+                'pound': 'lb', 'pounds': 'lb', 'lbs': 'lb',
+                'ounce': 'oz', 'ounces': 'oz',
+                
+                // Temperature
+                'celsius': 'celsius', 'c': 'celsius',
+                'fahrenheit': 'fahrenheit', 'f': 'fahrenheit',
+                'kelvin': 'kelvin', 'k': 'kelvin',
+                
+                // Currency
+                'dollar': 'USD', 'dollars': 'USD', 'usd': 'USD',
+                'euro': 'EUR', 'euros': 'EUR', 'eur': 'EUR',
+                'pound': 'GBP', 'pounds': 'GBP', 'gbp': 'GBP',
+                'yen': 'JPY', 'jpy': 'JPY',
+                'yuan': 'CNY', 'cny': 'CNY',
+                'rupee': 'INR', 'rupees': 'INR', 'inr': 'INR'
+            };
+
+            // Find matching unit
+            let matchedUnit = null;
+            for (const [speech, unit] of Object.entries(unitMappings)) {
+                if (transcript.includes(speech)) {
+                    matchedUnit = unit;
+                    break;
+                }
+            }
+
+            // Auto-fill both fields based on voice input
+            if (number !== null) {
+                document.getElementById('mobileFromValue').value = number;
+                showNotification(`Voice input: ${number} ${matchedUnit || 'units'}`, 'success');
+            }
+            
+            if (matchedUnit) {
+                // Try to set both from and to units intelligently
+                const currentFromUnit = document.getElementById('mobileFromUnit').value;
+                const currentToUnit = document.getElementById('mobileToUnit').value;
+                
+                if (!currentFromUnit) {
+                    document.getElementById('mobileFromUnit').value = matchedUnit;
+                } else if (!currentToUnit) {
+                    document.getElementById('mobileToUnit').value = matchedUnit;
+                } else {
+                    // If both are filled, update the "to" unit
+                    document.getElementById('mobileToUnit').value = matchedUnit;
+                }
+            }
+
+            // Auto-convert if both fields are filled
+            setTimeout(() => {
+                performMobileConversion();
+            }, 500);
+        }
+
+        // Accessibility Functions
+        function toggleVoiceInput() {
+            const voiceButtons = document.querySelectorAll('.mobile-voice-btn');
+            const isVisible = voiceButtons[0].style.display !== 'none';
+            
+            voiceButtons.forEach(btn => {
+                btn.style.display = isVisible ? 'none' : 'flex';
+            });
+            
+            showNotification(
+                isVisible ? 'Voice input disabled' : 'Voice input enabled', 
+                'success'
+            );
+        }
+
+        function testVoiceInput() {
+            if (!recognition) {
+                initVoiceRecognition();
+            }
+            
+            if (!recognition) {
+                showNotification('Voice recognition not supported in this browser', 'error');
+                return;
+            }
+            
+            showNotification('Testing voice recognition... Say "5 meters"', 'info');
+            
+            // Test with a sample input
+            setTimeout(() => {
+                processVoiceInput('5 meters');
+            }, 1000);
         }
 
         // Debug function
