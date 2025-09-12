@@ -4,6 +4,17 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AI Smart Unit Converter - 15+ Categories, 120+ Units</title>
+    
+    <!-- PWA Meta Tags -->
+    <link rel="manifest" href="/manifest.json">
+    <meta name="theme-color" content="#667eea">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Unit Converter">
+    <link rel="apple-touch-icon" href="/icons/icon-192x192.png">
+    <link rel="apple-touch-startup-image" href="/icons/splash-640x1136.png">
+    
+    <!-- External Resources -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <script src="draggable_categories.js"></script>
     <style>
@@ -1285,30 +1296,32 @@
             "Currency (Real-time)": {
                 icon: "fas fa-dollar-sign",
                 units: {
-                    "USD": 1.0,
-                    "EUR": 1.0,
-                    "GBP": 1.0,
-                    "JPY": 1.0,
-                    "CAD": 1.0,
-                    "AUD": 1.0,
-                    "CHF": 1.0,
-                    "CNY": 1.0,
-                    "INR": 1.0,
-                    "BRL": 1.0,
-                    "MXN": 1.0,
-                    "KRW": 1.0,
-                    "SGD": 1.0,
-                    "HKD": 1.0,
-                    "NZD": 1.0,
-                    "RUB": 1.0,
-                    "TRY": 1.0,
-                    "ZAR": 1.0,
-                    "SEK": 1.0,
-                    "NOK": 1.0,
-                    "DKK": 1.0,
-                    "PLN": 1.0,
-                    "CZK": 1.0,
-                    "HUF": 1.0
+                    "USD": 1.0, "EUR": 1.0, "GBP": 1.0, "JPY": 1.0, "CAD": 1.0, "AUD": 1.0,
+                    "CHF": 1.0, "CNY": 1.0, "INR": 1.0, "BRL": 1.0, "MXN": 1.0, "KRW": 1.0,
+                    "SGD": 1.0, "HKD": 1.0, "NZD": 1.0, "RUB": 1.0, "TRY": 1.0, "ZAR": 1.0,
+                    "SEK": 1.0, "NOK": 1.0, "DKK": 1.0, "PLN": 1.0, "CZK": 1.0, "HUF": 1.0,
+                    "AED": 1.0, "AFN": 1.0, "ALL": 1.0, "AMD": 1.0, "ANG": 1.0, "AOA": 1.0,
+                    "ARS": 1.0, "AWG": 1.0, "AZN": 1.0, "BAM": 1.0, "BBD": 1.0, "BDT": 1.0,
+                    "BGN": 1.0, "BHD": 1.0, "BIF": 1.0, "BMD": 1.0, "BND": 1.0, "BOB": 1.0,
+                    "BSD": 1.0, "BTN": 1.0, "BWP": 1.0, "BYN": 1.0, "BZD": 1.0, "CDF": 1.0,
+                    "CLP": 1.0, "COP": 1.0, "CRC": 1.0, "CUP": 1.0, "CVE": 1.0, "DJF": 1.0,
+                    "DOP": 1.0, "DZD": 1.0, "EGP": 1.0, "ERN": 1.0, "ETB": 1.0, "FJD": 1.0,
+                    "FKP": 1.0, "GEL": 1.0, "GHS": 1.0, "GIP": 1.0, "GMD": 1.0, "GNF": 1.0,
+                    "GTQ": 1.0, "GYD": 1.0, "HNL": 1.0, "HRK": 1.0, "HTG": 1.0, "IDR": 1.0,
+                    "ILS": 1.0, "IQD": 1.0, "IRR": 1.0, "ISK": 1.0, "JMD": 1.0, "JOD": 1.0,
+                    "KES": 1.0, "KGS": 1.0, "KHR": 1.0, "KMF": 1.0, "KPW": 1.0, "KWD": 1.0,
+                    "KYD": 1.0, "KZT": 1.0, "LAK": 1.0, "LBP": 1.0, "LKR": 1.0, "LRD": 1.0,
+                    "LSL": 1.0, "LYD": 1.0, "MAD": 1.0, "MDL": 1.0, "MGA": 1.0, "MKD": 1.0,
+                    "MMK": 1.0, "MNT": 1.0, "MOP": 1.0, "MRU": 1.0, "MUR": 1.0, "MVR": 1.0,
+                    "MWK": 1.0, "MYR": 1.0, "MZN": 1.0, "NAD": 1.0, "NGN": 1.0, "NIO": 1.0,
+                    "NPR": 1.0, "OMR": 1.0, "PAB": 1.0, "PEN": 1.0, "PGK": 1.0, "PHP": 1.0,
+                    "PKR": 1.0, "PYG": 1.0, "QAR": 1.0, "RON": 1.0, "RSD": 1.0, "RWF": 1.0,
+                    "SAR": 1.0, "SBD": 1.0, "SCR": 1.0, "SDG": 1.0, "SLL": 1.0, "SOS": 1.0,
+                    "SRD": 1.0, "STN": 1.0, "SYP": 1.0, "SZL": 1.0, "THB": 1.0, "TJS": 1.0,
+                    "TMT": 1.0, "TND": 1.0, "TOP": 1.0, "TTD": 1.0, "TVD": 1.0, "TWD": 1.0,
+                    "TZS": 1.0, "UAH": 1.0, "UGX": 1.0, "UYU": 1.0, "UZS": 1.0, "VES": 1.0,
+                    "VND": 1.0, "VUV": 1.0, "WST": 1.0, "XAF": 1.0, "XCD": 1.0, "XDR": 1.0,
+                    "XOF": 1.0, "XPF": 1.0, "YER": 1.0, "ZMW": 1.0, "ZWL": 1.0
                 }
             },
             "Cryptocurrency (Real-time)": {
@@ -1458,16 +1471,76 @@
         async function registerServiceWorker() {
             if ('serviceWorker' in navigator) {
                 try {
-                    const registration = await navigator.serviceWorker.register('../service-worker.js');
+                    const registration = await navigator.serviceWorker.register('./service-worker-enhanced.js');
                     console.log('Service Worker registered:', registration);
                     
                     // Request background sync permission
                     if ('sync' in registration) {
                         await registration.sync.register('update-rates');
                     }
+                    
+                    // Listen for service worker updates
+                    registration.addEventListener('updatefound', () => {
+                        const newWorker = registration.installing;
+                        newWorker.addEventListener('statechange', () => {
+                            if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                                // New content is available, prompt user to refresh
+                                if (confirm('New version available! Refresh to update?')) {
+                                    window.location.reload();
+                                }
+                            }
+                        });
+                    });
+                    
+                    // Listen for messages from service worker
+                    navigator.serviceWorker.addEventListener('message', (event) => {
+                        if (event.data && event.data.type === 'RATES_UPDATED') {
+                            console.log('Rates updated in background:', event.data.data);
+                            // Update UI with new rates
+                            updateRatesInUI(event.data.data);
+                        }
+                    });
+                    
                 } catch (error) {
                     console.log('Service Worker registration failed:', error);
                 }
+            }
+        }
+        
+        function updateRatesInUI(data) {
+            // Update currency rates in UI
+            if (data.currency && data.currency.rates) {
+                currencyRates = data.currency;
+                lastCurrencyUpdate = Date.now();
+                
+                // Update the currency units with real rates
+                const currencyCategory = categories["Currency (Real-time)"];
+                currencyCategory.units = data.currency.rates;
+                currencyCategory.units.USD = 1.0;
+                
+                console.log('Currency rates updated from background sync');
+            }
+            
+            // Update crypto rates in UI
+            if (data.crypto) {
+                cryptoRates = { rates: data.crypto, base: 'USD' };
+                lastCryptoUpdate = Date.now();
+                
+                // Update the crypto units with real rates
+                const cryptoCategory = categories["Cryptocurrency (Real-time)"];
+                const cryptoMapping = {
+                    'bitcoin': 'BTC',
+                    'ethereum': 'ETH'
+                };
+                
+                Object.keys(cryptoMapping).forEach(apiId => {
+                    const symbol = cryptoMapping[apiId];
+                    if (data.crypto[apiId] && data.crypto[apiId].usd) {
+                        cryptoCategory.units[symbol] = data.crypto[apiId].usd;
+                    }
+                });
+                
+                console.log('Crypto rates updated from background sync');
             }
         }
 
