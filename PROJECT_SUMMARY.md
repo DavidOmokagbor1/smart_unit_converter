@@ -367,5 +367,6 @@ https://davidomokagbor1.github.io/smart_unit_converter/
 
 *Last Updated: December 2024*  
 *Status: ✅ PRODUCTION READY*  
-*Version: 1.0*  
-*Deployment: ✅ LIVE* 
+**Version: 1.0**
+
+Deployment: ✅ LIVE

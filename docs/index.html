@@ -1,4 +1,300 @@
-<!-- Enhanced Floating Live Info Panel -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Smart Unit Converter - 15+ Categories, 120+ Units</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <script src="draggable_categories.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #667eea;
+            --secondary: #764ba2;
+            --accent: #f093fb;
+            --success: #4facfe;
+            --warning: #fbbf24;
+            --error: #ff6b6b;
+            --dark-bg: #1a1a2e;
+            --dark-secondary: #16213e;
+            --dark-tertiary: #0f3460;
+            --glass: rgba(255, 255, 255, 0.1);
+            --glass-border: rgba(255, 255, 255, 0.2);
+            --text-light: #ffffff;
+            --text-dark: #333333;
+            --shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 50%, var(--accent) 100%);
+            min-height: 100vh;
+            color: var(--text-light);
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+            display: grid;
+            grid-template-columns: 300px 1fr;
+            gap: 30px;
+            min-height: 100vh;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding: 30px;
+            -webkit-backdrop-filter: blur(20px);
+            backdrop-filter: blur(20px);
+            border-radius: 20px;
+            border: 1px solid var(--glass);
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            background: linear-gradient(45deg, var(--accent), var(--success));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+
+        .sidebar {
+            background: var(--glass);
+            -webkit-backdrop-filter: blur(20px);
+            backdrop-filter: blur(20px);
+            border-radius: 20px;
+            padding: 25px;
+            height: fit-content;
+        }
+
+        .converter-main {
+            background: var(--glass);
+            -webkit-backdrop-filter: blur(20px);
+            backdrop-filter: blur(20px);
+            border-radius: 20px;
+            padding: 25px;
+        }
+
+        .category-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        .category-card {
+            background: var(--glass);
+            border: 1px solid var(--glass-border);
+            border-radius: 15px;
+            padding: 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .category-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow);
+            border-color: var(--accent);
+        }
+
+        .category-card i {
+            font-size: 2rem;
+            margin-bottom: 10px;
+            color: var(--accent);
+        }
+
+        .category-card h3 {
+            font-size: 1.1rem;
+            margin-bottom: 5px;
+        }
+
+        .category-card p {
+            font-size: 0.9rem;
+            opacity: 0.8;
+        }
+
+        .converter-section {
+            background: var(--glass);
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 20px;
+        }
+
+        .converter-section h2 {
+            margin-bottom: 20px;
+            color: var(--accent);
+        }
+
+        .conversion-form {
+            display: grid;
+            grid-template-columns: 1fr auto 1fr;
+            gap: 20px;
+            align-items: end;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .form-group label {
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
+
+        .form-group select,
+        .form-group input {
+            padding: 12px 15px;
+            border: 1px solid var(--glass-border);
+            border-radius: 10px;
+            background: rgba(255, 255, 255, 0.1);
+            color: var(--text-light);
+            font-size: 1rem;
+            -webkit-backdrop-filter: blur(10px);
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+        }
+
+        .form-group select:focus,
+        .form-group input:focus {
+            outline: none;
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px rgba(240, 147, 251, 0.1);
+        }
+
+        .swap-btn {
+            background: var(--accent);
+            border: none;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            color: white;
+            font-size: 1.2rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            -webkit-backdrop-filter: blur(10px);
+            backdrop-filter: blur(10px);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .swap-btn:hover {
+            transform: scale(1.1);
+            box-shadow: 0 5px 15px rgba(240, 147, 251, 0.4);
+        }
+
+        .result-section {
+            background: var(--glass);
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 20px;
+        }
+
+        .result-display {
+            font-size: 2rem;
+            font-weight: bold;
+            text-align: center;
+            color: var(--success);
+            margin-bottom: 10px;
+        }
+
+        .result-formula {
+            text-align: center;
+            color: var(--text-light);
+            font-size: 1rem;
+            opacity: 0.8;
+        }
+
+        .history-section {
+            background: var(--glass);
+            -webkit-backdrop-filter: blur(20px);
+            backdrop-filter: blur(20px);
+            border-radius: 15px;
+            padding: 20px;
+        }
+
+        .history-section h3 {
+            margin-bottom: 15px;
+            color: var(--accent);
+        }
+
+        .history-item {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 10px;
+            border-left: 4px solid var(--accent);
+        }
+
+        .history-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .history-formula {
+            font-weight: 500;
+            margin-bottom: 5px;
+        }
+
+        .history-time {
+            font-size: 0.9rem;
+            opacity: 0.7;
+        }
+
+        .clear-history {
+            background: var(--error);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            margin-top: 15px;
+            transition: all 0.3s ease;
+        }
+
+        .clear-history:hover {
+            background: #e55555;
+            transform: translateY(-2px);
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .container {
+                grid-template-columns: 1fr;
+                padding: 10px;
+            }
+            
+            .header h1 {
+                font-size: 2rem;
+            }
+            
+            .conversion-form {
+                grid-template-columns: 1fr;
+                gap: 15px;
+            }
+            
+            .swap-btn {
+                align-self: center;
+            }
+        }
+
+        /* Enhanced Floating Live Info Panel */
 <div id="liveInfoPanel">
   <div class="live-header">
     <h4>🌍 Live Data</h4>
@@ -35,6 +331,7 @@
   max-width: 350px;
   font-family: 'Segoe UI', sans-serif;
   transition: all 0.3s ease;
+  -webkit-backdrop-filter: blur(10px);
   backdrop-filter: blur(10px);
   border: 1px solid rgba(255,255,255,0.1);
 }
@@ -537,3 +834,5 @@ testAPIs();
 updateExchangeRates();
 startAutoRefresh();
 </script>
+</body>
+</html>

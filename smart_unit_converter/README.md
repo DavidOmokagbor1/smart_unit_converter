@@ -71,6 +71,7 @@ A comprehensive and user-friendly unit converter application with multiple inter
 ### Setup
 
 1. Clone or download this repository:
+
    ```bash
    git clone https://github.com/DavidOmokagbor1/pursuit_Mini_Project_Idea.git
    cd smart_unit_converter
@@ -289,4 +290,4 @@ If you encounter any issues or have questions:
 
 ## ## **Happy Converting! 🎉**
 
-*Built with ❤️ using HTML5, CSS3, JavaScript, and Python*
+Built with ❤️ using HTML5, CSS3, JavaScript, and Python

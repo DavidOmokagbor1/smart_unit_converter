@@ -30,6 +30,7 @@
             padding: 30px;
             background: rgba(22, 33, 62, 0.8);
             border-radius: 15px;
+            -webkit-backdrop-filter: blur(10px);
             backdrop-filter: blur(10px);
         }
 
@@ -53,6 +54,7 @@
             border-radius: 15px;
             padding: 30px;
             margin-bottom: 20px;
+            -webkit-backdrop-filter: blur(10px);
             backdrop-filter: blur(10px);
             border: 1px solid rgba(255, 255, 255, 0.1);
         }
@@ -62,6 +64,18 @@
             font-weight: bold;
             margin-bottom: 20px;
             color: #e94560;
+        }
+
+        .sr-only {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            padding: 0;
+            margin: -1px;
+            overflow: hidden;
+            clip: rect(0, 0, 0, 0);
+            white-space: nowrap;
+            border: 0;
         }
 
         .category-selector {
@@ -190,6 +204,7 @@
             background: rgba(22, 33, 62, 0.8);
             border-radius: 15px;
             padding: 30px;
+            -webkit-backdrop-filter: blur(10px);
             backdrop-filter: blur(10px);
             border: 1px solid rgba(255, 255, 255, 0.1);
         }
@@ -249,7 +264,8 @@
         <div class="converter-card">
             <div class="category-selector">
                 <h2 class="section-title">📊 Select Conversion Category</h2>
-                <select id="categorySelect">
+                <label for="categorySelect" class="sr-only">Select conversion category</label>
+                <select id="categorySelect" title="Select conversion category">
                     <option value="">Choose a category...</option>
                     <option value="Length">Length</option>
                     <option value="Weight">Weight</option>
@@ -265,7 +281,7 @@
             <div class="conversion-section">
                 <div class="input-group">
                     <label for="fromUnit">From</label>
-                    <select id="fromUnit" disabled>
+                    <select id="fromUnit" disabled title="Select source unit">
                         <option value="">Select unit...</option>
                     </select>
                     <label for="valueInput">Value</label>
@@ -276,7 +292,7 @@
 
                 <div class="input-group">
                     <label for="toUnit">To</label>
-                    <select id="toUnit" disabled>
+                    <select id="toUnit" disabled title="Select target unit">
                         <option value="">Select unit...</option>
                     </select>
                     <label>Result</label>

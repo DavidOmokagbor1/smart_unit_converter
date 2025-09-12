@@ -204,6 +204,23 @@
             animation: spin 2s linear infinite;
         }
 
+        .hidden {
+            display: none;
+        }
+
+        .refresh-button {
+            background: none;
+            border: none;
+            color: inherit;
+            cursor: pointer;
+            margin-left: 10px;
+        }
+
+        .update-status-position {
+            top: 80px;
+            left: 20px;
+        }
+
         @keyframes spin {
             from { transform: rotate(0deg); }
             to { transform: rotate(360deg); }
@@ -899,15 +916,15 @@
             <i class="fas fa-moon" id="theme-icon"></i>
         </button>
 
-        <div id="currency-status" class="currency-status" style="display: none;">
+        <div id="currency-status" class="currency-status hidden">
             <i class="fas fa-sync-alt"></i>
             <span id="currency-status-text">Updating rates...</span>
-            <button onclick="refreshRates()" style="background: none; border: none; color: inherit; cursor: pointer; margin-left: 10px;" title="Manual refresh">
+            <button onclick="refreshRates()" class="refresh-button" title="Manual refresh">
                 <i class="fas fa-sync-alt"></i>
             </button>
         </div>
         
-        <div id="update-status" class="currency-status" style="display: none; top: 80px; left: 20px;">
+        <div id="update-status" class="currency-status update-status-position hidden">
             <i class="fas fa-clock"></i>
             <span id="update-status-text">Last update: Just now</span>
         </div>
