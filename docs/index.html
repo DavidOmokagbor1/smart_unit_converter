@@ -4,6 +4,17 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AI Smart Unit Converter - 15+ Categories, 120+ Units</title>
+    
+    <!-- PWA Meta Tags -->
+    <link rel="manifest" href="/manifest.json">
+    <meta name="theme-color" content="#667eea">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Unit Converter">
+    <link rel="apple-touch-icon" href="/icons/icon-192x192.png">
+    <link rel="apple-touch-startup-image" href="/icons/splash-640x1136.png">
+    
+    <!-- External Resources -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <script src="draggable_categories.js"></script>
     <style>
@@ -1458,16 +1469,76 @@
         async function registerServiceWorker() {
             if ('serviceWorker' in navigator) {
                 try {
-                    const registration = await navigator.serviceWorker.register('../service-worker.js');
+                    const registration = await navigator.serviceWorker.register('./service-worker-enhanced.js');
                     console.log('Service Worker registered:', registration);
                     
                     // Request background sync permission
                     if ('sync' in registration) {
                         await registration.sync.register('update-rates');
                     }
+                    
+                    // Listen for service worker updates
+                    registration.addEventListener('updatefound', () => {
+                        const newWorker = registration.installing;
+                        newWorker.addEventListener('statechange', () => {
+                            if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                                // New content is available, prompt user to refresh
+                                if (confirm('New version available! Refresh to update?')) {
+                                    window.location.reload();
+                                }
+                            }
+                        });
+                    });
+                    
+                    // Listen for messages from service worker
+                    navigator.serviceWorker.addEventListener('message', (event) => {
+                        if (event.data && event.data.type === 'RATES_UPDATED') {
+                            console.log('Rates updated in background:', event.data.data);
+                            // Update UI with new rates
+                            updateRatesInUI(event.data.data);
+                        }
+                    });
+                    
                 } catch (error) {
                     console.log('Service Worker registration failed:', error);
                 }
+            }
+        }
+        
+        function updateRatesInUI(data) {
+            // Update currency rates in UI
+            if (data.currency && data.currency.rates) {
+                currencyRates = data.currency;
+                lastCurrencyUpdate = Date.now();
+                
+                // Update the currency units with real rates
+                const currencyCategory = categories["Currency (Real-time)"];
+                currencyCategory.units = data.currency.rates;
+                currencyCategory.units.USD = 1.0;
+                
+                console.log('Currency rates updated from background sync');
+            }
+            
+            // Update crypto rates in UI
+            if (data.crypto) {
+                cryptoRates = { rates: data.crypto, base: 'USD' };
+                lastCryptoUpdate = Date.now();
+                
+                // Update the crypto units with real rates
+                const cryptoCategory = categories["Cryptocurrency (Real-time)"];
+                const cryptoMapping = {
+                    'bitcoin': 'BTC',
+                    'ethereum': 'ETH'
+                };
+                
+                Object.keys(cryptoMapping).forEach(apiId => {
+                    const symbol = cryptoMapping[apiId];
+                    if (data.crypto[apiId] && data.crypto[apiId].usd) {
+                        cryptoCategory.units[symbol] = data.crypto[apiId].usd;
+                    }
+                });
+                
+                console.log('Crypto rates updated from background sync');
             }
         }
 

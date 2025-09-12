@@ -1,0 +1,685 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Unit Converter - Mobile</title>
+    
+    <!-- PWA Meta Tags -->
+    <link rel="manifest" href="/manifest.json">
+    <meta name="theme-color" content="#667eea">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Unit Converter">
+    <link rel="apple-touch-icon" href="/icon-192x192.png">
+    
+    <!-- External Resources -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <script src="draggable_categories.js"></script>
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #667eea;
+            --secondary: #764ba2;
+            --accent: #f093fb;
+            --success: #4facfe;
+            --dark-bg: #0a0a0a;
+            --dark-card: #1a1a1a;
+            --dark-text: #ffffff;
+            --dark-text-secondary: #b0b0b0;
+            --glass: rgba(255, 255, 255, 0.1);
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            min-height: 100vh;
+            background: linear-gradient(-45deg, #0a0a0a, #1a1a2e, #16213e, #0f3460);
+            background-size: 400% 400%;
+            animation: gradientShift 15s ease infinite;
+            color: var(--dark-text);
+            overflow-x: hidden;
+            padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
+        }
+
+        @keyframes gradientShift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        /* Mobile Header - Compact */
+        .mobile-header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            background: rgba(26, 26, 46, 0.95);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 8px 16px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            height: 50px;
+        }
+
+        .mobile-title {
+            font-size: 18px;
+            font-weight: 600;
+            background: linear-gradient(45deg, #667eea, #f093fb);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .mobile-menu-btn {
+            background: none;
+            border: none;
+            color: var(--dark-text);
+            font-size: 20px;
+            cursor: pointer;
+            padding: 8px;
+            border-radius: 8px;
+            transition: background 0.3s ease;
+        }
+
+        .mobile-menu-btn:hover {
+            background: var(--glass);
+        }
+
+        /* Main Content - Mobile Optimized */
+        .mobile-content {
+            padding-top: 50px;
+            padding-bottom: 80px;
+        }
+
+        /* Category Selector - Compact */
+        .mobile-category-selector {
+            padding: 16px;
+            background: var(--glass);
+            margin: 8px 16px;
+            border-radius: 12px;
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .mobile-category-title {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 12px;
+            color: var(--accent);
+        }
+
+        .mobile-category-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 8px;
+        }
+
+        .mobile-category-btn {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: var(--dark-text);
+            padding: 12px 8px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .mobile-category-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-2px);
+        }
+
+        .mobile-category-btn.active {
+            background: linear-gradient(45deg, var(--primary), var(--secondary));
+            border-color: var(--accent);
+        }
+
+        .mobile-category-icon {
+            font-size: 16px;
+        }
+
+        /* Converter Section - Mobile Optimized */
+        .mobile-converter {
+            margin: 8px 16px;
+            background: var(--glass);
+            border-radius: 12px;
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 16px;
+        }
+
+        .mobile-converter-title {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 16px;
+            color: var(--accent);
+            text-align: center;
+        }
+
+        .mobile-input-group {
+            margin-bottom: 16px;
+        }
+
+        .mobile-input-label {
+            display: block;
+            font-size: 14px;
+            font-weight: 500;
+            margin-bottom: 8px;
+            color: var(--dark-text-secondary);
+        }
+
+        .mobile-input-container {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+
+        .mobile-input {
+            flex: 1;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: var(--dark-text);
+            padding: 12px 16px;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .mobile-input:focus {
+            outline: none;
+            border-color: var(--primary);
+            background: rgba(255, 255, 255, 0.15);
+        }
+
+        .mobile-unit-select {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: var(--dark-text);
+            padding: 12px 16px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            min-width: 120px;
+            transition: all 0.3s ease;
+        }
+
+        .mobile-unit-select:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+
+        .mobile-result {
+            background: linear-gradient(45deg, var(--primary), var(--secondary));
+            color: white;
+            padding: 16px;
+            border-radius: 8px;
+            text-align: center;
+            font-size: 18px;
+            font-weight: 600;
+            margin-top: 16px;
+            min-height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Mobile Bottom Navigation */
+        .mobile-bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: rgba(26, 26, 46, 0.95);
+            backdrop-filter: blur(20px);
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 8px 16px;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            height: 60px;
+        }
+
+        .mobile-nav-btn {
+            background: none;
+            border: none;
+            color: var(--dark-text-secondary);
+            font-size: 12px;
+            cursor: pointer;
+            padding: 8px;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            min-width: 60px;
+        }
+
+        .mobile-nav-btn:hover,
+        .mobile-nav-btn.active {
+            color: var(--accent);
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .mobile-nav-icon {
+            font-size: 18px;
+        }
+
+        /* Mobile Menu Overlay */
+        .mobile-menu-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(10px);
+            z-index: 2000;
+            display: none;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .mobile-menu-content {
+            background: var(--dark-card);
+            border-radius: 16px;
+            padding: 24px;
+            margin: 16px;
+            max-width: 300px;
+            width: 100%;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .mobile-menu-title {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 16px;
+            color: var(--accent);
+            text-align: center;
+        }
+
+        .mobile-menu-item {
+            display: block;
+            width: 100%;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: var(--dark-text);
+            padding: 12px 16px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-bottom: 8px;
+            text-align: center;
+        }
+
+        .mobile-menu-item:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        /* Responsive Design */
+        @media (max-width: 480px) {
+            .mobile-category-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .mobile-category-btn {
+                padding: 10px 6px;
+                font-size: 12px;
+            }
+            
+            .mobile-category-icon {
+                font-size: 14px;
+            }
+        }
+
+        /* Hide scrollbars on mobile */
+        ::-webkit-scrollbar {
+            display: none;
+        }
+
+        /* Loading Animation */
+        .mobile-loading {
+            display: none;
+            text-align: center;
+            padding: 20px;
+            color: var(--dark-text-secondary);
+        }
+
+        .mobile-spinner {
+            width: 20px;
+            height: 20px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-top: 2px solid var(--accent);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 10px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <!-- Mobile Header -->
+    <div class="mobile-header">
+        <div class="mobile-title">Unit Converter</div>
+        <button class="mobile-menu-btn" onclick="toggleMobileMenu()">
+            <i class="fas fa-bars"></i>
+        </button>
+    </div>
+
+    <!-- Main Content -->
+    <div class="mobile-content">
+        <!-- Category Selector -->
+        <div class="mobile-category-selector">
+            <div class="mobile-category-title">Choose Category</div>
+            <div class="mobile-category-grid" id="mobileCategoryGrid">
+                <!-- Categories will be populated by JavaScript -->
+            </div>
+        </div>
+
+        <!-- Converter Section -->
+        <div class="mobile-converter">
+            <div class="mobile-converter-title">Convert Units</div>
+            
+            <div class="mobile-input-group">
+                <label class="mobile-input-label">From</label>
+                <div class="mobile-input-container">
+                    <input type="number" class="mobile-input" id="mobileFromValue" placeholder="0" step="any">
+                    <select class="mobile-unit-select" id="mobileFromUnit">
+                        <option>Select unit</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="mobile-input-group">
+                <label class="mobile-input-label">To</label>
+                <div class="mobile-input-container">
+                    <input type="number" class="mobile-input" id="mobileToValue" placeholder="0" readonly>
+                    <select class="mobile-unit-select" id="mobileToUnit">
+                        <option>Select unit</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="mobile-result" id="mobileResult">
+                Enter values to convert
+            </div>
+        </div>
+
+        <!-- Loading Indicator -->
+        <div class="mobile-loading" id="mobileLoading">
+            <div class="mobile-spinner"></div>
+            <div>Loading...</div>
+        </div>
+    </div>
+
+    <!-- Mobile Bottom Navigation -->
+    <div class="mobile-bottom-nav">
+        <button class="mobile-nav-btn active" onclick="showConverter()">
+            <i class="fas fa-exchange-alt mobile-nav-icon"></i>
+            <span>Convert</span>
+        </button>
+        <button class="mobile-nav-btn" onclick="showCategories()">
+            <i class="fas fa-th-large mobile-nav-icon"></i>
+            <span>Categories</span>
+        </button>
+        <button class="mobile-nav-btn" onclick="showSettings()">
+            <i class="fas fa-cog mobile-nav-icon"></i>
+            <span>Settings</span>
+        </button>
+        <button class="mobile-nav-btn" onclick="showAbout()">
+            <i class="fas fa-info-circle mobile-nav-icon"></i>
+            <span>About</span>
+        </button>
+    </div>
+
+    <!-- Mobile Menu Overlay -->
+    <div class="mobile-menu-overlay" id="mobileMenuOverlay">
+        <div class="mobile-menu-content">
+            <div class="mobile-menu-title">Menu</div>
+            <button class="mobile-menu-item" onclick="showConverter()">
+                <i class="fas fa-exchange-alt"></i> Converter
+            </button>
+            <button class="mobile-menu-item" onclick="showCategories()">
+                <i class="fas fa-th-large"></i> Categories
+            </button>
+            <button class="mobile-menu-item" onclick="showSettings()">
+                <i class="fas fa-cog"></i> Settings
+            </button>
+            <button class="mobile-menu-item" onclick="showAbout()">
+                <i class="fas fa-info-circle"></i> About
+            </button>
+            <button class="mobile-menu-item" onclick="toggleMobileMenu()">
+                <i class="fas fa-times"></i> Close
+            </button>
+        </div>
+    </div>
+
+    <script>
+        // Mobile App State
+        let currentCategory = null;
+        let currentUnits = {};
+        let conversionRates = {};
+
+        // Mobile Categories Data
+        const mobileCategories = {
+            'length': { name: 'Length', icon: 'fas fa-ruler', units: ['mm', 'cm', 'm', 'km', 'in', 'ft', 'yd', 'mi'] },
+            'weight': { name: 'Weight', icon: 'fas fa-weight', units: ['mg', 'g', 'kg', 'oz', 'lb', 'ton'] },
+            'temperature': { name: 'Temperature', icon: 'fas fa-thermometer-half', units: ['°C', '°F', 'K'] },
+            'area': { name: 'Area', icon: 'fas fa-square', units: ['mm²', 'cm²', 'm²', 'km²', 'in²', 'ft²', 'yd²', 'ac'] },
+            'volume': { name: 'Volume', icon: 'fas fa-cube', units: ['ml', 'l', 'cm³', 'm³', 'in³', 'ft³', 'gal', 'qt'] },
+            'time': { name: 'Time', icon: 'fas fa-clock', units: ['ms', 's', 'min', 'h', 'd', 'wk', 'mo', 'yr'] },
+            'speed': { name: 'Speed', icon: 'fas fa-tachometer-alt', units: ['m/s', 'km/h', 'mph', 'ft/s', 'knot'] },
+            'pressure': { name: 'Pressure', icon: 'fas fa-compress', units: ['Pa', 'kPa', 'MPa', 'bar', 'psi', 'atm'] },
+            'energy': { name: 'Energy', icon: 'fas fa-bolt', units: ['J', 'kJ', 'MJ', 'cal', 'kcal', 'Wh', 'kWh'] },
+            'power': { name: 'Power', icon: 'fas fa-bolt', units: ['W', 'kW', 'MW', 'hp', 'BTU/h'] },
+            'currency': { name: 'Currency', icon: 'fas fa-dollar-sign', units: ['USD', 'EUR', 'GBP', 'JPY', 'CAD', 'AUD'] },
+            'crypto': { name: 'Crypto', icon: 'fab fa-bitcoin', units: ['BTC', 'ETH', 'LTC', 'XRP', 'ADA', 'DOT'] }
+        };
+
+        // Initialize Mobile App
+        function initMobileApp() {
+            populateMobileCategories();
+            setupMobileEventListeners();
+            loadMobileConversionRates();
+        }
+
+        // Populate Mobile Categories
+        function populateMobileCategories() {
+            const grid = document.getElementById('mobileCategoryGrid');
+            grid.innerHTML = '';
+
+            Object.entries(mobileCategories).forEach(([key, category]) => {
+                const btn = document.createElement('button');
+                btn.className = 'mobile-category-btn';
+                btn.innerHTML = `
+                    <i class="${category.icon} mobile-category-icon"></i>
+                    <span>${category.name}</span>
+                `;
+                btn.onclick = () => selectMobileCategory(key);
+                grid.appendChild(btn);
+            });
+        }
+
+        // Select Mobile Category
+        function selectMobileCategory(categoryKey) {
+            currentCategory = categoryKey;
+            const category = mobileCategories[categoryKey];
+            
+            // Update active category button
+            document.querySelectorAll('.mobile-category-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.closest('.mobile-category-btn').classList.add('active');
+
+            // Populate unit selectors
+            populateMobileUnits(category.units);
+            
+            // Clear previous values
+            document.getElementById('mobileFromValue').value = '';
+            document.getElementById('mobileToValue').value = '';
+            document.getElementById('mobileResult').textContent = 'Enter values to convert';
+        }
+
+        // Populate Mobile Units
+        function populateMobileUnits(units) {
+            const fromUnit = document.getElementById('mobileFromUnit');
+            const toUnit = document.getElementById('mobileToUnit');
+            
+            fromUnit.innerHTML = '<option>Select unit</option>';
+            toUnit.innerHTML = '<option>Select unit</option>';
+            
+            units.forEach(unit => {
+                const option1 = document.createElement('option');
+                option1.value = unit;
+                option1.textContent = unit;
+                fromUnit.appendChild(option1);
+                
+                const option2 = document.createElement('option');
+                option2.value = unit;
+                option2.textContent = unit;
+                toUnit.appendChild(option2);
+            });
+        }
+
+        // Setup Mobile Event Listeners
+        function setupMobileEventListeners() {
+            document.getElementById('mobileFromValue').addEventListener('input', performMobileConversion);
+            document.getElementById('mobileFromUnit').addEventListener('change', performMobileConversion);
+            document.getElementById('mobileToUnit').addEventListener('change', performMobileConversion);
+        }
+
+        // Perform Mobile Conversion
+        function performMobileConversion() {
+            const fromValue = parseFloat(document.getElementById('mobileFromValue').value);
+            const fromUnit = document.getElementById('mobileFromUnit').value;
+            const toUnit = document.getElementById('mobileToUnit').value;
+            
+            if (!fromValue || !fromUnit || !toUnit || fromUnit === 'Select unit' || toUnit === 'Select unit') {
+                document.getElementById('mobileResult').textContent = 'Enter values to convert';
+                return;
+            }
+
+            if (fromUnit === toUnit) {
+                document.getElementById('mobileToValue').value = fromValue;
+                document.getElementById('mobileResult').textContent = `${fromValue} ${fromUnit} = ${fromValue} ${toUnit}`;
+                return;
+            }
+
+            // Show loading
+            document.getElementById('mobileLoading').style.display = 'block';
+            
+            // Perform conversion (simplified for mobile)
+            const result = performSimpleConversion(fromValue, fromUnit, toUnit, currentCategory);
+            
+            setTimeout(() => {
+                document.getElementById('mobileToValue').value = result.toFixed(6);
+                document.getElementById('mobileResult').textContent = `${fromValue} ${fromUnit} = ${result.toFixed(6)} ${toUnit}`;
+                document.getElementById('mobileLoading').style.display = 'none';
+            }, 500);
+        }
+
+        // Simple Conversion Function
+        function performSimpleConversion(value, fromUnit, toUnit, category) {
+            // This is a simplified conversion - in a real app, you'd use proper conversion rates
+            const conversionFactors = {
+                'length': {
+                    'mm': 1, 'cm': 10, 'm': 1000, 'km': 1000000,
+                    'in': 25.4, 'ft': 304.8, 'yd': 914.4, 'mi': 1609344
+                },
+                'weight': {
+                    'mg': 1, 'g': 1000, 'kg': 1000000,
+                    'oz': 28349.5, 'lb': 453592, 'ton': 1000000000
+                },
+                'temperature': {
+                    '°C': (val) => val, '°F': (val) => (val - 32) * 5/9, 'K': (val) => val - 273.15
+                }
+            };
+
+            if (category === 'temperature') {
+                const factors = conversionFactors[category];
+                const celsius = factors[fromUnit](value);
+                const result = factors[toUnit](celsius);
+                return result;
+            } else {
+                const factors = conversionFactors[category] || {};
+                const baseValue = value * (factors[fromUnit] || 1);
+                const result = baseValue / (factors[toUnit] || 1);
+                return result;
+            }
+        }
+
+        // Load Mobile Conversion Rates
+        function loadMobileConversionRates() {
+            // In a real app, this would load actual conversion rates
+            console.log('Loading conversion rates...');
+        }
+
+        // Mobile Navigation Functions
+        function showConverter() {
+            setActiveNavButton(0);
+            // Converter is already visible
+        }
+
+        function showCategories() {
+            setActiveNavButton(1);
+            // Categories are already visible
+        }
+
+        function showSettings() {
+            setActiveNavButton(2);
+            alert('Settings coming soon!');
+        }
+
+        function showAbout() {
+            setActiveNavButton(3);
+            alert('AI Smart Unit Converter\nMobile Version\n\n15+ Categories\n120+ Units\nReal-time Rates');
+        }
+
+        function setActiveNavButton(index) {
+            document.querySelectorAll('.mobile-nav-btn').forEach((btn, i) => {
+                btn.classList.toggle('active', i === index);
+            });
+        }
+
+        // Mobile Menu Functions
+        function toggleMobileMenu() {
+            const overlay = document.getElementById('mobileMenuOverlay');
+            overlay.style.display = overlay.style.display === 'flex' ? 'none' : 'flex';
+        }
+
+        // Close menu when clicking outside
+        document.getElementById('mobileMenuOverlay').addEventListener('click', (e) => {
+            if (e.target.id === 'mobileMenuOverlay') {
+                toggleMobileMenu();
+            }
+        });
+
+        // Initialize when page loads
+        document.addEventListener('DOMContentLoaded', initMobileApp);
+    </script>
+</body>
+</html>
