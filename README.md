@@ -1,6 +1,7 @@
 # Smart Unit Converter
 
 A powerful, unified unit converter project with multiple interfaces for every user:
+
 - **Python GUI** (main.py)
 - **Command-line Interface** (cli_converter.py)
 - **Web App (Basic)** (web_converter.html)
@@ -11,10 +12,12 @@ A powerful, unified unit converter project with multiple interfaces for every us
 ## 🚀 Project Overview
 
 Smart Unit Converter is a comprehensive, modern tool for converting between 15+ categories and 120+ units, including:
+
 - Length, Weight, Temperature, Volume, Area, Speed, Time, Digital Storage
 - Currency, Cryptocurrency, Gold, Energy, Power, Pressure, Data Transfer, Frequency, and more
 
 **Features:**
+
 - Real-time exchange rates (currency & crypto)
 - Beautiful, animated backgrounds (web)
 - Dark/Light mode (web)
@@ -28,20 +31,24 @@ Smart Unit Converter is a comprehensive, modern tool for converting between 15+ 
 ## 🖥️ Interfaces
 
 ### 1. Python GUI
+
 - File: `main.py`
 - Run with: `python3 main.py`
 - Modern Tkinter interface for desktop use
 
 ### 2. Command-Line Interface
+
 - File: `cli_converter.py`
 - Run with: `python3 cli_converter.py`
 - Simple, fast, and works in any terminal
 
 ### 3. Web App (Basic)
+
 - File: `web_converter.html`
 - Open in any browser for a clean, responsive web interface
 
 ### 4. Web App (Stunning/Advanced)
+
 - File: `stunning_converter.html`
 - Open in any browser for a visually stunning, feature-rich experience
 - Includes animated backgrounds, floating live info panel, dark/light mode, and more
@@ -61,6 +68,7 @@ Smart Unit Converter is a comprehensive, modern tool for converting between 15+ 
 ---
 
 ## ✨ Features
+
 - 15+ categories, 120+ units
 - Real-time currency & crypto rates
 - Conversion history
@@ -74,6 +82,7 @@ Smart Unit Converter is a comprehensive, modern tool for converting between 15+ 
 ---
 
 ## 👩‍💻 For Developers
+
 - All interfaces share the same conversion logic and categories
 - Easy to extend: add new units or categories in one place
 - Well-organized, modular codebase
@@ -81,8 +90,9 @@ Smart Unit Converter is a comprehensive, modern tool for converting between 15+ 
 ---
 
 ## 📄 License
+
 MIT License
 
 ---
 
-**Smart Unit Converter** — The only converter you'll ever need, in any format you want! 
+**Smart Unit Converter** — The only converter you'll ever need, in any format you want!

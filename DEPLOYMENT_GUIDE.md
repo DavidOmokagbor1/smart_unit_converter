@@ -6,7 +6,8 @@ Since GitHub Pages is having Jekyll issues, here are alternative deployment appr
 
 ## 🌐 **Option 1: Netlify (Recommended)**
 
-### Setup:
+### Setup
+
 1. Push your code to GitHub
 2. Go to [Netlify](https://netlify.com)
 3. Click "New site from Git"
@@ -16,7 +17,8 @@ Since GitHub Pages is having Jekyll issues, here are alternative deployment appr
    - **Publish directory**: `docs`
 6. Deploy!
 
-### Benefits:
+### Benefits
+
 - ✅ No Jekyll processing
 - ✅ Fast deployment
 - ✅ Custom domains
@@ -25,14 +27,16 @@ Since GitHub Pages is having Jekyll issues, here are alternative deployment appr
 
 ## 🌐 **Option 2: Vercel**
 
-### Setup:
+### Vercel Setup
+
 1. Push your code to GitHub
 2. Go to [Vercel](https://vercel.com)
 3. Import your GitHub repository
 4. Vercel will auto-detect the static site
 5. Deploy!
 
-### Benefits:
+### Vercel Benefits
+
 - ✅ Zero configuration
 - ✅ Global CDN
 - ✅ Automatic HTTPS
@@ -40,19 +44,22 @@ Since GitHub Pages is having Jekyll issues, here are alternative deployment appr
 
 ## 🌐 **Option 3: GitHub Pages (Fixed)**
 
-### Current Status:
+### Current Status
+
 - ✅ `.nojekyll` file added
 - ✅ Jekyll processing disabled
 - ✅ Should work now
 
-### If still having issues:
+### If still having issues
+
 1. Check GitHub Pages settings in repository
 2. Ensure source is set to "Deploy from a branch"
 3. Select `main` branch and `/docs` folder
 
 ## 🌐 **Option 4: Local Testing**
 
-### Quick Test:
+### Quick Test
+
 ```bash
 # Run the deployment script
 ./deploy.sh
@@ -63,13 +70,13 @@ open docs/index.html
 
 ## 🔧 **Troubleshooting**
 
-### If drag-and-drop still doesn't work:
+### If drag-and-drop still doesn't work
 
 1. **Check Console**: Open browser dev tools and look for errors
 2. **Check Network**: Ensure all JS files are loading
 3. **Check CORS**: Some features might be blocked on local files
 
-### Common Issues:
+### Common Issues
 
 1. **Mixed Content**: Use HTTPS deployment
 2. **CORS Issues**: Deploy to a proper hosting service
@@ -77,7 +84,7 @@ open docs/index.html
 
 ## 📁 **File Structure**
 
-```
+```text
 smart_unit_converter/
 ├── docs/
 │   ├── index.html              # Main app
@@ -109,4 +116,4 @@ git commit -m "Ready for deployment"
 git push
 ```
 
-Then connect to your preferred hosting service! 
+Then connect to your preferred hosting service!

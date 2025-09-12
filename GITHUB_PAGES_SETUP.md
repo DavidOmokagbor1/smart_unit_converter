@@ -1,13 +1,14 @@
 # 🚀 GitHub Pages Setup Guide
 
 ## ❌ Current Issue
+
 Your GitHub Actions deployment is failing with a 403 permission error. This is because GitHub Pages needs to be properly configured.
 
 ## ✅ Solution Steps
 
 ### 1. Enable GitHub Pages in Repository Settings
 
-1. **Go to your repository**: https://github.com/DavidOmokagbor1/smart_unit_converter
+1. **Go to your repository**: <https://github.com/DavidOmokagbor1/smart_unit_converter>
 2. **Click "Settings"** tab (at the top of the repository)
 3. **Scroll down to "Pages"** section (in the left sidebar)
 4. **Under "Source"**, select **"GitHub Actions"**
@@ -32,6 +33,7 @@ Your GitHub Actions deployment is failing with a 403 permission error. This is b
 If the automated deployment still fails, you can deploy manually:
 
 ### Option A: Using GitHub CLI
+
 ```bash
 # Install GitHub CLI if not already installed
 # Then run:
@@ -40,6 +42,7 @@ gh pages deploy docs --branch gh-pages --dir docs
 ```
 
 ### Option B: Using Git Commands
+
 ```bash
 # Create and switch to gh-pages branch
 git checkout --orphan gh-pages
@@ -51,6 +54,7 @@ git push origin gh-pages
 ```
 
 ### Option C: Using Netlify (Recommended)
+
 Since you already have Netlify deployment set up, you can use that instead:
 
 1. **Go to your Netlify dashboard**
@@ -62,18 +66,21 @@ Since you already have Netlify deployment set up, you can use that instead:
 ## 🌐 Expected Results
 
 Once properly configured, your site will be available at:
+
 - **GitHub Pages**: `https://davidomokagbor1.github.io/smart_unit_converter/`
 - **Netlify**: Your existing Netlify URL
 
 ## 🔍 Troubleshooting
 
-### If GitHub Pages still fails:
+### If GitHub Pages still fails
+
 1. **Check repository settings** - ensure Pages is enabled
 2. **Check Actions permissions** - ensure write access is enabled
 3. **Check branch protection** - ensure main branch allows Actions
 4. **Use Netlify instead** - it's more reliable for this type of project
 
-### If APIs still don't work:
+### If APIs still don't work
+
 1. **Open browser console** (F12) to see error messages
 2. **Try the test page**: `test_apis.html`
 3. **Check CORS errors** - some APIs may still be blocked
@@ -90,7 +97,7 @@ Once properly configured, your site will be available at:
 ## 🎯 Next Steps
 
 1. **Enable GitHub Pages** in repository settings (most important)
-2. **Check Actions permissions** 
+2. **Check Actions permissions**
 3. **Monitor deployment** in Actions tab
 4. **Test live site** once deployed
 5. **Consider Netlify** as backup deployment method
