@@ -226,31 +226,241 @@
             to { transform: rotate(360deg); }
         }
 
-        .main-content {
-            display: grid;
-            grid-template-columns: 1fr 2fr;
-            gap: 25px;
+        /* Main Converter Section - Enhanced */
+        .converter-main-top {
+            background: linear-gradient(135deg, var(--glass), rgba(102, 126, 234, 0.1));
+            -webkit-backdrop-filter: blur(20px);
+            backdrop-filter: blur(20px);
+            border-radius: 25px;
+            padding: 30px;
+            border: 2px solid var(--accent);
             margin-bottom: 25px;
-            flex: 1;
+            box-shadow: 0 20px 40px rgba(102, 126, 234, 0.2);
         }
 
-        .sidebar {
+        .converter-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .quick-shortcuts {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .quick-shortcut {
+            background: linear-gradient(45deg, var(--primary), var(--accent));
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            white-space: nowrap;
+        }
+
+        .quick-shortcut:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .quick-shortcut i {
+            font-size: 0.9rem;
+        }
+
+        /* Search and Categories Section */
+        .search-categories-section {
             background: var(--glass);
             -webkit-backdrop-filter: blur(20px);
             backdrop-filter: blur(20px);
             border-radius: 20px;
             padding: 25px;
             border: 1px solid var(--glass);
-            height: fit-content;
+            margin-bottom: 25px;
         }
 
-        .converter-main {
+        .favorites-section {
+            margin-bottom: 20px;
+        }
+
+        .favorites-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .favorite-card {
+            background: linear-gradient(45deg, var(--primary), var(--accent));
+            padding: 12px 8px;
+            border-radius: 12px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 1px solid transparent;
+            font-size: 0.85rem;
+            height: 90px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            position: relative;
+        }
+
+        .favorite-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(240, 147, 251, 0.4);
+        }
+
+        .favorite-card .remove-favorite {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            color: white;
+            cursor: pointer;
+            font-size: 0.7rem;
+            display: none;
+        }
+
+        .favorite-card:hover .remove-favorite {
+            display: block;
+        }
+
+        .favorite-card .category-name {
+            font-size: 0.8rem;
+            font-weight: 600;
+            margin-top: 4px;
+        }
+
+        .favorite-card .usage-count {
+            position: absolute;
+            top: 5px;
+            left: 5px;
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 10px;
+            padding: 2px 6px;
+            font-size: 0.7rem;
+            font-weight: bold;
+        }
+
+        .favorite-card[draggable="true"] {
+            cursor: grab;
+        }
+
+        .favorite-card[draggable="true"]:active {
+            cursor: grabbing;
+        }
+
+        .all-categories-section {
+            margin-top: 20px;
+        }
+
+        .show-all-container {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .btn-show-all {
+            background: linear-gradient(45deg, var(--success), var(--primary));
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 10px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-show-all:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(79, 172, 254, 0.3);
+        }
+
+        /* QR Code Section */
+        .qr-section {
             background: var(--glass);
             -webkit-backdrop-filter: blur(20px);
             backdrop-filter: blur(20px);
             border-radius: 20px;
             padding: 25px;
             border: 1px solid var(--glass);
+            margin-bottom: 25px;
+            text-align: center;
+        }
+
+        .qr-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 30px;
+            flex-wrap: wrap;
+        }
+
+        .qr-code {
+            background: white;
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        .qr-info {
+            text-align: left;
+            max-width: 400px;
+        }
+
+        .qr-info h3 {
+            color: var(--accent);
+            margin-bottom: 10px;
+            font-size: 1.2rem;
+        }
+
+        .qr-info p {
+            color: var(--dark-text-secondary);
+            margin-bottom: 20px;
+            line-height: 1.5;
+        }
+
+        .qr-features {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .qr-feature {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(240, 147, 251, 0.1);
+            padding: 8px 12px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            color: var(--accent);
+        }
+
+        .qr-feature i {
+            font-size: 1rem;
+        }
+
+        .qr-image {
+            max-width: 200px;
+            height: auto;
         }
 
         .section-title {
@@ -339,12 +549,22 @@
             margin-bottom: 3px;
         }
 
+        /* Live Features Section */
+        .live-features-section {
+            background: var(--glass);
+            -webkit-backdrop-filter: blur(20px);
+            backdrop-filter: blur(20px);
+            border-radius: 20px;
+            padding: 25px;
+            border: 1px solid var(--glass);
+            margin-bottom: 25px;
+        }
+
         /* Live Features Styles */
         .live-features {
-            margin-top: 20px;
             display: grid;
-            grid-template-columns: 1fr;
-            gap: 15px;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
         }
 
         .feature-title {
@@ -512,6 +732,47 @@
             transform: scale(1.02);
         }
 
+        .search-input::placeholder {
+            color: var(--dark-text-secondary);
+            opacity: 0.7;
+        }
+
+        .no-results {
+            text-align: center;
+            padding: 20px;
+            color: var(--dark-text-secondary);
+            font-style: italic;
+        }
+
+        .search-suggestions {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: var(--glass);
+            border-radius: 10px;
+            border: 1px solid var(--glass);
+            max-height: 200px;
+            overflow-y: auto;
+            z-index: 1000;
+            display: none;
+        }
+
+        .suggestion-item {
+            padding: 10px 15px;
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .suggestion-item:hover {
+            background: rgba(240, 147, 251, 0.2);
+        }
+
+        .suggestion-item:last-child {
+            border-bottom: none;
+        }
+
         .search-icon {
             position: absolute;
             right: 15px;
@@ -524,6 +785,36 @@
         .category-card.active {
             background: linear-gradient(45deg, var(--primary), var(--accent));
             border-color: var(--accent);
+        }
+
+        .category-card {
+            position: relative;
+        }
+
+        .category-card .add-favorite {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            color: var(--accent);
+            cursor: pointer;
+            font-size: 0.7rem;
+            display: none;
+            transition: all 0.3s ease;
+        }
+
+        .category-card:hover .add-favorite {
+            display: block;
+        }
+
+        .category-card .add-favorite:hover {
+            background: var(--accent);
+            color: white;
+            transform: scale(1.1);
         }
 
         .category-icon {
@@ -719,11 +1010,6 @@
         }
 
         @media (max-width: 1024px) {
-            .main-content {
-                grid-template-columns: 1fr;
-                gap: 20px;
-            }
-            
             .conversion-section {
                 grid-template-columns: 1fr;
                 gap: 15px;
@@ -739,6 +1025,10 @@
             
             .subtitle {
                 font-size: 1rem;
+            }
+            
+            .favorites-grid {
+                grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
             }
         }
 
@@ -766,13 +1056,12 @@
                 gap: 10px;
             }
             
-            .main-content {
-                gap: 10px;
-                margin-bottom: 12px;
+            .converter-main-top, .search-categories-section {
+                padding: 12px;
             }
             
-            .sidebar, .converter-main {
-                padding: 12px;
+            .favorites-grid {
+                grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
             }
             
             .category-grid {
@@ -859,7 +1148,7 @@
                 font-size: 0.75rem;
             }
             
-            .sidebar, .converter-main {
+            .converter-main-top, .search-categories-section {
                 padding: 10px;
             }
             
@@ -952,71 +1241,76 @@
             </div>
         </div>
 
-        <div class="main-content">
-            <div class="sidebar">
-                <h2 class="section-title">
-                    <i class="fas fa-th-large"></i>
-                    Categories
-                </h2>
-                
-                <!-- Search functionality -->
-                <div class="search-container">
-                    <input type="text" id="categorySearch" placeholder="Search categories..." class="search-input">
-                    <i class="fas fa-search search-icon"></i>
-                </div>
-                
-                <div class="category-grid" id="categoryGrid">
-                    <!-- Categories will be populated by JavaScript -->
-                </div>
-            </div>
-
-            <div class="converter-main">
+        <!-- Main Converter Section - Enhanced -->
+        <div class="converter-main-top">
+            <div class="converter-header">
                 <h2 class="section-title">
                     <i class="fas fa-exchange-alt"></i>
-                    Conversion
+                    Quick Convert
                 </h2>
+                <div class="quick-shortcuts">
+                    <button class="quick-shortcut" onclick="quickConvert('meters', 'feet', 1)">
+                        <i class="fas fa-ruler"></i> 1m → 3.28ft
+                    </button>
+                    <button class="quick-shortcut" onclick="quickConvert('celsius', 'fahrenheit', 25)">
+                        <i class="fas fa-thermometer-half"></i> 25°C → 77°F
+                    </button>
+                    <button class="quick-shortcut" onclick="quickConvert('kilograms', 'pounds', 1)">
+                        <i class="fas fa-weight-hanging"></i> 1kg → 2.2lbs
+                    </button>
+                    <button class="quick-shortcut" onclick="quickConvert('USD', 'EUR', 100)">
+                        <i class="fas fa-dollar-sign"></i> $100 → €92
+                    </button>
+                </div>
+            </div>
                 
-                <div class="loading" id="loading">
-                    <div class="spinner"></div>
-                    <p>Fetching real-time rates...</p>
+            <div class="loading" id="loading">
+                <div class="spinner"></div>
+                <p>Fetching real-time rates...</p>
+            </div>
+
+            <div class="conversion-section">
+                <div class="input-group">
+                    <label for="fromUnit">
+                        <i class="fas fa-arrow-right"></i> From
+                    </label>
+                    <select id="fromUnit" disabled>
+                        <option value="">Select unit...</option>
+                    </select>
+                    <label for="valueInput">
+                        <i class="fas fa-calculator"></i> Value
+                    </label>
+                    <input type="number" id="valueInput" placeholder="Enter value..." step="any">
                 </div>
 
-                <div class="conversion-section">
-                    <div class="input-group">
-                        <label for="fromUnit">
-                            <i class="fas fa-arrow-right"></i> From
-                        </label>
-                        <select id="fromUnit" disabled>
-                            <option value="">Select unit...</option>
-                        </select>
-                        <label for="valueInput">
-                            <i class="fas fa-calculator"></i> Value
-                        </label>
-                        <input type="number" id="valueInput" placeholder="Enter value..." step="any">
-                    </div>
-
-                    <div class="arrow-container">
-                        <div class="arrow">
-                            <i class="fas fa-arrow-right"></i>
-                        </div>
-                    </div>
-
-                    <div class="input-group">
-                        <label for="toUnit">
-                            <i class="fas fa-arrow-left"></i> To
-                        </label>
-                        <select id="toUnit" disabled>
-                            <option value="">Select unit...</option>
-                        </select>
-                        <label>Result</label>
-                        <div class="result-display" id="result">
-                            Enter a value to see the conversion result
-                        </div>
+                <div class="arrow-container">
+                    <div class="arrow">
+                        <i class="fas fa-arrow-right"></i>
                     </div>
                 </div>
 
-                <!-- Live Features Section -->
-                <div class="live-features">
+                <div class="input-group">
+                    <label for="toUnit">
+                        <i class="fas fa-arrow-left"></i> To
+                    </label>
+                    <select id="toUnit" disabled>
+                        <option value="">Select unit...</option>
+                    </select>
+                    <label>Result</label>
+                    <div class="result-display" id="result">
+                        Enter a value to see the conversion result
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Live Features Section - Moved Below Search -->
+        <div class="live-features-section">
+            <h2 class="section-title">
+                <i class="fas fa-magic"></i>
+                Smart Features
+            </h2>
+            <div class="live-features">
                     <!-- Live Market Data -->
                     <div class="live-market-data">
                         <h3 class="feature-title">
@@ -1097,25 +1391,55 @@
                             </div>
                         </div>
                     </div>
-                </div>
-
-                <div class="compact-controls">
-                    <div class="buttons">
-                        <button class="btn btn-convert" onclick="convert()">
-                            <i class="fas fa-sync-alt"></i> Convert
-                        </button>
-                        <button class="btn btn-clear" onclick="clearAll()">
-                            <i class="fas fa-trash"></i> Clear
-                        </button>
-                        <button class="btn btn-swap" onclick="swapUnits()">
-                            <i class="fas fa-exchange-alt"></i> Swap
-                        </button>
-                    </div>
-                </div>
-
-
             </div>
         </div>
+
+        <!-- Search and Category Selection Section -->
+        <div class="search-categories-section">
+            <h2 class="section-title">
+                <i class="fas fa-search"></i>
+                Find Your Category
+            </h2>
+            
+            <!-- Search functionality -->
+            <div class="search-container">
+                <input type="text" id="categorySearch" placeholder="Search categories (e.g., length, weight, currency)..." class="search-input">
+                <i class="fas fa-search search-icon"></i>
+                <div class="search-suggestions" id="searchSuggestions">
+                    <!-- Suggestions will be populated by JavaScript -->
+                </div>
+            </div>
+            
+            <!-- Quick Access Favorites -->
+            <div class="favorites-section">
+                <h3 class="section-subtitle">
+                    <i class="fas fa-star"></i>
+                    Your Favorites
+                </h3>
+                <div class="favorites-grid" id="favoritesGrid">
+                    <!-- Favorites will be populated by JavaScript -->
+                </div>
+            </div>
+            
+            <!-- All Categories (Initially Hidden) -->
+            <div class="all-categories-section hidden" id="allCategoriesSection">
+                <h3 class="section-subtitle">
+                    <i class="fas fa-th-large"></i>
+                    All Categories
+                </h3>
+                <div class="category-grid" id="categoryGrid">
+                    <!-- Categories will be populated by JavaScript -->
+                </div>
+            </div>
+            
+            <!-- Show All Categories Button -->
+            <div class="show-all-container">
+                <button class="btn btn-show-all" onclick="toggleAllCategories()">
+                    <i class="fas fa-th-large"></i> Show All Categories
+                </button>
+            </div>
+        </div>
+
 
         <div class="history-section">
             <h2 class="section-title">
@@ -1430,10 +1754,16 @@
         let cryptoRates = {};
         let lastCryptoUpdate = 0;
         const CRYPTO_CACHE_DURATION = 2 * 60 * 1000; // 2 minutes (crypto changes faster)
+        
+        // Favorites management
+        let favoriteCategories = JSON.parse(localStorage.getItem('favoriteCategories') || '[]');
+        let categoryUsage = JSON.parse(localStorage.getItem('categoryUsage') || '{}');
+        let allCategoriesVisible = false;
 
         // Initialize the app
         document.addEventListener('DOMContentLoaded', function() {
             createParticles();
+            populateFavorites();
             populateCategories();
             setupEventListeners();
             
@@ -1518,6 +1848,77 @@
             }
         }
 
+        function populateFavorites() {
+            const favoritesGrid = document.getElementById('favoritesGrid');
+            favoritesGrid.innerHTML = '';
+
+            if (favoriteCategories.length === 0) {
+                // Show default favorites for new users
+                const defaultFavorites = ["Length", "Weight", "Temperature", "Currency (Real-time)"];
+                favoriteCategories = defaultFavorites;
+                saveFavorites();
+            }
+
+            // Sort favorites by usage frequency
+            const sortedFavorites = favoriteCategories.sort((a, b) => {
+                const usageA = categoryUsage[a] || 0;
+                const usageB = categoryUsage[b] || 0;
+                return usageB - usageA;
+            });
+
+            sortedFavorites.forEach(category => {
+                if (categories[category]) {
+                    const usage = categoryUsage[category] || 0;
+                    const card = document.createElement('div');
+                    card.className = 'favorite-card';
+                    card.draggable = true;
+                    card.onclick = () => selectCategory(category);
+                    card.innerHTML = `
+                        <button class="remove-favorite" onclick="removeFromFavorites('${category}', event)">×</button>
+                        <div class="category-icon">
+                            <i class="${categories[category].icon}"></i>
+                        </div>
+                        <div class="category-name">${category}</div>
+                        ${usage > 0 ? `<div class="usage-count">${usage}</div>` : ''}
+                    `;
+                    
+                    // Add drag and drop functionality
+                    card.addEventListener('dragstart', (e) => {
+                        e.dataTransfer.setData('text/plain', category);
+                        card.style.opacity = '0.5';
+                    });
+                    
+                    card.addEventListener('dragend', (e) => {
+                        card.style.opacity = '1';
+                    });
+                    
+                    card.addEventListener('dragover', (e) => {
+                        e.preventDefault();
+                    });
+                    
+                    card.addEventListener('drop', (e) => {
+                        e.preventDefault();
+                        const draggedCategory = e.dataTransfer.getData('text/plain');
+                        reorderFavorites(draggedCategory, category);
+                    });
+                    
+                    favoritesGrid.appendChild(card);
+                }
+            });
+        }
+
+        function reorderFavorites(draggedCategory, targetCategory) {
+            const draggedIndex = favoriteCategories.indexOf(draggedCategory);
+            const targetIndex = favoriteCategories.indexOf(targetCategory);
+            
+            if (draggedIndex !== -1 && targetIndex !== -1) {
+                favoriteCategories.splice(draggedIndex, 1);
+                favoriteCategories.splice(targetIndex, 0, draggedCategory);
+                saveFavorites();
+                populateFavorites();
+            }
+        }
+
         function populateCategories() {
             const categoryGrid = document.getElementById('categoryGrid');
             categoryGrid.innerHTML = '';
@@ -1531,16 +1932,6 @@
                 "Cooking Volume", "Cooking Weight", "Baking Temperature"
             ];
 
-            // Quick access section will be created by the draggable system
-
-            // Add main categories section
-            const mainCategoriesSection = document.createElement('div');
-            mainCategoriesSection.className = 'main-categories-section';
-            mainCategoriesSection.innerHTML = '<h3 class="section-subtitle">All Categories</h3>';
-            
-            const mainCategoriesGrid = document.createElement('div');
-            mainCategoriesGrid.className = 'category-grid';
-
             categoryOrder.forEach(category => {
                 if (categories[category]) {
                     const card = document.createElement('div');
@@ -1551,23 +1942,29 @@
                             <i class="${categories[category].icon}"></i>
                         </div>
                         <div>${category}</div>
+                        <button class="add-favorite" onclick="addToFavorites('${category}', event)" title="Add to favorites">
+                            <i class="fas fa-star"></i>
+                        </button>
                     `;
-                    mainCategoriesGrid.appendChild(card);
+                    categoryGrid.appendChild(card);
                 }
             });
-
-            mainCategoriesSection.appendChild(mainCategoriesGrid);
-            categoryGrid.appendChild(mainCategoriesSection);
         }
 
         function selectCategory(category) {
+            // Track usage
+            categoryUsage[category] = (categoryUsage[category] || 0) + 1;
+            localStorage.setItem('categoryUsage', JSON.stringify(categoryUsage));
+            
             // Remove active class from all cards
-            document.querySelectorAll('.category-card').forEach(card => {
+            document.querySelectorAll('.category-card, .favorite-card').forEach(card => {
                 card.classList.remove('active');
             });
 
             // Add active class to selected card
-            event.target.closest('.category-card').classList.add('active');
+            if (event && event.target) {
+                event.target.closest('.category-card, .favorite-card').classList.add('active');
+            }
 
             const fromUnit = document.getElementById('fromUnit');
             const toUnit = document.getElementById('toUnit');
@@ -1609,15 +2006,114 @@
         function filterCategories() {
             const searchTerm = document.getElementById('categorySearch').value.toLowerCase();
             const categoryCards = document.querySelectorAll('.category-card');
+            const favoritesGrid = document.getElementById('favoritesGrid');
+            const allCategoriesSection = document.getElementById('allCategoriesSection');
+            const searchSuggestions = document.getElementById('searchSuggestions');
             
+            // Show/hide all categories section based on search
+            if (searchTerm.length > 0) {
+                allCategoriesSection.classList.remove('hidden');
+                allCategoriesVisible = true;
+            }
+            
+            // Generate search suggestions
+            if (searchTerm.length > 1) {
+                const suggestions = Object.keys(categories).filter(category => 
+                    category.toLowerCase().includes(searchTerm)
+                ).slice(0, 5);
+                
+                if (suggestions.length > 0) {
+                    searchSuggestions.innerHTML = suggestions.map(category => 
+                        `<div class="suggestion-item" onclick="selectSuggestion('${category}')">
+                            <i class="${categories[category].icon}"></i>
+                            <span>${category}</span>
+                        </div>`
+                    ).join('');
+                    searchSuggestions.style.display = 'block';
+                } else {
+                    searchSuggestions.style.display = 'none';
+                }
+            } else {
+                searchSuggestions.style.display = 'none';
+            }
+            
+            let hasMatches = false;
             categoryCards.forEach(card => {
-                const categoryName = card.querySelector('div:last-child').textContent.toLowerCase();
+                const categoryName = card.querySelector('div:nth-child(2)').textContent.toLowerCase();
                 if (categoryName.includes(searchTerm)) {
                     card.style.display = 'block';
+                    hasMatches = true;
                 } else {
                     card.style.display = 'none';
                 }
             });
+            
+            // Show "No results" message if no matches
+            let noResultsMsg = document.getElementById('noResultsMsg');
+            if (searchTerm.length > 0 && !hasMatches) {
+                if (!noResultsMsg) {
+                    noResultsMsg = document.createElement('div');
+                    noResultsMsg.id = 'noResultsMsg';
+                    noResultsMsg.className = 'no-results';
+                    noResultsMsg.textContent = `No categories found for "${searchTerm}"`;
+                    allCategoriesSection.appendChild(noResultsMsg);
+                }
+                noResultsMsg.style.display = 'block';
+            } else if (noResultsMsg) {
+                noResultsMsg.style.display = 'none';
+            }
+            
+            // If searching, hide favorites and show all categories
+            if (searchTerm.length > 0) {
+                favoritesGrid.style.display = 'none';
+                allCategoriesSection.classList.remove('hidden');
+            } else {
+                favoritesGrid.style.display = 'grid';
+                if (!allCategoriesVisible) {
+                    allCategoriesSection.classList.add('hidden');
+                }
+            }
+        }
+
+        function selectSuggestion(category) {
+            document.getElementById('categorySearch').value = category;
+            document.getElementById('searchSuggestions').style.display = 'none';
+            selectCategory(category);
+        }
+
+        function toggleAllCategories() {
+            const allCategoriesSection = document.getElementById('allCategoriesSection');
+            const showAllBtn = document.querySelector('.btn-show-all');
+            
+            if (allCategoriesVisible) {
+                allCategoriesSection.classList.add('hidden');
+                showAllBtn.innerHTML = '<i class="fas fa-th-large"></i> Show All Categories';
+                allCategoriesVisible = false;
+            } else {
+                allCategoriesSection.classList.remove('hidden');
+                showAllBtn.innerHTML = '<i class="fas fa-eye-slash"></i> Hide All Categories';
+                allCategoriesVisible = true;
+            }
+        }
+
+        function addToFavorites(category, event) {
+            event.stopPropagation();
+            if (!favoriteCategories.includes(category)) {
+                favoriteCategories.push(category);
+                saveFavorites();
+                populateFavorites();
+            }
+        }
+
+        function removeFromFavorites(category, event) {
+            event.stopPropagation();
+            favoriteCategories = favoriteCategories.filter(cat => cat !== category);
+            saveFavorites();
+            populateFavorites();
+        }
+
+        function saveFavorites() {
+            localStorage.setItem('favoriteCategories', JSON.stringify(favoriteCategories));
         }
 
         function onValueChange() {
