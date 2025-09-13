@@ -12,8 +12,10 @@ import {
   Alert,
 } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useTheme } from '../contexts/ThemeContext';
 
 export default function HistoryScreen() {
+  const { colors } = useTheme();
   const [history, setHistory] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -69,44 +71,131 @@ export default function HistoryScreen() {
     return date.toLocaleDateString();
   };
 
+  const dynamicStyles = StyleSheet.create({
+    container: {
+      flex: 1,
+      backgroundColor: colors.background,
+    },
+    header: {
+      flexDirection: 'row',
+      justifyContent: 'flex-end',
+      padding: 20,
+      borderBottomWidth: 1,
+      borderBottomColor: colors.border,
+    },
+    actionButton: {
+      backgroundColor: colors.primary,
+      paddingHorizontal: 20,
+      paddingVertical: 10,
+      borderRadius: 8,
+    },
+    actionButtonText: {
+      color: '#fff',
+      fontWeight: 'bold',
+    },
+    emptyContainer: {
+      flex: 1,
+      justifyContent: 'center',
+      alignItems: 'center',
+      padding: 40,
+    },
+    emptyText: {
+      color: colors.text,
+      fontSize: 18,
+      fontWeight: 'bold',
+      marginBottom: 10,
+    },
+    emptySubtext: {
+      color: colors.textSecondary,
+      fontSize: 14,
+      textAlign: 'center',
+    },
+    historyList: {
+      flex: 1,
+      padding: 20,
+    },
+    historyItem: {
+      backgroundColor: colors.surface,
+      padding: 15,
+      borderRadius: 8,
+      marginBottom: 10,
+      borderWidth: 1,
+      borderColor: colors.border,
+    },
+    historyMain: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      marginBottom: 8,
+    },
+    historyValue: {
+      color: colors.text,
+      fontSize: 16,
+      fontWeight: 'bold',
+      flex: 1,
+    },
+    historyArrow: {
+      color: colors.primary,
+      fontSize: 18,
+      marginHorizontal: 10,
+    },
+    historyMeta: {
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      alignItems: 'center',
+    },
+    historyCategory: {
+      color: colors.textSecondary,
+      fontSize: 12,
+    },
+    historyTime: {
+      color: colors.textSecondary,
+      fontSize: 12,
+    },
+    loadingText: {
+      color: colors.text,
+      textAlign: 'center',
+      marginTop: 50,
+    },
+  });
+
   const renderHistoryItem = ({ item }) => (
-    <TouchableOpacity style={styles.historyItem}>
-      <View style={styles.historyMain}>
-        <Text style={styles.historyValue}>
+    <TouchableOpacity style={dynamicStyles.historyItem}>
+      <View style={dynamicStyles.historyMain}>
+        <Text style={dynamicStyles.historyValue}>
           {item.fromValue} {item.fromUnit}
         </Text>
-        <Text style={styles.historyArrow}>→</Text>
-        <Text style={styles.historyValue}>
+        <Text style={dynamicStyles.historyArrow}>→</Text>
+        <Text style={dynamicStyles.historyValue}>
           {item.toValue} {item.toUnit}
         </Text>
       </View>
-      <View style={styles.historyMeta}>
-        <Text style={styles.historyCategory}>{item.category}</Text>
-        <Text style={styles.historyTime}>{formatTime(item.timestamp)}</Text>
+      <View style={dynamicStyles.historyMeta}>
+        <Text style={dynamicStyles.historyCategory}>{item.category}</Text>
+        <Text style={dynamicStyles.historyTime}>{formatTime(item.timestamp)}</Text>
       </View>
     </TouchableOpacity>
   );
 
   if (loading) {
     return (
-      <View style={styles.container}>
-        <Text style={styles.loadingText}>Loading history...</Text>
+      <View style={dynamicStyles.container}>
+        <Text style={dynamicStyles.loadingText}>Loading history...</Text>
       </View>
     );
   }
 
   return (
-    <View style={styles.container}>
-      <View style={styles.header}>
-        <TouchableOpacity style={styles.actionButton} onPress={clearHistory}>
-          <Text style={styles.actionButtonText}>Clear History</Text>
+    <View style={dynamicStyles.container}>
+      <View style={dynamicStyles.header}>
+        <TouchableOpacity style={dynamicStyles.actionButton} onPress={clearHistory}>
+          <Text style={dynamicStyles.actionButtonText}>Clear History</Text>
         </TouchableOpacity>
       </View>
 
       {history.length === 0 ? (
-        <View style={styles.emptyContainer}>
-          <Text style={styles.emptyText}>No conversions yet</Text>
-          <Text style={styles.emptySubtext}>
+        <View style={dynamicStyles.emptyContainer}>
+          <Text style={dynamicStyles.emptyText}>No conversions yet</Text>
+          <Text style={dynamicStyles.emptySubtext}>
             Start converting units to see your history here
           </Text>
         </View>
@@ -115,7 +204,7 @@ export default function HistoryScreen() {
           data={history}
           renderItem={renderHistoryItem}
           keyExtractor={(item) => item.id.toString()}
-          style={styles.historyList}
+          style={dynamicStyles.historyList}
           showsVerticalScrollIndicator={false}
         />
       )}
@@ -123,87 +212,3 @@ export default function HistoryScreen() {
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#1a1a2e',
-  },
-  header: {
-    flexDirection: 'row',
-    justifyContent: 'flex-end',
-    padding: 20,
-    borderBottomWidth: 1,
-    borderBottomColor: '#333',
-  },
-  actionButton: {
-    backgroundColor: '#4facfe',
-    paddingHorizontal: 20,
-    paddingVertical: 10,
-    borderRadius: 8,
-  },
-  actionButtonText: {
-    color: '#fff',
-    fontWeight: 'bold',
-  },
-  emptyContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    padding: 40,
-  },
-  emptyText: {
-    color: '#fff',
-    fontSize: 18,
-    fontWeight: 'bold',
-    marginBottom: 10,
-  },
-  emptySubtext: {
-    color: '#666',
-    fontSize: 14,
-    textAlign: 'center',
-  },
-  historyList: {
-    flex: 1,
-    padding: 20,
-  },
-  historyItem: {
-    backgroundColor: '#2a2a3e',
-    padding: 15,
-    borderRadius: 8,
-    marginBottom: 10,
-    borderWidth: 1,
-    borderColor: '#333',
-  },
-  historyMain: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: 5,
-  },
-  historyValue: {
-    color: '#fff',
-    fontSize: 16,
-    fontWeight: 'bold',
-  },
-  historyArrow: {
-    color: '#4facfe',
-    fontSize: 16,
-    marginHorizontal: 10,
-  },
-  historyMeta: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-  },
-  historyCategory: {
-    color: '#666',
-    fontSize: 12,
-  },
-  historyTime: {
-    color: '#666',
-    fontSize: 12,
-  },
-  loadingText: {
-    color: '#fff',
-    textAlign: 'center',
-    marginTop: 50,
-  },
-});
