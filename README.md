@@ -89,6 +89,22 @@ Smart Unit Converter is a comprehensive, modern tool for converting between 15+ 
 
 ---
 
+## 📚 **Documentation**
+
+- **[Security Guide](SECURITY_GUIDE.md)** - Security measures and best practices
+- **[API Documentation](API_DOCUMENTATION.md)** - External APIs and integration
+- **[Troubleshooting Guide](TROUBLESHOOTING_GUIDE.md)** - Common issues and solutions
+- **[Development Guide](DEVELOPMENT_GUIDE.md)** - Development setup and guidelines
+- **[Deployment Guide](DEPLOYMENT_GUIDE.md)** - Deployment instructions
+
+## 🔒 **Security Features**
+
+- ✅ **Content Security Policy (CSP)** - XSS protection
+- ✅ **Input Sanitization** - Prevents injection attacks
+- ✅ **Rate Limiting** - Prevents abuse (60 requests/minute)
+- ✅ **API Response Validation** - Ensures data integrity
+- ✅ **Security Headers** - Additional protection layers
+
 ## 📄 License
 
 MIT License
