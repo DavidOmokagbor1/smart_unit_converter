@@ -603,6 +603,197 @@
             font-size: 14px;
             color: var(--dark-text-secondary);
         }
+
+        /* History Section */
+        .mobile-history {
+            background: var(--glass);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 20px;
+        }
+
+        .mobile-history-content h3 {
+            margin-bottom: 16px;
+            color: var(--accent);
+            text-align: center;
+        }
+
+        .mobile-history-actions {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 16px;
+            justify-content: center;
+        }
+
+        .mobile-history-list {
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .history-item {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 8px;
+            padding: 12px;
+            margin-bottom: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .history-item:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-1px);
+        }
+
+        .history-main {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 4px;
+        }
+
+        .history-value {
+            font-weight: 600;
+            color: var(--dark-text);
+        }
+
+        .history-arrow {
+            color: var(--accent);
+            font-weight: bold;
+        }
+
+        .history-meta {
+            display: flex;
+            justify-content: space-between;
+            font-size: 12px;
+            color: var(--dark-text-secondary);
+        }
+
+        /* Favorites Section */
+        .mobile-favorites {
+            background: var(--glass);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 20px;
+        }
+
+        .mobile-favorites-content h3 {
+            margin-bottom: 16px;
+            color: var(--accent);
+            text-align: center;
+        }
+
+        .mobile-favorites-list {
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .favorite-item {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 8px;
+            padding: 12px;
+            margin-bottom: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .favorite-item:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-1px);
+        }
+
+        .favorite-main {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 4px;
+        }
+
+        .favorite-units {
+            font-weight: 600;
+            color: var(--dark-text);
+        }
+
+        .favorite-remove {
+            background: #f56565;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            cursor: pointer;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .favorite-category {
+            font-size: 12px;
+            color: var(--dark-text-secondary);
+        }
+
+        /* Batch Section */
+        .mobile-batch {
+            background: var(--glass);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 20px;
+        }
+
+        .mobile-batch-content h3 {
+            margin-bottom: 16px;
+            color: var(--accent);
+            text-align: center;
+        }
+
+        .mobile-batch-actions {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 16px;
+            justify-content: center;
+        }
+
+        .mobile-batch-list {
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .batch-input-group {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 8px;
+            padding: 8px;
+            margin-bottom: 8px;
+        }
+
+        .batch-value {
+            flex: 1;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: var(--dark-text);
+            padding: 8px;
+            border-radius: 4px;
+        }
+
+        .batch-convert, .batch-remove {
+            padding: 8px 12px;
+            font-size: 12px;
+        }
+
+        .batch-result {
+            background: rgba(102, 126, 234, 0.2);
+            border: 1px solid rgba(102, 126, 234, 0.3);
+            border-radius: 4px;
+            padding: 8px;
+            margin-top: 8px;
+            font-size: 14px;
+            color: var(--dark-text);
+        }
     </style>
 </head>
 <body>
@@ -710,6 +901,44 @@
             </div>
         </div>
 
+        <!-- History Section -->
+        <div class="mobile-history" id="mobileHistory" style="display: none;">
+            <div class="mobile-history-content">
+                <h3>📚 Conversion History</h3>
+                <div class="mobile-history-actions">
+                    <button class="mobile-btn" onclick="clearHistory()">Clear History</button>
+                    <button class="mobile-btn" onclick="exportHistory()">Export</button>
+                </div>
+                <div id="conversionHistory" class="mobile-history-list">
+                    <!-- History items will be populated here -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Favorites Section -->
+        <div class="mobile-favorites" id="mobileFavorites" style="display: none;">
+            <div class="mobile-favorites-content">
+                <h3>⭐ Favorite Conversions</h3>
+                <div id="conversionFavorites" class="mobile-favorites-list">
+                    <!-- Favorites will be populated here -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Batch Section -->
+        <div class="mobile-batch" id="mobileBatch" style="display: none;">
+            <div class="mobile-batch-content">
+                <h3>📊 Batch Conversions</h3>
+                <div class="mobile-batch-actions">
+                    <button class="mobile-btn" onclick="addBatchInput()">Add Input</button>
+                    <button class="mobile-btn" onclick="clearBatch()">Clear All</button>
+                </div>
+                <div id="batchContainer" class="mobile-batch-list">
+                    <!-- Batch inputs will be added here -->
+                </div>
+            </div>
+        </div>
+
         <!-- About Section -->
         <div class="mobile-about" style="display: none;">
             <div class="mobile-about-content">
@@ -778,13 +1007,21 @@
             <i class="fas fa-th-large mobile-nav-icon"></i>
             <span>Categories</span>
         </button>
+        <button class="mobile-nav-btn" onclick="showHistory()">
+            <i class="fas fa-history mobile-nav-icon"></i>
+            <span>History</span>
+        </button>
+        <button class="mobile-nav-btn" onclick="showFavorites()">
+            <i class="fas fa-star mobile-nav-icon"></i>
+            <span>Favorites</span>
+        </button>
+        <button class="mobile-nav-btn" onclick="showBatch()">
+            <i class="fas fa-list mobile-nav-icon"></i>
+            <span>Batch</span>
+        </button>
         <button class="mobile-nav-btn" onclick="showSettings()">
             <i class="fas fa-cog mobile-nav-icon"></i>
             <span>Settings</span>
-        </button>
-        <button class="mobile-nav-btn" onclick="showAbout()">
-            <i class="fas fa-info-circle mobile-nav-icon"></i>
-            <span>About</span>
         </button>
     </div>
 
@@ -1060,8 +1297,17 @@
                     document.getElementById('mobileResult').innerHTML = `
                         ${fromValue} ${fromUnit} = ${formattedResult} ${toUnit}
                         <br><small style="color: #4facfe;">💱 Live Rate</small>
+                        <br><button class="mobile-btn-small" onclick="toggleFavorite('${fromUnit}', '${toUnit}', '${currentCategory}')" style="margin-top: 8px; padding: 4px 8px; font-size: 12px;">⭐ Favorite</button>
+                    `;
+                } else {
+                    document.getElementById('mobileResult').innerHTML = `
+                        ${fromValue} ${fromUnit} = ${formattedResult} ${toUnit}
+                        <br><button class="mobile-btn-small" onclick="toggleFavorite('${fromUnit}', '${toUnit}', '${currentCategory}')" style="margin-top: 8px; padding: 4px 8px; font-size: 12px;">⭐ Favorite</button>
                     `;
                 }
+                
+                // Save to history
+                saveConversion(fromValue, fromUnit, formattedResult, toUnit, currentCategory);
                 
             } catch (error) {
                 console.error('Conversion error:', error);
@@ -1357,6 +1603,9 @@
             document.querySelector('.mobile-category-selector').style.display = 'block';
             document.querySelector('.mobile-settings').style.display = 'none';
             document.querySelector('.mobile-about').style.display = 'none';
+            document.querySelector('.mobile-history').style.display = 'none';
+            document.querySelector('.mobile-favorites').style.display = 'none';
+            document.querySelector('.mobile-batch').style.display = 'none';
             
             // Scroll to top
             window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -1370,6 +1619,9 @@
             document.querySelector('.mobile-category-selector').style.display = 'block';
             document.querySelector('.mobile-settings').style.display = 'none';
             document.querySelector('.mobile-about').style.display = 'none';
+            document.querySelector('.mobile-history').style.display = 'none';
+            document.querySelector('.mobile-favorites').style.display = 'none';
+            document.querySelector('.mobile-batch').style.display = 'none';
             
             // Scroll to categories
             document.querySelector('.mobile-category-selector').scrollIntoView({ behavior: 'smooth' });
@@ -1385,13 +1637,64 @@
             document.querySelector('.mobile-about').style.display = 'none';
         }
 
+        function showHistory() {
+            console.log('showHistory called');
+            setActiveNavButton(3);
+            // Show history section, hide others
+            document.querySelector('.mobile-converter').style.display = 'none';
+            document.querySelector('.mobile-category-selector').style.display = 'none';
+            document.querySelector('.mobile-settings').style.display = 'none';
+            document.querySelector('.mobile-about').style.display = 'none';
+            document.querySelector('.mobile-history').style.display = 'none';
+            document.querySelector('.mobile-favorites').style.display = 'none';
+            document.querySelector('.mobile-batch').style.display = 'none';
+            document.querySelector('.mobile-favorites').style.display = 'none';
+            document.querySelector('.mobile-batch').style.display = 'none';
+            document.querySelector('.mobile-history').style.display = 'block';
+        }
+
+        function showFavorites() {
+            console.log('showFavorites called');
+            setActiveNavButton(4);
+            // Show favorites section, hide others
+            document.querySelector('.mobile-converter').style.display = 'none';
+            document.querySelector('.mobile-category-selector').style.display = 'none';
+            document.querySelector('.mobile-settings').style.display = 'none';
+            document.querySelector('.mobile-about').style.display = 'none';
+            document.querySelector('.mobile-history').style.display = 'none';
+            document.querySelector('.mobile-favorites').style.display = 'none';
+            document.querySelector('.mobile-batch').style.display = 'none';
+            document.querySelector('.mobile-history').style.display = 'none';
+            document.querySelector('.mobile-batch').style.display = 'none';
+            document.querySelector('.mobile-favorites').style.display = 'block';
+        }
+
+        function showBatch() {
+            console.log('showBatch called');
+            setActiveNavButton(5);
+            // Show batch section, hide others
+            document.querySelector('.mobile-converter').style.display = 'none';
+            document.querySelector('.mobile-category-selector').style.display = 'none';
+            document.querySelector('.mobile-settings').style.display = 'none';
+            document.querySelector('.mobile-about').style.display = 'none';
+            document.querySelector('.mobile-history').style.display = 'none';
+            document.querySelector('.mobile-favorites').style.display = 'none';
+            document.querySelector('.mobile-batch').style.display = 'none';
+            document.querySelector('.mobile-history').style.display = 'none';
+            document.querySelector('.mobile-favorites').style.display = 'none';
+            document.querySelector('.mobile-batch').style.display = 'block';
+        }
+
         function showAbout() {
             console.log('showAbout called');
-            setActiveNavButton(3);
+            setActiveNavButton(6);
             // Show about section, hide others
             document.querySelector('.mobile-converter').style.display = 'none';
             document.querySelector('.mobile-category-selector').style.display = 'none';
             document.querySelector('.mobile-settings').style.display = 'none';
+            document.querySelector('.mobile-history').style.display = 'none';
+            document.querySelector('.mobile-favorites').style.display = 'none';
+            document.querySelector('.mobile-batch').style.display = 'none';
             document.querySelector('.mobile-about').style.display = 'block';
         }
 
@@ -1598,10 +1901,239 @@
 
 
 
+        // Conversion History Management
+        let conversionHistory = JSON.parse(localStorage.getItem('conversionHistory') || '[]');
+        const MAX_HISTORY = 50; // Keep last 50 conversions
+
+        function saveConversion(fromValue, fromUnit, toValue, toUnit, category) {
+            const conversion = {
+                id: Date.now(),
+                timestamp: new Date().toISOString(),
+                fromValue: parseFloat(fromValue),
+                fromUnit: fromUnit,
+                toValue: parseFloat(toValue),
+                toUnit: toUnit,
+                category: category
+            };
+            
+            conversionHistory.unshift(conversion);
+            
+            // Keep only the last MAX_HISTORY conversions
+            if (conversionHistory.length > MAX_HISTORY) {
+                conversionHistory = conversionHistory.slice(0, MAX_HISTORY);
+            }
+            
+            localStorage.setItem('conversionHistory', JSON.stringify(conversionHistory));
+            updateHistoryDisplay();
+        }
+
+        function updateHistoryDisplay() {
+            const historyContainer = document.getElementById('conversionHistory');
+            if (!historyContainer) return;
+            
+            if (conversionHistory.length === 0) {
+                historyContainer.innerHTML = '<p style="text-align: center; color: var(--dark-text-secondary); padding: 20px;">No conversions yet</p>';
+                return;
+            }
+            
+            historyContainer.innerHTML = conversionHistory.map(conv => `
+                <div class="history-item" onclick="loadFromHistory('${conv.id}')">
+                    <div class="history-main">
+                        <span class="history-value">${conv.fromValue} ${conv.fromUnit}</span>
+                        <span class="history-arrow">→</span>
+                        <span class="history-value">${conv.toValue} ${conv.toUnit}</span>
+                    </div>
+                    <div class="history-meta">
+                        <span class="history-category">${conv.category}</span>
+                        <span class="history-time">${formatTime(conv.timestamp)}</span>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function loadFromHistory(conversionId) {
+            const conversion = conversionHistory.find(c => c.id == conversionId);
+            if (!conversion) return;
+            
+            document.getElementById('mobileFromValue').value = conversion.fromValue;
+            document.getElementById('mobileFromUnit').value = conversion.fromUnit;
+            document.getElementById('mobileToUnit').value = conversion.toUnit;
+            
+            // Auto-convert
+            performMobileConversion();
+            showNotification('Loaded from history', 'success');
+        }
+
+        function formatTime(timestamp) {
+            const date = new Date(timestamp);
+            const now = new Date();
+            const diff = now - date;
+            
+            if (diff < 60000) return 'Just now';
+            if (diff < 3600000) return `${Math.floor(diff / 60000)}m ago`;
+            if (diff < 86400000) return `${Math.floor(diff / 3600000)}h ago`;
+            return date.toLocaleDateString();
+        }
+
+        function clearHistory() {
+            conversionHistory = [];
+            localStorage.removeItem('conversionHistory');
+            updateHistoryDisplay();
+            showNotification('History cleared', 'success');
+        }
+
+        function exportHistory() {
+            if (conversionHistory.length === 0) {
+                showNotification('No history to export', 'info');
+                return;
+            }
+            
+            const csv = 'Timestamp,From Value,From Unit,To Value,To Unit,Category\n' +
+                conversionHistory.map(conv => 
+                    `${conv.timestamp},${conv.fromValue},${conv.fromUnit},${conv.toValue},${conv.toUnit},${conv.category}`
+                ).join('\n');
+            
+            const blob = new Blob([csv], { type: 'text/csv' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'conversion_history.csv';
+            a.click();
+            window.URL.revokeObjectURL(url);
+            
+            showNotification('History exported', 'success');
+        }
+
+        // Favorites Management
+        let favorites = JSON.parse(localStorage.getItem('conversionFavorites') || '[]');
+
+        function toggleFavorite(fromUnit, toUnit, category) {
+            const favoriteId = `${fromUnit}-${toUnit}-${category}`;
+            const existingIndex = favorites.findIndex(f => f.id === favoriteId);
+            
+            if (existingIndex >= 0) {
+                favorites.splice(existingIndex, 1);
+                showNotification('Removed from favorites', 'info');
+            } else {
+                favorites.push({
+                    id: favoriteId,
+                    fromUnit: fromUnit,
+                    toUnit: toUnit,
+                    category: category,
+                    timestamp: new Date().toISOString()
+                });
+                showNotification('Added to favorites', 'success');
+            }
+            
+            localStorage.setItem('conversionFavorites', JSON.stringify(favorites));
+            updateFavoritesDisplay();
+        }
+
+        function updateFavoritesDisplay() {
+            const favoritesContainer = document.getElementById('conversionFavorites');
+            if (!favoritesContainer) return;
+            
+            if (favorites.length === 0) {
+                favoritesContainer.innerHTML = '<p style="text-align: center; color: var(--dark-text-secondary); padding: 20px;">No favorites yet</p>';
+                return;
+            }
+            
+            favoritesContainer.innerHTML = favorites.map(fav => `
+                <div class="favorite-item" onclick="loadFavorite('${fav.id}')">
+                    <div class="favorite-main">
+                        <span class="favorite-units">${fav.fromUnit} → ${fav.toUnit}</span>
+                        <button class="favorite-remove" onclick="event.stopPropagation(); removeFavorite('${fav.id}')">×</button>
+                    </div>
+                    <div class="favorite-category">${fav.category}</div>
+                </div>
+            `).join('');
+        }
+
+        function loadFavorite(favoriteId) {
+            const favorite = favorites.find(f => f.id === favoriteId);
+            if (!favorite) return;
+            
+            document.getElementById('mobileFromUnit').value = favorite.fromUnit;
+            document.getElementById('mobileToUnit').value = favorite.toUnit;
+            
+            // Auto-select the category
+            const categoryBtn = document.querySelector(`[data-category="${favorite.category}"]`);
+            if (categoryBtn) {
+                categoryBtn.click();
+            }
+            
+            showNotification('Loaded favorite', 'success');
+        }
+
+        function removeFavorite(favoriteId) {
+            favorites = favorites.filter(f => f.id !== favoriteId);
+            localStorage.setItem('conversionFavorites', JSON.stringify(favorites));
+            updateFavoritesDisplay();
+            showNotification('Removed from favorites', 'info');
+        }
+
+        // Batch Conversion Feature
+        function addBatchInput() {
+            const batchContainer = document.getElementById('batchContainer');
+            if (!batchContainer) return;
+            
+            const inputGroup = document.createElement('div');
+            inputGroup.className = 'batch-input-group';
+            inputGroup.innerHTML = `
+                <input type="number" class="mobile-input batch-value" placeholder="Value" step="any">
+                <button class="mobile-btn batch-convert" onclick="convertBatchItem(this)">Convert</button>
+                <button class="mobile-btn batch-remove" onclick="removeBatchItem(this)">×</button>
+            `;
+            
+            batchContainer.appendChild(inputGroup);
+        }
+
+        function convertBatchItem(button) {
+            const group = button.parentElement;
+            const valueInput = group.querySelector('.batch-value');
+            const value = parseFloat(valueInput.value);
+            
+            if (!value || isNaN(value)) {
+                showNotification('Please enter a valid number', 'error');
+                return;
+            }
+            
+            const fromUnit = document.getElementById('mobileFromUnit').value;
+            const toUnit = document.getElementById('mobileToUnit').value;
+            
+            if (!fromUnit || !toUnit) {
+                showNotification('Please select units first', 'error');
+                return;
+            }
+            
+            // Perform conversion
+            const result = performSimpleConversion(value, fromUnit, toUnit, getCurrentCategory());
+            if (result !== null) {
+                const resultSpan = document.createElement('span');
+                resultSpan.className = 'batch-result';
+                resultSpan.textContent = `${value} ${fromUnit} = ${result} ${toUnit}`;
+                group.appendChild(resultSpan);
+                button.style.display = 'none';
+            }
+        }
+
+        function removeBatchItem(button) {
+            button.parentElement.remove();
+        }
+
+        function clearBatch() {
+            const batchContainer = document.getElementById('batchContainer');
+            if (batchContainer) {
+                batchContainer.innerHTML = '';
+            }
+        }
+
         // Initialize when page loads
         document.addEventListener('DOMContentLoaded', function() {
             console.log('Mobile app initializing...');
             initMobileApp();
+            updateHistoryDisplay();
+            updateFavoritesDisplay();
             console.log('Mobile app initialized successfully');
         });
     </script>

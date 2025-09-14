@@ -5,17 +5,25 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AI Smart Unit Converter - 15+ Categories, 120+ Units</title>
     
+    <!-- Security Headers -->
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com; style-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com; connect-src 'self' https://api.exchangerate-api.com https://api.fixer.io https://api.currencyapi.com https://api.coingecko.com https://api.coincap.io https://min-api.cryptocompare.com; img-src 'self' data: https:; font-src 'self' https://cdnjs.cloudflare.com;">
+    <meta http-equiv="X-Content-Type-Options" content="nosniff">
+    <meta http-equiv="X-Frame-Options" content="DENY">
+    <meta http-equiv="X-XSS-Protection" content="1; mode=block">
+    <meta http-equiv="Referrer-Policy" content="strict-origin-when-cross-origin">
+    
     <!-- PWA Meta Tags -->
-    <link rel="manifest" href="/manifest.json">
+    <link rel="manifest" href="./manifest.json">
     <meta name="theme-color" content="#667eea">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="Unit Converter">
-    <link rel="apple-touch-icon" href="/icons/icon-192x192.png">
-    <link rel="apple-touch-startup-image" href="/icons/splash-640x1136.png">
+    <link rel="apple-touch-icon" href="./icons/icon-192x192.png">
+    <link rel="apple-touch-startup-image" href="./icons/splash-640x1136.png">
     
     <!-- External Resources -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <script src="security_utils.js"></script>
     <script src="draggable_categories.js"></script>
     <style>
         * {
@@ -1023,6 +1031,12 @@
                         <div class="result-display" id="result">
                             Enter a value to see the conversion result
                         </div>
+                        
+                        <!-- Security Status Indicator -->
+                        <div class="security-status" id="security-status" style="display: none; margin-top: 10px; padding: 8px; background: rgba(76, 175, 80, 0.1); border-radius: 8px; font-size: 12px; color: #4caf50;">
+                            <i class="fas fa-shield-alt"></i>
+                            <span id="security-status-text">Security features active</span>
+                        </div>
                     </div>
                 </div>
 
@@ -1444,11 +1458,29 @@
         let lastCryptoUpdate = 0;
         const CRYPTO_CACHE_DURATION = 2 * 60 * 1000; // 2 minutes (crypto changes faster)
 
+        // Show security status
+        function showSecurityStatus() {
+            if (typeof SecurityUtils !== 'undefined') {
+                const status = SecurityUtils.getSecurityStatus();
+                const statusDiv = document.getElementById('security-status');
+                const statusText = document.getElementById('security-status-text');
+                
+                if (status.isSecureContext && status.hasCSP) {
+                    statusText.textContent = '🔒 Security features active - CSP, Input validation, Rate limiting';
+                    statusDiv.style.display = 'block';
+                    setTimeout(() => {
+                        statusDiv.style.display = 'none';
+                    }, 5000);
+                }
+            }
+        }
+
         // Initialize the app
         document.addEventListener('DOMContentLoaded', function() {
             createParticles();
             populateCategories();
             setupEventListeners();
+            showSecurityStatus();
             
             // Register service worker for background updates
             registerServiceWorker();
