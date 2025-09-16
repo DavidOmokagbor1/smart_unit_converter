@@ -964,6 +964,7 @@
 </head>
 <body class="dark-mode">
             <div class="floating-particles" id="particles"></div>
+            <div id="connection-status" class="connection-status online" style="position: fixed; top: 10px; right: 10px; padding: 8px 16px; border-radius: 20px; font-size: 12px; font-weight: bold; z-index: 1000; background: rgba(76, 175, 80, 0.9); color: white;">📡 Online</div>
         
         <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle dark/light theme" title="Toggle dark/light theme">
             <i class="fas fa-moon" id="theme-icon"></i>
@@ -1637,6 +1638,9 @@
             // Initialize PWA features
             initializePWAFeatures();
             
+            // Initialize offline support
+            initializeOfflineSupport();
+            
             // Initial API calls
             fetchCurrencyRates();
             fetchCryptoRates();
@@ -1658,7 +1662,7 @@
         async function registerServiceWorker() {
             if ('serviceWorker' in navigator) {
                 try {
-                    const registration = await navigator.serviceWorker.register('./service-worker-enhanced.js');
+                    const registration = await navigator.serviceWorker.register('./service-worker-fixed.js');
                     console.log('Service Worker registered:', registration);
                     
                     // Request background sync permission
@@ -1691,6 +1695,66 @@
                 } catch (error) {
                     console.log('Service Worker registration failed:', error);
                 }
+            }
+        }
+        
+        function initializeOfflineSupport() {
+            // Check online/offline status
+            function updateOnlineStatus() {
+                const isOnline = navigator.onLine;
+                const statusElement = document.getElementById('connection-status');
+                
+                if (statusElement) {
+                    statusElement.textContent = isOnline ? '📡 Online' : '📡 Offline';
+                    statusElement.className = isOnline ? 'connection-status online' : 'connection-status offline';
+                    statusElement.style.background = isOnline ? 'rgba(76, 175, 80, 0.9)' : 'rgba(244, 67, 54, 0.9)';
+                }
+                
+                // Show offline message
+                if (!isOnline) {
+                    showOfflineMessage();
+                } else {
+                    hideOfflineMessage();
+                }
+            }
+            
+            // Listen for online/offline events
+            window.addEventListener('online', updateOnlineStatus);
+            window.addEventListener('offline', updateOnlineStatus);
+            
+            // Initial check
+            updateOnlineStatus();
+        }
+        
+        function showOfflineMessage() {
+            let offlineMessage = document.getElementById('offline-message');
+            if (!offlineMessage) {
+                offlineMessage = document.createElement('div');
+                offlineMessage.id = 'offline-message';
+                offlineMessage.innerHTML = `
+                    <div style="
+                        position: fixed;
+                        top: 0;
+                        left: 0;
+                        right: 0;
+                        background: #ff6b6b;
+                        color: white;
+                        padding: 10px;
+                        text-align: center;
+                        z-index: 1000;
+                        font-weight: bold;
+                    ">
+                        📡 You're offline - Some features may be limited
+                    </div>
+                `;
+                document.body.appendChild(offlineMessage);
+            }
+        }
+        
+        function hideOfflineMessage() {
+            const offlineMessage = document.getElementById('offline-message');
+            if (offlineMessage) {
+                offlineMessage.remove();
             }
         }
         
