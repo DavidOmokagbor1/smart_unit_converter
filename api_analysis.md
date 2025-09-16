@@ -73,3 +73,5 @@
 - ✅ Auto-updating functionality
 
 No upgrades needed unless you want advanced features like historical data or market analysis.
+
+

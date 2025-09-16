@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Site Fix</title>
+</head>
+<body>
+    <h1>Testing Site Fix</h1>
+    <p>Checking if the undefined error is fixed...</p>
+    
+    <script>
+        // Test the SecurityUtils implementation
+        const SecurityUtils = {
+            getSecurityStatus: function() {
+                return {
+                    isSecureContext: window.isSecureContext || false,
+                    hasCSP: document.querySelector('meta[http-equiv="Content-Security-Policy"]') !== null
+                };
+            }
+        };
+        
+        console.log('SecurityUtils test:', SecurityUtils.getSecurityStatus());
+        console.log('No undefined errors should appear above');
+    </script>
+</body>
+</html>

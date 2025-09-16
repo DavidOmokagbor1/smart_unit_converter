@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Debug Site - Smart Unit Converter</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .status { padding: 10px; margin: 10px 0; border-radius: 5px; }
+        .success { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+        .error { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+        .info { background: #d1ecf1; color: #0c5460; border: 1px solid #bee5eb; }
+    </style>
+</head>
+<body>
+    <h1>🔍 Smart Unit Converter - Debug Test</h1>
+    
+    <div id="status"></div>
+    
+    <h2>Test Results:</h2>
+    <div id="results"></div>
+    
+    <h2>Console Log:</h2>
+    <div id="console"></div>
+    
+    <script>
+        const statusDiv = document.getElementById('status');
+        const resultsDiv = document.getElementById('results');
+        const consoleDiv = document.getElementById('console');
+        
+        let testResults = [];
+        let consoleLog = [];
+        
+        // Override console.log to capture logs
+        const originalLog = console.log;
+        console.log = function(...args) {
+            consoleLog.push(args.join(' '));
+            originalLog.apply(console, args);
+        };
+        
+        // Test 1: Check if SecurityUtils is defined
+        try {
+            if (typeof SecurityUtils !== 'undefined') {
+                testResults.push('✅ SecurityUtils is defined');
+            } else {
+                testResults.push('❌ SecurityUtils is undefined');
+            }
+        } catch (e) {
+            testResults.push('❌ Error checking SecurityUtils: ' + e.message);
+        }
+        
+        // Test 2: Check if main functions exist
+        try {
+            if (typeof showSecurityStatus === 'function') {
+                testResults.push('✅ showSecurityStatus function exists');
+            } else {
+                testResults.push('❌ showSecurityStatus function is undefined');
+            }
+        } catch (e) {
+            testResults.push('❌ Error checking showSecurityStatus: ' + e.message);
+        }
+        
+        // Test 3: Check if categories object exists
+        try {
+            if (typeof categories !== 'undefined') {
+                testResults.push('✅ categories object exists');
+            } else {
+                testResults.push('❌ categories object is undefined');
+            }
+        } catch (e) {
+            testResults.push('❌ Error checking categories: ' + e.message);
+        }
+        
+        // Test 4: Check for any undefined variables
+        try {
+            // This will catch any undefined variables in the global scope
+            const undefinedVars = [];
+            for (let prop in window) {
+                if (window[prop] === undefined) {
+                    undefinedVars.push(prop);
+                }
+            }
+            if (undefinedVars.length > 0) {
+                testResults.push('⚠️ Found undefined variables: ' + undefinedVars.join(', '));
+            } else {
+                testResults.push('✅ No undefined variables found');
+            }
+        } catch (e) {
+            testResults.push('❌ Error checking undefined variables: ' + e.message);
+        }
+        
+        // Display results
+        resultsDiv.innerHTML = testResults.map(result => `<div class="status ${result.startsWith('✅') ? 'success' : result.startsWith('❌') ? 'error' : 'info'}">${result}</div>`).join('');
+        
+        // Display console log
+        consoleDiv.innerHTML = consoleLog.map(log => `<div>${log}</div>`).join('');
+        
+        // Overall status
+        const hasErrors = testResults.some(result => result.startsWith('❌'));
+        if (hasErrors) {
+            statusDiv.innerHTML = '<div class="status error">❌ Issues found - see test results below</div>';
+        } else {
+            statusDiv.innerHTML = '<div class="status success">✅ All tests passed - site is working correctly</div>';
+        }
+        
+        // Test the main site
+        setTimeout(() => {
+            console.log('Testing main site...');
+            fetch('https://davidomokagbor1.github.io/smart_unit_converter/')
+                .then(response => response.text())
+                .then(html => {
+                    console.log('Main site loaded successfully');
+                    if (html.includes('undefined')) {
+                        console.log('⚠️ Main site contains "undefined" text');
+                    } else {
+                        console.log('✅ Main site does not contain "undefined" text');
+                    }
+                })
+                .catch(error => {
+                    console.log('❌ Error loading main site: ' + error.message);
+                });
+        }, 1000);
+    </script>
+</body>
+</html>
