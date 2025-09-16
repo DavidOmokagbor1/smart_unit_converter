@@ -15,7 +15,7 @@ import HistoryScreen from './src/screens/HistoryScreen';
 import FavoritesScreen from './src/screens/FavoritesScreen';
 import SettingsScreen from './src/screens/SettingsScreen';
 
-// Import theme
+// Import theme and components
 import { ThemeProvider, useTheme } from './src/contexts/ThemeContext';
 
 const Tab = createBottomTabNavigator();

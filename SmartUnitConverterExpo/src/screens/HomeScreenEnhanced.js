@@ -3,7 +3,7 @@
  * Modern interface with subtle background elements
  */
 
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
@@ -15,7 +15,6 @@ import {
   ActivityIndicator,
   Dimensions,
   Modal,
-  Animated,
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import ConversionService from '../services/ConversionService';
@@ -31,56 +30,25 @@ export default function HomeScreen() {
   const [loading, setLoading] = useState(false);
   const [showFromUnitModal, setShowFromUnitModal] = useState(false);
   const [showToUnitModal, setShowToUnitModal] = useState(false);
-  const [lastUpdate, setLastUpdate] = useState(null);
-  const [isUpdating, setIsUpdating] = useState(false);
 
-  // All categories from ConversionService with icons
+  // Categories with icons
   const categories = [
     { id: 'length', name: 'Length', icon: '📏' },
     { id: 'weight', name: 'Weight', icon: '⚖️' },
     { id: 'temperature', name: 'Temperature', icon: '🌡️' },
-    { id: 'volume', name: 'Volume', icon: '🧪' },
     { id: 'area', name: 'Area', icon: '📐' },
-    { id: 'speed', name: 'Speed', icon: '🚀' },
+    { id: 'volume', name: 'Volume', icon: '🧪' },
     { id: 'time', name: 'Time', icon: '⏰' },
-    { id: 'digital_storage_binary', name: 'Binary Storage', icon: '💾' },
-    { id: 'digital_storage_decimal', name: 'Decimal Storage', icon: '💿' },
-    { id: 'energy', name: 'Energy', icon: '⚡' },
-    { id: 'power', name: 'Power', icon: '🔋' },
+    { id: 'speed', name: 'Speed', icon: '🚀' },
     { id: 'pressure', name: 'Pressure', icon: '💨' },
-    { id: 'data_transfer', name: 'Data Transfer', icon: '📡' },
-    { id: 'frequency', name: 'Frequency', icon: '📻' },
-    { id: 'cooking_volume', name: 'Cooking Volume', icon: '🥄' },
-    { id: 'cooking_weight', name: 'Cooking Weight', icon: '🍽️' },
-    { id: 'baking_temperature', name: 'Baking Temp', icon: '🔥' },
-    { id: 'currency', name: 'Currency', icon: '💵' },
-    { id: 'crypto', name: 'Cryptocurrency', icon: '₿' },
+    { id: 'energy', name: 'Energy', icon: '⚡' },
   ];
-
-  // Country flags for currencies
-  const currencyFlags = {
-    'USD': '🇺🇸', 'EUR': '🇪🇺', 'GBP': '🇬🇧', 'JPY': '🇯🇵', 'CNY': '🇨🇳',
-    'INR': '🇮🇳', 'AUD': '🇦🇺', 'CAD': '🇨🇦', 'CHF': '🇨🇭', 'SEK': '🇸🇪',
-    'NOK': '🇳🇴', 'DKK': '🇩🇰', 'PLN': '🇵🇱', 'CZK': '🇨🇿', 'HUF': '🇭🇺',
-    'RUB': '🇷🇺', 'BRL': '🇧🇷', 'KRW': '🇰🇷', 'SGD': '🇸🇬', 'HKD': '🇭🇰',
-    'NZD': '🇳🇿', 'MXN': '🇲🇽', 'ZAR': '🇿🇦', 'TRY': '🇹🇷', 'THB': '🇹🇭'
-  };
-
-  // Crypto symbols
-  const cryptoSymbols = {
-    'BTC': '₿', 'ETH': 'Ξ', 'BNB': '🟡', 'ADA': '🔵', 'SOL': '☀️',
-    'XRP': '💧', 'DOT': '🔴', 'DOGE': '🐕', 'AVAX': '🔺', 'SHIB': '🐕',
-    'MATIC': '🟣', 'LTC': '⚡', 'UNI': '🦄', 'LINK': '🔗', 'ATOM': '⚛️',
-    'FTM': '👻', 'NEAR': '🌐', 'ALGO': '🔷', 'VET': '🔷', 'ICP': '🌐'
-  };
 
   // Get units for current category
   const currentUnits = Object.entries(ConversionService.categories[currentCategory]?.units || {}).map(([key, data]) => ({
     id: key,
     name: data.name,
     symbol: key,
-    flag: currentCategory === 'currency' ? currencyFlags[key] : 
-          currentCategory === 'crypto' ? cryptoSymbols[key] : null,
   }));
 
   useEffect(() => {
@@ -88,34 +56,6 @@ export default function HomeScreen() {
       setFromUnit(currentUnits[0].id);
       setToUnit(currentUnits[1]?.id || currentUnits[0].id);
     }
-  }, [currentCategory]);
-
-  // Auto-update currency and crypto rates every 3 minutes
-  useEffect(() => {
-    const updateRates = async () => {
-      if (currentCategory === 'currency' || currentCategory === 'crypto') {
-        setIsUpdating(true);
-        try {
-          await ConversionService.loadCurrencyRates();
-          await ConversionService.loadCryptoRates();
-          setLastUpdate(new Date());
-    } catch (error) {
-          console.log('Rate update failed:', error);
-        } finally {
-          setIsUpdating(false);
-        }
-      }
-    };
-
-    // Update immediately if currency/crypto category
-    if (currentCategory === 'currency' || currentCategory === 'crypto') {
-      updateRates();
-    }
-
-    // Set up interval for auto-updates every 3 minutes
-    const interval = setInterval(updateRates, 3 * 60 * 1000); // 3 minutes
-
-    return () => clearInterval(interval);
   }, [currentCategory]);
 
   const handleConvert = async () => {
@@ -146,93 +86,17 @@ export default function HomeScreen() {
     }
   };
 
-  // Floating logo component with animation
-  const FloatingLogo = ({ icon, top, left, right, delay = 0 }) => {
-    const floatAnim = useRef(new Animated.Value(0)).current;
-    const rotateAnim = useRef(new Animated.Value(0)).current;
-
-    useEffect(() => {
-      const startFloating = () => {
-        // Floating up and down animation
-        Animated.loop(
-          Animated.sequence([
-            Animated.timing(floatAnim, {
-              toValue: 1,
-              duration: 3000 + delay * 200,
-              useNativeDriver: true,
-            }),
-            Animated.timing(floatAnim, {
-              toValue: 0,
-              duration: 3000 + delay * 200,
-              useNativeDriver: true,
-            }),
-          ])
-        ).start();
-
-        // Gentle rotation animation
-        Animated.loop(
-          Animated.timing(rotateAnim, {
-            toValue: 1,
-            duration: 8000 + delay * 500,
-            useNativeDriver: true,
-          })
-        ).start();
-      };
-
-      startFloating();
-    }, [delay]);
-
-    const translateY = floatAnim.interpolate({
-      inputRange: [0, 1],
-      outputRange: [0, -15],
-    });
-
-    const rotate = rotateAnim.interpolate({
-      inputRange: [0, 1],
-      outputRange: ['0deg', '360deg'],
-    });
-
-    return (
-      <Animated.Text
-        style={[
-          styles.floatingLogo,
-          {
-            top,
-            left,
-            right,
-            transform: [
-              { translateY },
-              { rotate },
-            ],
-          },
-        ]}
-      >
-        {icon}
-      </Animated.Text>
-    );
-  };
-
   const FloatingConversionLogos = () => (
     <View style={styles.floatingLogos}>
-      <FloatingLogo icon="📏" top={height * 0.05} left={width * 0.1} delay={0} />
-      <FloatingLogo icon="⚖️" top={height * 0.15} right={width * 0.1} delay={1} />
-      <FloatingLogo icon="🌡️" top={height * 0.25} left={width * 0.05} delay={2} />
-      <FloatingLogo icon="📐" top={height * 0.35} right={width * 0.05} delay={3} />
-      <FloatingLogo icon="🧪" top={height * 0.45} left={width * 0.15} delay={4} />
-      <FloatingLogo icon="⏰" top={height * 0.55} right={width * 0.15} delay={5} />
-      <FloatingLogo icon="🚀" top={height * 0.65} left={width * 0.1} delay={6} />
-      <FloatingLogo icon="💨" top={height * 0.75} right={width * 0.1} delay={7} />
-      <FloatingLogo icon="⚡" top={height * 0.85} left={width * 0.2} delay={8} />
-      <FloatingLogo icon="💾" top={height * 0.1} right={width * 0.2} delay={9} />
-      <FloatingLogo icon="💿" top={height * 0.2} left={width * 0.25} delay={10} />
-      <FloatingLogo icon="🔋" top={height * 0.3} right={width * 0.25} delay={11} />
-      <FloatingLogo icon="📡" top={height * 0.4} left={width * 0.3} delay={12} />
-      <FloatingLogo icon="📻" top={height * 0.5} right={width * 0.3} delay={13} />
-      <FloatingLogo icon="🥄" top={height * 0.6} left={width * 0.35} delay={14} />
-      <FloatingLogo icon="🍽️" top={height * 0.7} right={width * 0.35} delay={15} />
-      <FloatingLogo icon="🔥" top={height * 0.8} left={width * 0.4} delay={16} />
-      <FloatingLogo icon="💵" top={height * 0.9} right={width * 0.4} delay={17} />
-      <FloatingLogo icon="₿" top={height * 0.95} left={width * 0.5} delay={18} />
+      <Text style={[styles.floatingLogo, { top: height * 0.1, left: width * 0.1 }]}>📏</Text>
+      <Text style={[styles.floatingLogo, { top: height * 0.2, right: width * 0.1 }]}>⚖️</Text>
+      <Text style={[styles.floatingLogo, { top: height * 0.3, left: width * 0.05 }]}>🌡️</Text>
+      <Text style={[styles.floatingLogo, { top: height * 0.4, right: width * 0.05 }]}>📐</Text>
+      <Text style={[styles.floatingLogo, { top: height * 0.5, left: width * 0.15 }]}>🧪</Text>
+      <Text style={[styles.floatingLogo, { top: height * 0.6, right: width * 0.15 }]}>⏰</Text>
+      <Text style={[styles.floatingLogo, { top: height * 0.7, left: width * 0.1 }]}>🚀</Text>
+      <Text style={[styles.floatingLogo, { top: height * 0.8, right: width * 0.1 }]}>💨</Text>
+      <Text style={[styles.floatingLogo, { top: height * 0.9, left: width * 0.2 }]}>⚡</Text>
     </View>
   );
 
@@ -264,17 +128,12 @@ export default function HomeScreen() {
                   onClose();
                 }}
               >
-                <View style={styles.unitOptionContent}>
-                  {unit.flag && (
-                    <Text style={styles.unitOptionFlag}>{unit.flag}</Text>
-                  )}
-                  <Text style={[
-                    styles.unitOptionText,
-                    selectedUnit === unit.id && styles.unitOptionTextSelected
-                  ]}>
-                    {unit.name}
-                  </Text>
-                </View>
+                <Text style={[
+                  styles.unitOptionText,
+                  selectedUnit === unit.id && styles.unitOptionTextSelected
+                ]}>
+                  {unit.name}
+                </Text>
               </TouchableOpacity>
             ))}
           </ScrollView>
@@ -291,22 +150,6 @@ export default function HomeScreen() {
       {/* Simple Header */}
       <View style={styles.header}>
         <Text style={styles.title}>Smart Unit Converter</Text>
-        {(currentCategory === 'currency' || currentCategory === 'crypto') && (
-          <View style={styles.updateIndicator}>
-            {isUpdating ? (
-              <View style={styles.updatingContainer}>
-                <ActivityIndicator size="small" color="#4facfe" />
-                <Text style={styles.updatingText}>Updating rates...</Text>
-              </View>
-            ) : lastUpdate ? (
-              <Text style={styles.lastUpdateText}>
-                Last updated: {lastUpdate.toLocaleTimeString()}
-              </Text>
-            ) : (
-              <Text style={styles.lastUpdateText}>Loading rates...</Text>
-            )}
-          </View>
-        )}
       </View>
 
       {/* Main Content */}
@@ -335,16 +178,9 @@ export default function HomeScreen() {
               style={styles.unitDisplay}
               onPress={() => setShowFromUnitModal(true)}
             >
-              <View style={styles.unitTextContainer}>
-                {fromUnit && currentUnits.find(u => u.id === fromUnit)?.flag && (
-                  <Text style={styles.unitFlag}>
-                    {currentUnits.find(u => u.id === fromUnit)?.flag}
-                  </Text>
-                )}
-                <Text style={styles.unitText}>
-                  {fromUnit ? currentUnits.find(u => u.id === fromUnit)?.name : 'Select Unit'}
-                </Text>
-              </View>
+              <Text style={styles.unitText}>
+                {fromUnit ? currentUnits.find(u => u.id === fromUnit)?.name : 'Select Unit'}
+              </Text>
               <Text style={styles.dropdownArrow}>▼</Text>
             </TouchableOpacity>
           </View>
@@ -356,16 +192,9 @@ export default function HomeScreen() {
               style={styles.unitDisplay}
               onPress={() => setShowToUnitModal(true)}
             >
-              <View style={styles.unitTextContainer}>
-                {toUnit && currentUnits.find(u => u.id === toUnit)?.flag && (
-                  <Text style={styles.unitFlag}>
-                    {currentUnits.find(u => u.id === toUnit)?.flag}
-                  </Text>
-                )}
-                <Text style={styles.unitText}>
-                  {toUnit ? currentUnits.find(u => u.id === toUnit)?.name : 'Select Unit'}
-                </Text>
-              </View>
+              <Text style={styles.unitText}>
+                {toUnit ? currentUnits.find(u => u.id === toUnit)?.name : 'Select Unit'}
+              </Text>
               <Text style={styles.dropdownArrow}>▼</Text>
             </TouchableOpacity>
           </View>
@@ -391,16 +220,9 @@ export default function HomeScreen() {
           {/* Result */}
           {result && (
             <View style={styles.resultCard}>
-              <View style={styles.resultContent}>
-                {currentUnits.find(u => u.id === toUnit)?.flag && (
-                  <Text style={styles.resultFlag}>
-                    {currentUnits.find(u => u.id === toUnit)?.flag}
-                  </Text>
-                )}
-                <Text style={styles.resultText}>
-                  {result} {currentUnits.find(u => u.id === toUnit)?.symbol || ''}
-                </Text>
-              </View>
+              <Text style={styles.resultText}>
+                {result} {currentUnits.find(u => u.id === toUnit)?.symbol || ''}
+              </Text>
             </View>
           )}
         </View>
@@ -452,8 +274,8 @@ export default function HomeScreen() {
 }
 
 const styles = StyleSheet.create({
-    container: {
-      flex: 1,
+  container: {
+    flex: 1,
     backgroundColor: '#0a0a0a',
   },
   floatingLogos: {
@@ -466,12 +288,9 @@ const styles = StyleSheet.create({
   },
   floatingLogo: {
     position: 'absolute',
-    fontSize: 28,
-    opacity: 0.15,
+    fontSize: 24,
+    opacity: 0.1,
     color: '#667eea',
-    textShadowColor: 'rgba(102, 126, 234, 0.3)',
-    textShadowOffset: { width: 0, height: 0 },
-    textShadowRadius: 10,
   },
   header: {
     backgroundColor: '#1a1a2e',
@@ -485,46 +304,28 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: '700',
     color: '#ffffff',
-      textAlign: 'center',
-    },
-  updateIndicator: {
-    marginTop: 8,
-    alignItems: 'center',
+    textAlign: 'center',
   },
-  updatingContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  updatingText: {
-      fontSize: 12,
-    color: '#4facfe',
-    marginLeft: 8,
-  },
-  lastUpdateText: {
-    fontSize: 11,
-    color: 'rgba(255, 255, 255, 0.6)',
-      fontStyle: 'italic',
-    },
   content: {
     flex: 1,
-      padding: 16,
+    padding: 16,
     zIndex: 5,
-    },
+  },
   card: {
     backgroundColor: 'rgba(255, 255, 255, 0.1)',
-      borderRadius: 12,
-      borderWidth: 1,
+    borderRadius: 12,
+    borderWidth: 1,
     borderColor: 'rgba(255, 255, 255, 0.2)',
-      padding: 16,
+    padding: 16,
     marginBottom: 16,
   },
   cardTitle: {
-      fontSize: 16,
+    fontSize: 16,
     fontWeight: '600',
     color: '#f093fb',
     marginBottom: 16,
-      textAlign: 'center',
-    },
+    textAlign: 'center',
+  },
   inputGroup: {
     marginBottom: 12,
   },
@@ -538,29 +339,20 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(255, 255, 255, 0.1)',
     borderWidth: 1,
     borderColor: 'rgba(255, 255, 255, 0.2)',
-      borderRadius: 8,
+    borderRadius: 8,
     padding: 12,
-      fontSize: 16,
+    fontSize: 16,
     color: '#ffffff',
-    },
+  },
   unitDisplay: {
     backgroundColor: 'rgba(255, 255, 255, 0.1)',
-      borderWidth: 1,
+    borderWidth: 1,
     borderColor: 'rgba(255, 255, 255, 0.2)',
     borderRadius: 8,
-      padding: 12,
-      flexDirection: 'row',
-      justifyContent: 'space-between',
-      alignItems: 'center',
-    },
-  unitTextContainer: {
-      flexDirection: 'row',
-      alignItems: 'center',
-      flex: 1,
-    },
-  unitFlag: {
-    fontSize: 16,
-    marginRight: 8,
+    padding: 12,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
   },
   unitText: {
     fontSize: 16,
@@ -568,11 +360,11 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   dropdownArrow: {
-      fontSize: 12,
+    fontSize: 12,
     color: 'rgba(255, 255, 255, 0.6)',
-    },
+  },
   convertButton: {
-      borderRadius: 8,
+    borderRadius: 8,
     marginTop: 12,
   },
   buttonGradient: {
@@ -587,29 +379,20 @@ const styles = StyleSheet.create({
   },
   resultCard: {
     marginTop: 12,
-      padding: 12,
+    padding: 12,
     backgroundColor: 'rgba(79, 172, 254, 0.2)',
-      borderRadius: 8,
-      borderWidth: 1,
+    borderRadius: 8,
+    borderWidth: 1,
     borderColor: 'rgba(79, 172, 254, 0.3)',
-  },
-  resultContent: {
-      flexDirection: 'row',
-      alignItems: 'center',
-    justifyContent: 'center',
-  },
-  resultFlag: {
-    fontSize: 18,
-    marginRight: 8,
   },
   resultText: {
     fontSize: 16,
-      fontWeight: 'bold',
+    fontWeight: 'bold',
     color: '#4facfe',
     textAlign: 'center',
   },
   categoryGrid: {
-      flexDirection: 'row',
+    flexDirection: 'row',
     flexWrap: 'wrap',
     justifyContent: 'space-between',
   },
@@ -618,9 +401,9 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: 'rgba(255, 255, 255, 0.2)',
     borderRadius: 8,
-    padding: 10,
+    padding: 12,
     width: (width - 80) / 3,
-      alignItems: 'center',
+    alignItems: 'center',
     marginBottom: 8,
   },
   categoryButtonActive: {
@@ -628,13 +411,13 @@ const styles = StyleSheet.create({
     borderColor: '#f093fb',
   },
   categoryIcon: {
-      fontSize: 18,
+    fontSize: 18,
     marginBottom: 4,
   },
   categoryText: {
-    fontSize: 10,
+    fontSize: 11,
     color: '#ffffff',
-      textAlign: 'center',
+    textAlign: 'center',
     fontWeight: '500',
   },
   categoryTextActive: {
@@ -646,7 +429,7 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: 'rgba(0, 0, 0, 0.8)',
     justifyContent: 'center',
-      alignItems: 'center',
+    alignItems: 'center',
   },
   modalContent: {
     backgroundColor: '#1a1a2e',
@@ -659,13 +442,13 @@ const styles = StyleSheet.create({
   modalHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-      alignItems: 'center',
+    alignItems: 'center',
     padding: 16,
     borderBottomWidth: 1,
     borderBottomColor: 'rgba(255, 255, 255, 0.1)',
   },
   modalTitle: {
-      fontSize: 18,
+    fontSize: 18,
     fontWeight: '600',
     color: '#ffffff',
   },
@@ -684,14 +467,6 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     borderBottomColor: 'rgba(255, 255, 255, 0.1)',
   },
-  unitOptionContent: {
-      flexDirection: 'row',
-      alignItems: 'center',
-  },
-  unitOptionFlag: {
-    fontSize: 18,
-    marginRight: 12,
-  },
   unitOptionSelected: {
     backgroundColor: 'rgba(102, 126, 234, 0.3)',
   },
@@ -702,5 +477,5 @@ const styles = StyleSheet.create({
   unitOptionTextSelected: {
     color: '#f093fb',
     fontWeight: '600',
-    },
-  });
+  },
+});

@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Expo QR Code - Auto-Update Version</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+        .container {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(20px);
+            border-radius: 20px;
+            padding: 30px;
+            text-align: center;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            max-width: 700px;
+        }
+        h1 { color: white; margin-bottom: 20px; }
+        .qr-container {
+            margin: 20px 0;
+            padding: 20px;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+        .qr-code { max-width: 100%; height: auto; border-radius: 10px; }
+        .url {
+            color: white;
+            font-size: 16px;
+            margin: 20px 0;
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            word-break: break-all;
+        }
+        .features {
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 14px;
+            line-height: 1.6;
+            margin-top: 20px;
+            text-align: left;
+        }
+        .feature {
+            margin: 10px 0;
+            padding: 10px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+        }
+        .success {
+            color: #4facfe;
+            font-weight: bold;
+            background: rgba(79, 172, 254, 0.2);
+            padding: 10px;
+            border-radius: 8px;
+            margin: 10px 0;
+        }
+        .update-demo {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 20px 0;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        .update-icon {
+            font-size: 24px;
+            margin: 0 10px;
+            animation: pulse 2s ease-in-out infinite;
+        }
+        .update-icon:nth-child(2) { animation-delay: 0.5s; }
+        .update-icon:nth-child(3) { animation-delay: 1s; }
+        .update-icon:nth-child(4) { animation-delay: 1.5s; }
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); opacity: 0.7; }
+            50% { transform: scale(1.2); opacity: 1; }
+        }
+        .premium-features {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+        .premium-feature {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        .premium-icon {
+            font-size: 32px;
+            margin-bottom: 10px;
+        }
+        .premium-title {
+            color: #f093fb;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        .premium-desc {
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 12px;
+        }
+        .timer-demo {
+            background: rgba(79, 172, 254, 0.2);
+            padding: 15px;
+            border-radius: 10px;
+            margin: 15px 0;
+            border: 1px solid rgba(79, 172, 254, 0.3);
+        }
+        .timer-text {
+            color: #4facfe;
+            font-weight: bold;
+            font-size: 16px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>📱 Expo Go QR Code - AUTO-UPDATE VERSION</h1>
+        <div class="success">
+            ✅ Auto-Updating Currency & Crypto + Floating Animations + Country Flags!
+        </div>
+        
+        <div class="update-demo">
+            <div class="update-icon">🔄</div>
+            <div class="update-icon">💵</div>
+            <div class="update-icon">₿</div>
+            <div class="update-icon">📊</div>
+        </div>
+        
+        <div class="timer-demo">
+            <div class="timer-text">⏰ Updates every 3 minutes automatically!</div>
+        </div>
+        
+        <div class="qr-container">
+            <img src="expo_fresh_8084_qr.png" alt="Expo QR Code" class="qr-code">
+        </div>
+        <div class="url">
+            <strong>URL:</strong> exp://192.168.1.160:8084
+        </div>
+        
+        <div class="features">
+            <div class="feature">
+                <strong>🔄 Auto-Updates:</strong> Currency and crypto rates update every 3 minutes
+            </div>
+            <div class="feature">
+                <strong>📊 Live Rates:</strong> Real-time exchange rates from reliable APIs
+            </div>
+            <div class="feature">
+                <strong>⏰ Visual Indicators:</strong> Shows "Updating rates..." and last update time
+            </div>
+            <div class="feature">
+                <strong>🎭 Floating Animations:</strong> 19+ logos gently float and rotate
+            </div>
+            <div class="feature">
+                <strong>🏳️ Country Flags:</strong> Visual flags for all currencies
+            </div>
+            <div class="feature">
+                <strong>₿ Crypto Symbols:</strong> Unique symbols for cryptocurrencies
+            </div>
+            <div class="feature">
+                <strong>📋 Complete Dropdowns:</strong> All units with flags/symbols
+            </div>
+        </div>
+
+        <h3 style="color: #f093fb; margin: 20px 0 10px 0;">🔄 Auto-Update Features:</h3>
+        <div class="premium-features">
+            <div class="premium-feature">
+                <div class="premium-icon">⏰</div>
+                <div class="premium-title">3-Minute Updates</div>
+                <div class="premium-desc">Automatic rate refresh</div>
+            </div>
+            <div class="premium-feature">
+                <div class="premium-icon">📊</div>
+                <div class="premium-title">Live Data</div>
+                <div class="premium-desc">Real-time exchange rates</div>
+            </div>
+            <div class="premium-feature">
+                <div class="premium-icon">🔄</div>
+                <div class="premium-title">Visual Feedback</div>
+                <div class="premium-desc">Update status indicators</div>
+            </div>
+            <div class="premium-feature">
+                <div class="premium-icon">⚡</div>
+                <div class="premium-title">Instant Updates</div>
+                <div class="premium-desc">Immediate refresh on category switch</div>
+            </div>
+        </div>
+
+        <p style="color: #ffd700; margin-top: 20px; font-weight: bold;">
+            🎯 Professional app with live data updates and premium animations!
+        </p>
+    </div>
+</body>
+</html>

@@ -54,45 +54,56 @@ export const ThemeProvider = ({ children }) => {
     isDarkMode,
     toggleTheme,
     colors: {
-      // Background colors
-      background: isDarkMode ? '#1a1a2e' : '#ffffff',
-      surface: isDarkMode ? '#2a2a3e' : '#f8f9fa',
-      card: isDarkMode ? '#2a2a3e' : '#ffffff',
+      // Web app exact colors
+      primary: '#667eea',
+      secondary: '#764ba2', 
+      accent: '#f093fb',
+      success: '#4facfe',
+      warning: '#f093fb',
+      error: '#ff6b6b',
       
-      // Text colors
-      text: isDarkMode ? '#ffffff' : '#000000',
-      textSecondary: isDarkMode ? '#666666' : '#666666',
-      textMuted: isDarkMode ? '#999999' : '#999999',
+      // Dark mode colors (matching web app exactly)
+      darkBg: '#0a0a0a',
+      darkCard: '#1a1a1a',
+      darkText: '#ffffff',
+      darkTextSecondary: '#b0b0b0',
       
-      // Accent colors
-      primary: '#4facfe',
-      primaryDark: '#3d8bfe',
-      secondary: isDarkMode ? '#333333' : '#e9ecef',
+      // Light mode colors (matching web app exactly)
+      lightBg: '#f8fafc',
+      lightCard: '#ffffff',
+      lightText: '#1a202c',
+      lightTextSecondary: '#4a5568',
       
-      // Border colors
-      border: isDarkMode ? '#333333' : '#dee2e6',
-      borderLight: isDarkMode ? '#444444' : '#f1f3f4',
+      // Glassmorphism colors (exact web app values)
+      glass: 'rgba(255, 255, 255, 0.1)',
+      glassDark: 'rgba(0, 0, 0, 0.1)',
       
-      // Status colors
-      success: '#10b981',
-      warning: '#f59e0b',
-      error: '#ef4444',
-      info: '#3b82f6',
+      // Dynamic colors based on theme
+      background: isDarkMode ? '#0a0a0a' : '#f8fafc',
+      surface: isDarkMode ? 'rgba(255, 255, 255, 0.1)' : 'rgba(255, 255, 255, 0.8)',
+      card: isDarkMode ? 'rgba(255, 255, 255, 0.1)' : 'rgba(255, 255, 255, 0.9)',
+      text: isDarkMode ? '#ffffff' : '#1a202c',
+      textSecondary: isDarkMode ? '#b0b0b0' : '#4a5568',
       
-      // Interactive colors
-      button: isDarkMode ? '#4facfe' : '#4facfe',
+      // Gradient arrays for animations
+      darkGradient: ['#0a0a0a', '#1a1a2e', '#16213e', '#0f3460'],
+      lightGradient: ['#f8fafc', '#e2e8f0', '#cbd5e0', '#a0aec0'],
+      
+      // Glassmorphism borders and shadows
+      glassBorder: isDarkMode ? 'rgba(255, 255, 255, 0.18)' : 'rgba(255, 255, 255, 0.3)',
+      glassBackground: isDarkMode ? 'rgba(255, 255, 255, 0.1)' : 'rgba(255, 255, 255, 0.2)',
+      shadow: isDarkMode ? 'rgba(102, 126, 234, 0.3)' : 'rgba(0, 0, 0, 0.1)',
+      shadowStrong: isDarkMode ? 'rgba(102, 126, 234, 0.5)' : 'rgba(0, 0, 0, 0.2)',
+      
+      // Interactive elements
+      button: isDarkMode ? 'rgba(102, 126, 234, 0.8)' : 'rgba(102, 126, 234, 0.9)',
       buttonText: '#ffffff',
-      buttonSecondary: isDarkMode ? '#333333' : '#e9ecef',
-      buttonSecondaryText: isDarkMode ? '#ffffff' : '#000000',
+      buttonSecondary: isDarkMode ? 'rgba(255, 255, 255, 0.1)' : 'rgba(0, 0, 0, 0.1)',
+      buttonSecondaryText: isDarkMode ? '#ffffff' : '#1a202c',
       
-      // Dropdown colors
-      dropdownBackground: isDarkMode ? '#1a1a2e' : '#ffffff',
-      dropdownBorder: isDarkMode ? '#4facfe' : '#4facfe',
-      dropdownItem: isDarkMode ? '#2a2a3e' : '#f8f9fa',
-      dropdownItemActive: '#4facfe',
-      
-      // Shadow colors
-      shadow: isDarkMode ? '#4facfe' : '#000000',
+      // Text gradient colors
+      gradientText: ['#667eea', '#f093fb', '#4facfe'],
+      textShadow: 'rgba(102, 126, 234, 0.5)',
     }
   };
 

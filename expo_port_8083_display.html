@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Expo QR Code - Port 8083</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+        .container {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(20px);
+            border-radius: 20px;
+            padding: 30px;
+            text-align: center;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            max-width: 500px;
+        }
+        h1 { color: white; margin-bottom: 20px; }
+        .qr-container {
+            margin: 20px 0;
+            padding: 20px;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+        .qr-code { max-width: 100%; height: auto; border-radius: 10px; }
+        .url {
+            color: white;
+            font-size: 16px;
+            margin: 20px 0;
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            word-break: break-all;
+        }
+        .instructions {
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 14px;
+            line-height: 1.6;
+            margin-top: 20px;
+        }
+        .step {
+            margin: 10px 0;
+            padding: 10px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+        }
+        .warning {
+            color: #ffd700;
+            font-weight: bold;
+            background: rgba(255, 215, 0, 0.2);
+            padding: 10px;
+            border-radius: 8px;
+            margin: 10px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>📱 Expo Go QR Code - PORT 8083</h1>
+        <div class="warning">
+            ⚠️ This QR code uses the CORRECT port (8083) where Expo is currently running!
+        </div>
+        <div class="qr-container">
+            <img src="expo_port_8083_qr.png" alt="Expo QR Code" class="qr-code">
+        </div>
+        <div class="url">
+            <strong>URL:</strong> exp://192.168.1.160:8083
+        </div>
+        <div class="instructions">
+            <div class="step">
+                <strong>Step 1:</strong> Make sure your phone is on the same WiFi network
+            </div>
+            <div class="step">
+                <strong>Step 2:</strong> Install "Expo Go" app from App Store/Google Play
+            </div>
+            <div class="step">
+                <strong>Step 3:</strong> Open Expo Go app on your phone
+            </div>
+            <div class="step">
+                <strong>Step 4:</strong> Scan the QR code above
+            </div>
+            <div class="step">
+                <strong>Step 5:</strong> Your FIXED mobile app will load!
+            </div>
+        </div>
+        <p style="color: #4facfe; margin-top: 20px; font-weight: bold;">
+            ✅ This should show the FIXED layout with better spacing!
+        </p>
+    </div>
+</body>
+</html>
