@@ -1758,6 +1758,38 @@
             }
         }
         
+        // Tab management functionality
+        function openNewTab() {
+            if (window.navigator && window.navigator.userAgent.includes('Chrome')) {
+                // Try to open in new tab within PWA
+                window.open(window.location.href, '_blank');
+            } else {
+                // Fallback for other browsers
+                window.open(window.location.href, '_blank');
+            }
+        }
+        
+        // Check if tabbed display is supported
+        function checkTabbedSupport() {
+            if ('display_override' in window.navigator) {
+                console.log('Tabbed display support detected');
+                return true;
+            } else {
+                console.log('Tabbed display not supported in this browser');
+                return false;
+            }
+        }
+        
+        // Initialize tabbed display check
+        document.addEventListener('DOMContentLoaded', function() {
+            const tabbedSupported = checkTabbedSupport();
+            if (tabbedSupported) {
+                console.log('✅ Tabbed display is supported and configured');
+            } else {
+                console.log('⚠️ Tabbed display not supported - PWA will work in standalone mode');
+            }
+        });
+        
         function updateRatesInUI(data) {
             // Update currency rates in UI
             if (data.currency && data.currency.rates) {
