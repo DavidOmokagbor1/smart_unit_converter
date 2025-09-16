@@ -1790,6 +1790,55 @@
             }
         });
         
+        // Browser detection and manifest loading
+        function detectBrowser() {
+            const userAgent = navigator.userAgent;
+            if (userAgent.includes('Safari') && !userAgent.includes('Chrome')) {
+                return 'safari';
+            } else if (userAgent.includes('Mobile') || userAgent.includes('Android') || userAgent.includes('iPhone')) {
+                return 'mobile';
+            } else if (userAgent.includes('Chrome') || userAgent.includes('Edge')) {
+                return 'chrome';
+            } else {
+                return 'other';
+            }
+        }
+        
+        function loadAppropriateManifest() {
+            const browser = detectBrowser();
+            let manifestFile = './manifest.json';
+            
+            switch(browser) {
+                case 'safari':
+                    manifestFile = './manifest-safari.json';
+                    console.log('🍎 Safari detected - using Safari-optimized manifest');
+                    break;
+                case 'mobile':
+                    manifestFile = './manifest-mobile.json';
+                    console.log('📱 Mobile detected - using mobile-optimized manifest');
+                    break;
+                case 'chrome':
+                    manifestFile = './manifest.json';
+                    console.log('🌐 Chrome/Edge detected - using full-featured manifest');
+                    break;
+                default:
+                    manifestFile = './manifest.json';
+                    console.log('🌐 Other browser detected - using default manifest');
+            }
+            
+            // Update manifest link
+            const manifestLink = document.querySelector('link[rel="manifest"]');
+            if (manifestLink) {
+                manifestLink.href = manifestFile;
+                console.log('📄 Manifest loaded:', manifestFile);
+            }
+        }
+        
+        // Load appropriate manifest on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            loadAppropriateManifest();
+        });
+        
         function updateRatesInUI(data) {
             // Update currency rates in UI
             if (data.currency && data.currency.rates) {
