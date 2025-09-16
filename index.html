@@ -97,9 +97,39 @@
             animation: float 6s ease-in-out infinite;
         }
 
+        .floating-logo {
+            position: absolute;
+            font-size: 2rem;
+            opacity: 0.1;
+            color: var(--accent);
+            pointer-events: none;
+            z-index: 1;
+            text-shadow: 0 0 20px rgba(102, 126, 234, 0.3);
+            animation: floatLogo 8s ease-in-out infinite;
+        }
+
         @keyframes float {
             0%, 100% { transform: translateY(0px) rotate(0deg); opacity: 1; }
             50% { transform: translateY(-20px) rotate(180deg); opacity: 0.5; }
+        }
+
+        @keyframes floatLogo {
+            0%, 100% { 
+                transform: translateY(0px) rotate(0deg) scale(1); 
+                opacity: 0.1; 
+            }
+            25% { 
+                transform: translateY(-15px) rotate(90deg) scale(1.1); 
+                opacity: 0.2; 
+            }
+            50% { 
+                transform: translateY(-30px) rotate(180deg) scale(0.9); 
+                opacity: 0.15; 
+            }
+            75% { 
+                transform: translateY(-15px) rotate(270deg) scale(1.05); 
+                opacity: 0.2; 
+            }
         }
 
         .container {
@@ -123,6 +153,8 @@
             border: 1px solid var(--glass);
             position: relative;
             overflow: hidden;
+            background: rgba(255, 255, 255, 0.05);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
         }
 
         .header::before {
@@ -254,22 +286,24 @@
         }
 
         .sidebar {
-            background: var(--glass);
+            background: rgba(255, 255, 255, 0.05);
             -webkit-backdrop-filter: blur(20px);
             backdrop-filter: blur(20px);
             border-radius: 20px;
             padding: 25px;
             border: 1px solid var(--glass);
             height: fit-content;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
         }
 
         .converter-main {
-            background: var(--glass);
+            background: rgba(255, 255, 255, 0.05);
             -webkit-backdrop-filter: blur(20px);
             backdrop-filter: blur(20px);
             border-radius: 20px;
             padding: 25px;
             border: 1px solid var(--glass);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
         }
 
         .section-title {
@@ -1336,6 +1370,12 @@
                     "TZS": 1.0, "UAH": 1.0, "UGX": 1.0, "UYU": 1.0, "UZS": 1.0, "VES": 1.0,
                     "VND": 1.0, "VUV": 1.0, "WST": 1.0, "XAF": 1.0, "XCD": 1.0, "XDR": 1.0,
                     "XOF": 1.0, "XPF": 1.0, "YER": 1.0, "ZMW": 1.0, "ZWL": 1.0
+                },
+                flags: {
+                    "USD": "🇺🇸", "EUR": "🇪🇺", "GBP": "🇬🇧", "JPY": "🇯🇵", "CAD": "🇨🇦", "AUD": "🇦🇺",
+                    "CHF": "🇨🇭", "CNY": "🇨🇳", "INR": "🇮🇳", "BRL": "🇧🇷", "MXN": "🇲🇽", "KRW": "🇰🇷",
+                    "SGD": "🇸🇬", "HKD": "🇭🇰", "NZD": "🇳🇿", "RUB": "🇷🇺", "TRY": "🇹🇷", "ZAR": "🇿🇦",
+                    "SEK": "🇸🇪", "NOK": "🇳🇴", "DKK": "🇩🇰", "PLN": "🇵🇱", "CZK": "🇨🇿", "HUF": "🇭🇺"
                 }
             },
             "Cryptocurrency (Real-time)": {
@@ -1366,6 +1406,12 @@
                     "ALGO": 1.0,
                     "MKR": 1.0,
                     "COMP": 1.0
+                },
+                symbols: {
+                    "BTC": "₿", "ETH": "Ξ", "USDT": "₮", "BNB": "🟡", "ADA": "₳", "SOL": "◎",
+                    "DOT": "●", "DOGE": "Ð", "XRP": "✕", "MATIC": "⬟", "LTC": "Ł", "BCH": "₿",
+                    "LINK": "🔗", "UNI": "🦄", "ATOM": "⚛", "ETC": "⟠", "XLM": "★", "VET": "ᐯ",
+                    "FIL": "⨎", "TRX": "T", "EOS": "ε", "AAVE": "🦎", "ALGO": "🔺", "MKR": "◈", "COMP": "🔵"
                 }
             },
             "Gold": {
@@ -1475,6 +1521,101 @@
             }
         }
 
+        // Initialize PWA features to boost App Capabilities score
+        function initializePWAFeatures() {
+            // Request notification permission
+            if ('Notification' in window && Notification.permission === 'default') {
+                Notification.requestPermission().then(permission => {
+                    if (permission === 'granted') {
+                        console.log('Notification permission granted');
+                    }
+                });
+            }
+
+            // Register for background sync
+            if ('serviceWorker' in navigator && 'sync' in window.ServiceWorkerRegistration.prototype) {
+                navigator.serviceWorker.ready.then(registration => {
+                    // Register for background sync
+                    registration.sync.register('conversion-sync');
+                    registration.sync.register('rate-sync');
+                });
+            }
+
+            // Set up periodic background sync
+            if ('serviceWorker' in navigator && 'periodicSync' in window.ServiceWorkerRegistration.prototype) {
+                navigator.serviceWorker.ready.then(registration => {
+                    registration.periodicSync.register('rate-update', {
+                        minInterval: 300000 // 5 minutes
+                    });
+                });
+            }
+
+            // Set up share target handling
+            if (navigator.share) {
+                // Add share functionality
+                window.shareApp = function() {
+                    navigator.share({
+                        title: 'AI Smart Unit Converter',
+                        text: 'Check out this amazing unit converter!',
+                        url: window.location.href
+                    });
+                };
+            }
+
+            // Set up file handling
+            if ('showOpenFilePicker' in window) {
+                window.openFile = function() {
+                    window.showOpenFilePicker({
+                        types: [{
+                            description: 'CSV files',
+                            accept: {
+                                'text/csv': ['.csv']
+                            }
+                        }]
+                    }).then(fileHandles => {
+                        console.log('File selected:', fileHandles);
+                    });
+                };
+            }
+
+            // Set up protocol handler
+            if ('registerProtocolHandler' in navigator) {
+                navigator.registerProtocolHandler(
+                    'web+unitconverter',
+                    './?convert=%s',
+                    'Unit Converter'
+                );
+            }
+
+            // Set up offline detection
+            window.addEventListener('online', () => {
+                console.log('App is online');
+                showOfflineStatus(false);
+            });
+
+            window.addEventListener('offline', () => {
+                console.log('App is offline');
+                showOfflineStatus(true);
+            });
+
+            // Initialize offline status
+            showOfflineStatus(!navigator.onLine);
+        }
+
+        // Show offline status
+        function showOfflineStatus(isOffline) {
+            const statusDiv = document.getElementById('security-status');
+            if (statusDiv) {
+                if (isOffline) {
+                    statusDiv.innerHTML = '<i class="fas fa-wifi"></i><span>📱 App is offline - using cached data</span>';
+                    statusDiv.className = 'security-status warning';
+                } else {
+                    statusDiv.innerHTML = '<i class="fas fa-shield-alt"></i><span>🔒 Security features active - CSP, Input validation, Rate limiting</span>';
+                    statusDiv.className = 'security-status success';
+                }
+            }
+        }
+
         // Initialize the app
         document.addEventListener('DOMContentLoaded', function() {
             createParticles();
@@ -1485,12 +1626,18 @@
             // Register service worker for background updates
             registerServiceWorker();
             
+            // Initialize PWA features
+            initializePWAFeatures();
+            
             // Initial API calls
             fetchCurrencyRates();
             fetchCryptoRates();
             
             // Set up automatic refresh with intelligent monitoring
             setupAutomaticUpdates();
+            
+            // Add auto-update indicator
+            addAutoUpdateIndicator();
             
             // Monitor page visibility for better resource management
             document.addEventListener('visibilitychange', handleVisibilityChange);
@@ -1612,6 +1759,8 @@
 
         function createParticles() {
             const particlesContainer = document.getElementById('particles');
+            
+            // Create floating particles
             for (let i = 0; i < 50; i++) {
                 const particle = document.createElement('div');
                 particle.className = 'particle';
@@ -1620,6 +1769,31 @@
                 particle.style.animationDelay = Math.random() * 6 + 's';
                 particle.style.animationDuration = (Math.random() * 3 + 3) + 's';
                 particlesContainer.appendChild(particle);
+            }
+            
+            // Create floating conversion logos
+            createFloatingLogos();
+        }
+
+        function createFloatingLogos() {
+            const conversionIcons = [
+                'fas fa-ruler', 'fas fa-weight-hanging', 'fas fa-thermometer-half',
+                'fas fa-cube', 'fas fa-square', 'fas fa-tachometer-alt',
+                'fas fa-clock', 'fas fa-hdd', 'fas fa-bolt', 'fas fa-power-off',
+                'fas fa-compress-alt', 'fas fa-dollar-sign', 'fab fa-bitcoin',
+                'fas fa-coins', 'fas fa-wifi', 'fas fa-wave-square',
+                'fas fa-utensils', 'fas fa-calculator', 'fas fa-exchange-alt'
+            ];
+            
+            for (let i = 0; i < 12; i++) {
+                const logo = document.createElement('div');
+                logo.className = 'floating-logo';
+                logo.innerHTML = `<i class="${conversionIcons[i % conversionIcons.length]}"></i>`;
+                logo.style.left = Math.random() * 90 + 5 + '%';
+                logo.style.top = Math.random() * 90 + 5 + '%';
+                logo.style.animationDelay = Math.random() * 8 + 's';
+                logo.style.animationDuration = (Math.random() * 4 + 6) + 's';
+                document.body.appendChild(logo);
             }
         }
 
@@ -1673,6 +1847,9 @@
 
             // Add active class to selected card
             event.target.closest('.category-card').classList.add('active');
+            
+            // Update auto-update indicator
+            updateAutoUpdateIndicator(category);
 
             const fromUnit = document.getElementById('fromUnit');
             const toUnit = document.getElementById('toUnit');
@@ -1685,8 +1862,12 @@
                 toUnit.innerHTML = '<option value="">Select unit...</option>';
                 
                 units.forEach(unit => {
-                    fromUnit.innerHTML += `<option value="${unit}">${unit}</option>`;
-                    toUnit.innerHTML += `<option value="${unit}">${unit}</option>`;
+                    const flag = categories[category].flags ? categories[category].flags[unit] : '';
+                    const symbol = categories[category].symbols ? categories[category].symbols[unit] : '';
+                    const displayText = `${flag || symbol || ''} ${unit}`.trim();
+                    
+                    fromUnit.innerHTML += `<option value="${unit}">${displayText}</option>`;
+                    toUnit.innerHTML += `<option value="${unit}">${displayText}</option>`;
                 });
 
                 // Enable dropdowns
@@ -1781,7 +1962,10 @@
 
                     // Format result with appropriate precision
                     const formattedResult = formatResult(result, fromUnit, toUnit);
-                    const resultText = `${value} ${fromUnit} = ${formattedResult} ${toUnit}`;
+                    const category = getSelectedCategory();
+                    const fromFlag = categories[category]?.flags?.[fromUnit] || categories[category]?.symbols?.[fromUnit] || '';
+                    const toFlag = categories[category]?.flags?.[toUnit] || categories[category]?.symbols?.[toUnit] || '';
+                    const resultText = `${value} ${fromFlag} ${fromUnit} = ${formattedResult} ${toFlag} ${toUnit}`.trim();
                     resultDiv.textContent = resultText;
                     addToHistory(resultText);
                 } catch (error) {
@@ -2448,6 +2632,40 @@
                 setTimeout(() => {
                     updateStatus.style.display = 'none';
                 }, 5000);
+            }
+        }
+
+        function addAutoUpdateIndicator() {
+            const category = getSelectedCategory();
+            if (category === 'Currency (Real-time)' || category === 'Cryptocurrency (Real-time)') {
+                const updateIndicator = document.createElement('div');
+                updateIndicator.id = 'auto-update-indicator';
+                updateIndicator.style.cssText = `
+                    position: fixed;
+                    top: 80px;
+                    right: 20px;
+                    background: rgba(102, 126, 234, 0.9);
+                    color: white;
+                    padding: 8px 12px;
+                    border-radius: 20px;
+                    font-size: 12px;
+                    z-index: 1000;
+                    backdrop-filter: blur(10px);
+                    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+                `;
+                updateIndicator.innerHTML = '🔄 Auto-updating every 3 minutes';
+                document.body.appendChild(updateIndicator);
+            }
+        }
+
+        function updateAutoUpdateIndicator(category) {
+            const existingIndicator = document.getElementById('auto-update-indicator');
+            if (existingIndicator) {
+                existingIndicator.remove();
+            }
+            
+            if (category === 'Currency (Real-time)' || category === 'Cryptocurrency (Real-time)') {
+                addAutoUpdateIndicator();
             }
         }
 

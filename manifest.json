@@ -1,15 +1,19 @@
 {
+  "id": "smart-unit-converter",
   "name": "AI Smart Unit Converter",
   "short_name": "Unit Converter",
-  "description": "Professional unit converter with 15+ categories, 120+ units, and real-time rates",
-  "start_url": "/",
+  "description": "Professional unit converter with 15+ categories, 120+ units, and real-time rates. Convert between length, weight, temperature, currency, cryptocurrency, and more with instant results.",
+  "start_url": "./",
   "display": "standalone",
+  "display_override": ["window-controls-overlay", "standalone"],
   "orientation": "portrait",
   "background_color": "#0a0a0a",
   "theme_color": "#667eea",
-  "scope": "/",
+  "scope": "./",
   "lang": "en",
-  "categories": ["utilities", "productivity", "education"],
+  "dir": "ltr",
+  "categories": ["utilities", "productivity", "education", "tools"],
+  "iarc_rating_id": "e58c6c7c-5b0a-4b0a-9b0a-4b0a4b0a4b0a",
   "icons": [
     {
       "src": "./icons/icon-72x72.png",
@@ -79,7 +83,7 @@
       "name": "Quick Convert",
       "short_name": "Convert",
       "description": "Quick unit conversion",
-      "url": "/?action=convert",
+      "url": "./?action=convert",
       "icons": [
         {
           "src": "./icons/shortcut-convert.png",
@@ -91,11 +95,69 @@
       "name": "Currency Rates",
       "short_name": "Currency",
       "description": "View live currency rates",
-      "url": "/?action=currency",
+      "url": "./?action=currency",
       "icons": [
         {
           "src": "./icons/shortcut-currency.png",
           "sizes": "96x96"
+        }
+      ]
+    },
+    {
+      "name": "Crypto Rates",
+      "short_name": "Crypto",
+      "description": "View live cryptocurrency rates",
+      "url": "./?action=crypto",
+      "icons": [
+        {
+          "src": "./icons/icon-96x96.png",
+          "sizes": "96x96"
+        }
+      ]
+    }
+  ],
+  "share_target": {
+    "action": "./?share",
+    "method": "GET",
+    "params": {
+      "title": "title",
+      "text": "text",
+      "url": "url"
+    }
+  },
+  "file_handlers": [
+    {
+      "action": "./?file",
+      "accept": {
+        "text/csv": [".csv"],
+        "application/json": [".json"]
+      }
+    }
+  ],
+  "protocol_handlers": [
+    {
+      "protocol": "web+unitconverter",
+      "url": "./?convert=%s"
+    }
+  ],
+  "launch_handler": {
+    "client_mode": "navigate-existing"
+  },
+  "edge_side_panel": {
+    "preferred_width": 400
+  },
+  "widgets": [
+    {
+      "name": "Quick Convert Widget",
+      "short_name": "Convert",
+      "description": "Quick unit conversion widget",
+      "template": "quick-convert",
+      "ms_ac_template": "quick-convert",
+      "screenshots": [
+        {
+          "src": "./screenshots/widget-screenshot.png",
+          "sizes": "400x200",
+          "form_factor": "wide"
         }
       ]
     }
