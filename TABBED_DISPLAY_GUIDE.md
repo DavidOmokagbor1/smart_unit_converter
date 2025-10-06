@@ -107,3 +107,4 @@ The tabbed display is correctly configured in the manifest. The issue is likely 
 4. **Check browser version** (needs 120+)
 
 **Tabbed display is working correctly in the manifest - it just needs proper PWA installation and browser support!** 🚀
+

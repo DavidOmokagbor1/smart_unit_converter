@@ -1,44 +1,57 @@
 # 🔒 Cursor IDE Security Rules
+
 # Apply these security patterns to ALL web projects automatically
 
 ## 🛡️ SECURITY REQUIREMENTS FOR ALL WEB PROJECTS
 
 ### MANDATORY SECURITY HEADERS
-When creating or editing HTML files, ALWAYS include these security headers:
 
+When creating or editing HTML files, ALWAYS include these security headers
 ```html
+
 <!-- Security Headers - REQUIRED FOR ALL PROJECTS -->
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com; style-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com; connect-src 'self' https://api.trusted.com; img-src 'self' data: https:; font-src 'self' https://cdnjs.cloudflare.com;">
+
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' [https://cdnjs.cloudflare.com;]([https://cdnjs.cloudflare.com;](https://cdnjs.cloudflare.com;)) style-src 'self' 'unsafe-inline' [https://cdnjs.cloudflare.com;]([https://cdnjs.cloudflare.com;](https://cdnjs.cloudflare.com;)) connect-src 'self' [https://api.trusted.com;]([https://api.trusted.com;](https://api.trusted.com;)) img-src 'self' data: https:; font-src 'self' [https://cdnjs.cloudflare.com;">]([https://cdnjs.cloudflare.com;">](https://cdnjs.cloudflare.com;">))
+
 <meta http-equiv="X-Content-Type-Options" content="nosniff">
+
 <meta http-equiv="X-Frame-Options" content="DENY">
+
 <meta http-equiv="X-XSS-Protection" content="1; mode=block">
+
 <meta http-equiv="Referrer-Policy" content="strict-origin-when-cross-origin">
-```
 
+```text
 ### MANDATORY INPUT VALIDATION
-When handling user input, ALWAYS implement:
 
+When handling user input, ALWAYS implement
 1. **Input Sanitization**:
+
 ```javascript
+
 function sanitizeInput(input) {
     if (typeof input !== 'string') return '';
     return input.replace(/[<>\"'&]/g, function(match) {
         const escapeMap = {
             '<': '&lt;', '>': '&gt;', '"': '&quot;',
             "'": '&#x27;', '&': '&amp;'
+
         };
         return escapeMap[match];
     }).trim();
 }
-```
 
+```text
 2. **Input Validation**:
+
 ```javascript
+
 function validateNumericInput(input) {
     const sanitized = sanitizeInput(input);
     if (!sanitized) return { isValid: false, value: null, error: 'Input cannot be empty' };
     
     const numberRegex = /^-?(\d+\.?\d*|\.\d+)([eE][+-]?\d+)?$/;
+
     if (!numberRegex.test(sanitized)) {
         return { isValid: false, value: null, error: 'Invalid number format' };
     }
@@ -50,12 +63,13 @@ function validateNumericInput(input) {
     
     return { isValid: true, value: numValue, error: null };
 }
-```
 
+```text
 ### MANDATORY RATE LIMITING
-For any application with user interactions, implement rate limiting:
 
+For any application with user interactions, implement rate limiting
 ```javascript
+
 class RateLimiter {
     constructor(limit = 60, window = 60000) {
         this.requests = new Map();
@@ -67,6 +81,7 @@ class RateLimiter {
         const now = Date.now();
         const userRequests = this.requests.get(identifier) || [];
         const validRequests = userRequests.filter(time => now - time < this.window);
+
         
         if (validRequests.length >= this.limit) return false;
         
@@ -75,31 +90,36 @@ class RateLimiter {
         return true;
     }
 }
-```
 
+```text
 ### MANDATORY API SECURITY
-When making API calls, ALWAYS:
 
+When making API calls, ALWAYS
 1. **Validate API responses**:
+
 ```javascript
+
 function validateApiResponse(data, expectedType = 'object') {
     if (!data) return false;
     if (typeof data !== expectedType) return false;
     if (data.error && typeof data.error === 'string') return false;
     return true;
 }
-```
 
+```text
 2. **Use HTTPS only**:
+
 ```javascript
+
 // ALWAYS use HTTPS for API calls
-const response = await fetch('https://api.example.com/data');
-```
+const response = await fetch('[https://api.example.com/data']([https://api.example.com/data'](https://api.example.com/data')));
 
+```text
 ### MANDATORY ERROR HANDLING
-Always implement comprehensive error handling:
 
+Always implement comprehensive error handling
 ```javascript
+
 try {
     // Your code here
 } catch (error) {
@@ -109,69 +129,103 @@ try {
         SecurityUtils.logSecurityEvent('error', { error: error.message });
     }
     // Provide user-friendly error message
+
     return { success: false, error: 'An error occurred' };
 }
-```
 
+```text
 ## 🚨 SECURITY CHECKLIST FOR EVERY PROJECT
 
-Before deploying ANY web project, verify:
-
+Before deploying ANY web project, verify
 - [ ] Security headers implemented
+
 - [ ] Input validation on all user inputs
+
 - [ ] Output encoding for all user data
+
 - [ ] Rate limiting implemented
+
 - [ ] HTTPS used in production
+
 - [ ] API responses validated
+
 - [ ] Error handling comprehensive
+
 - [ ] No sensitive data in client-side code
+
 - [ ] CSP policy configured
+
 - [ ] Security testing completed
 
 ## 📚 MANDATORY DOCUMENTATION
 
-For every project, create:
-
+For every project, create
 1. **SECURITY_GUIDE.md** - Security measures and best practices
+
 2. **API_DOCUMENTATION.md** - API integration and security
+
 3. **TROUBLESHOOTING_GUIDE.md** - Common issues and solutions
+
 4. **README.md** - Include security features section
 
 ## 🔧 FRAMEWORK-SPECIFIC RULES
 
 ### React Projects
+
 - Use React's built-in XSS protection
+
 - Implement PropTypes for validation
+
 - Use React Router for secure navigation
+
 - Implement error boundaries
 
 ### Vue.js Projects
+
 - Use Vue's built-in XSS protection
+
 - Implement v-model validation
+
 - Use Vue Router for secure navigation
+
 - Implement error handling
 
 ### Node.js/Express Projects
+
 - Use helmet.js for security headers
+
 - Implement express-rate-limit
+
 - Use express-validator for input validation
+
 - Implement CORS properly
 
 ### Static Sites
+
 - Include security meta tags
+
 - Implement client-side validation
+
 - Use service workers for security
+
 - Implement CSP properly
 
 ## 🚫 SECURITY ANTI-PATTERNS TO AVOID
 
 - ❌ Never use `eval()` or `innerHTML` with user data
+
 - ❌ Never store sensitive data in localStorage
+
 - ❌ Never disable security headers
+
 - ❌ Never skip input validation
+
 - ❌ Never use HTTP in production
+
 - ❌ Never ignore error handling
+
 - ❌ Never trust user input
+
 - ❌ Never skip rate limiting
 
 ## 🎯 REMEMBER
@@ -179,10 +233,14 @@ For every project, create:
 **Security is not optional - it's mandatory for every web project!**
 
 Apply these patterns consistently across all your projects to ensure:
-- User data protection
-- Application security
-- Professional standards
-- Client confidence
-- Production readiness
 
+- User data protection
+
+- Application security
+
+- Professional standards
+
+- Client confidence
+
+- Production readiness
 
