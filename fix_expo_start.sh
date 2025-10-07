@@ -34,3 +34,4 @@ echo "⏹️  Press Ctrl+C to stop"
 echo "=================================================="
 
 npx expo start --lan --clear
+

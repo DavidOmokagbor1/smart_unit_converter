@@ -1,0 +1,25 @@
+Starting project at /Users/java/Downloads/smart_unit_converter-main/SmartUnitConverterExpo
+Starting Metro Bundler
+warning: Bundler cache is empty, rebuilding (this may take a minute)
+Waiting on http://localhost:8081
+Logs for your project will appear below.
+iOS ./index.js ░░░░░░░░░░░░░░░░  0.0% (0/1)
+| (node:67821) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+| (Use `node --trace-warnings ...` to show where the warning was created)
+| (node:67826) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+| (Use `node --trace-warnings ...` to show where the warning was created)
+| (node:67823) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+| (Use `node --trace-warnings ...` to show where the warning was created)
+| (node:67822) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+| (Use `node --trace-warnings ...` to show where the warning was created)
+| (node:67824) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+| (Use `node --trace-warnings ...` to show where the warning was created)
+| (node:67825) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+| (Use `node --trace-warnings ...` to show where the warning was created)
+iOS ./index.js ▓▓▓▓▓▓▓▓▓░░░░░░░ 60.5% ( 68/207)
+iOS ./index.js ▓▓▓▓▓▓▓▓▓░░░░░░░ 60.5% (334/563)
+iOS ./index.js ▓▓▓▓▓▓▓▓▓▓▓▓▓░░░ 83.1% (771/846)
+iOS ./index.js ▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓░ 99.8% (1017/1018)
+iOS Bundled 15160ms index.js (1018 modules)
+ WARN  🚨 React Native's New Architecture is always enabled in Expo Go, but it is explicitly disabled in your project's app config. This may lead to unexpected behavior when creating a production or development build. Remove "newArchEnabled": false from your app.json.
+Learn more: https://docs.expo.dev/guides/new-architecture/

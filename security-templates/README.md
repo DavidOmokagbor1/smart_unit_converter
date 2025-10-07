@@ -98,3 +98,4 @@ cp security-templates/security-utils.js your-project/utils/
 
 **Security is mandatory for every project!** Use these templates to ensure consistent security across all your applications.
 
+

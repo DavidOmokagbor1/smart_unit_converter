@@ -175,3 +175,4 @@ The protection system will prevent:
 - ❌ Version mismatches
 
 Your Smart Unit Converter is now protected and will work reliably! 🚀
+
