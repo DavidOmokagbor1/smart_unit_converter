@@ -4,22 +4,86 @@ warning: Bundler cache is empty, rebuilding (this may take a minute)
 Waiting on http://localhost:8081
 Logs for your project will appear below.
 iOS ./index.js ░░░░░░░░░░░░░░░░  0.0% (0/1)
-| (node:67821) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
-| (Use `node --trace-warnings ...` to show where the warning was created)
-| (node:67826) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
-| (Use `node --trace-warnings ...` to show where the warning was created)
-| (node:67823) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
-| (Use `node --trace-warnings ...` to show where the warning was created)
-| (node:67822) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
-| (Use `node --trace-warnings ...` to show where the warning was created)
-| (node:67824) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
-| (Use `node --trace-warnings ...` to show where the warning was created)
-| (node:67825) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
-| (Use `node --trace-warnings ...` to show where the warning was created)
-iOS ./index.js ▓▓▓▓▓▓▓▓▓░░░░░░░ 60.5% ( 68/207)
-iOS ./index.js ▓▓▓▓▓▓▓▓▓░░░░░░░ 60.5% (334/563)
-iOS ./index.js ▓▓▓▓▓▓▓▓▓▓▓▓▓░░░ 83.1% (771/846)
-iOS ./index.js ▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓░ 99.8% (1017/1018)
-iOS Bundled 15160ms index.js (1018 modules)
+iOS ./index.js ▓░░░░░░░░░░░░░░░ 12.0% ( 76/235)
+iOS ./index.js ▓▓▓▓▓▓▓▓▓░░░░░░░ 61.4% (510/651)
+iOS ./index.js ▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓░ 97.5% (927/939)
+iOS Bundled 12675ms index.js (1018 modules)
  WARN  🚨 React Native's New Architecture is always enabled in Expo Go, but it is explicitly disabled in your project's app config. This may lead to unexpected behavior when creating a production or development build. Remove "newArchEnabled": false from your app.json.
 Learn more: https://docs.expo.dev/guides/new-architecture/
+ ERROR  SyntaxError: /Users/java/Downloads/smart_unit_converter-main/SmartUnitConverterExpo/src/services/ConversionService.js: Missing semicolon. (416:7)
+
+  414 |
+  415 |   // Load currency rates from API
+> 416 |   async loadCurrencyRates() {
+      |        ^
+  417 |     const now = Date.now();
+  418 |     
+  419 |     // Check if we have recent data
+ ERROR  [Error: TransformError SyntaxError: /Users/java/Downloads/smart_unit_converter-main/SmartUnitConverterExpo/src/services/ConversionService.js: Missing semicolon. (416:7)
+
+[0m [90m 414 |[39m
+ [90m 415 |[39m   [90m// Load currency rates from API[39m
+[31m[1m>[22m[39m[90m 416 |[39m   [36masync[39m loadCurrencyRates() {
+ [90m     |[39m        [31m[1m^[22m[39m
+ [90m 417 |[39m     [36mconst[39m now [33m=[39m [33mDate[39m[33m.[39mnow()[33m;[39m
+ [90m 418 |[39m     
+ [90m 419 |[39m     [90m// Check if we have recent data[39m[0m]
+SyntaxError: /Users/java/Downloads/smart_unit_converter-main/SmartUnitConverterExpo/src/services/ConversionService.js: Missing semicolon. (416:7)
+
+[0m [90m 414 |[39m
+ [90m 415 |[39m   [90m// Load currency rates from API[39m
+[31m[1m>[22m[39m[90m 416 |[39m   [36masync[39m loadCurrencyRates() {
+ [90m     |[39m        [31m[1m^[22m[39m
+ [90m 417 |[39m     [36mconst[39m now [33m=[39m [33mDate[39m[33m.[39mnow()[33m;[39m
+ [90m 418 |[39m     
+ [90m 419 |[39m     [90m// Check if we have recent data[39m[0m
+    at constructor (/Users/java/Downloads/smart_unit_converter-main/SmartUnitConverterExpo/node_modules/@babel/parser/lib/index.js:367:19)
+    at FlowParserMixin.raise (/Users/java/Downloads/smart_unit_converter-main/SmartUnitConverterExpo/node_modules/@babel/parser/lib/index.js:6630:19)
+    at FlowParserMixin.semicolon (/Users/java/Downloads/smart_unit_converter-main/SmartUnitConverterExpo/node_modules/@babel/parser/lib/index.js:6926:10)
+    at FlowParserMixin.parseExpressionStatement (/Users/java/Downloads/smart_unit_converter-main/SmartUnitConverterExpo/node_modules/@babel/parser/lib/index.js:13294:10)
+    at FlowParserMixin.parseExpressionStatement (/Users/java/Downloads/smart_unit_converter-main/SmartUnitConverterExpo/node_modules/@babel/parser/lib/index.js:2971:18)
+    at FlowParserMixin.parseStatementContent (/Users/java/Downloads/smart_unit_converter-main/SmartUnitConverterExpo/node_modules/@babel/parser/lib/index.js:12908:19)
+    at FlowParserMixin.parseStatementLike (/Users/java/Downloads/smart_unit_converter-main/SmartUnitConverterExpo/node_modules/@babel/parser/lib/index.js:12776:17)
+    at FlowParserMixin.parseStatementLike (/Users/java/Downloads/smart_unit_converter-main/SmartUnitConverterExpo/node_modules/@babel/parser/lib/index.js:2949:24)
+    at FlowParserMixin.parseStatementListItem (/Users/java/Downloads/smart_unit_converter-main/SmartUnitConverterExpo/node_modules/@babel/parser/lib/index.js:12756:17)
+    at FlowParserMixin.parseBlockOrModuleBlockBody (/Users/java/Downloads/smart_unit_converter-main/SmartUnitConverterExpo/node_modules/@babel/parser/lib/index.js:13325:61)
+    at FlowParserMixin.parseBlockBody (/Users/java/Downloads/smart_unit_converter-main/SmartUnitConverterExpo/node_modules/@babel/parser/lib/index.js:13318:10)
+    at FlowParserMixin.parseBlock (/Users/java/Downloads/smart_unit_converter-main/SmartUnitConverterExpo/node_modules/@babel/parser/lib/index.js:13306:10)
+    at FlowParserMixin.parseFunctionBody (/Users/java/Downloads/smart_unit_converter-main/SmartUnitConverterExpo/node_modules/@babel/parser/lib/index.js:12110:24)
+    at FlowParserMixin.parseFunctionBody (/Users/java/Downloads/smart_unit_converter-main/SmartUnitConverterExpo/node_modules/@babel/parser/lib/index.js:2926:11)
+    at FlowParserMixin.parseFunctionBodyAndFinish (/Users/java/Downloads/smart_unit_converter-main/SmartUnitConverterExpo/node_modules/@babel/parser/lib/index.js:12096:10)
+    at FlowParserMixin.parseFunctionBodyAndFinish (/Users/java/Downloads/smart_unit_converter-main/SmartUnitConverterExpo/node_modules/@babel/parser/lib/index.js:2934:18)
+    at FlowParserMixin.parseMethod (/Users/java/Downloads/smart_unit_converter-main/SmartUnitConverterExpo/node_modules/@babel/parser/lib/index.js:12054:31)
+    at FlowParserMixin.pushClassMethod (/Users/java/Downloads/smart_unit_converter-main/SmartUnitConverterExpo/node_modules/@babel/parser/lib/index.js:13736:30)
+    at FlowParserMixin.pushClassMethod (/Users/java/Downloads/smart_unit_converter-main/SmartUnitConverterExpo/node_modules/@babel/parser/lib/index.js:3302:11)
+    at FlowParserMixin.parseClassMemberWithIsStatic (/Users/java/Downloads/smart_unit_converter-main/SmartUnitConverterExpo/node_modules/@babel/parser/lib/index.js:13624:12)
+    at FlowParserMixin.parseClassMember (/Users/java/Downloads/smart_unit_converter-main/SmartUnitConverterExpo/node_modules/@babel/parser/lib/index.js:13572:10)
+    at FlowParserMixin.parseClassMember (/Users/java/Downloads/smart_unit_converter-main/SmartUnitConverterExpo/node_modules/@babel/parser/lib/index.js:3190:11)
+    at /Users/java/Downloads/smart_unit_converter-main/SmartUnitConverterExpo/node_modules/@babel/parser/lib/index.js:13526:14
+    at FlowParserMixin.withSmartMixTopicForbiddingContext (/Users/java/Downloads/smart_unit_converter-main/SmartUnitConverterExpo/node_modules/@babel/parser/lib/index.js:12413:14)
+    at FlowParserMixin.parseClassBody (/Users/java/Downloads/smart_unit_converter-main/SmartUnitConverterExpo/node_modules/@babel/parser/lib/index.js:13508:10)
+    at FlowParserMixin.parseClass (/Users/java/Downloads/smart_unit_converter-main/SmartUnitConverterExpo/node_modules/@babel/parser/lib/index.js:13483:22)
+    at FlowParserMixin.parseStatementContent (/Users/java/Downloads/smart_unit_converter-main/SmartUnitConverterExpo/node_modules/@babel/parser/lib/index.js:12803:21)
+    at FlowParserMixin.parseStatementLike (/Users/java/Downloads/smart_unit_converter-main/SmartUnitConverterExpo/node_modules/@babel/parser/lib/index.js:12776:17)
+    at FlowParserMixin.parseStatementLike (/Users/java/Downloads/smart_unit_converter-main/SmartUnitConverterExpo/node_modules/@babel/parser/lib/index.js:2949:24)
+    at FlowParserMixin.parseModuleItem (/Users/java/Downloads/smart_unit_converter-main/SmartUnitConverterExpo/node_modules/@babel/parser/lib/index.js:12753:17)
+    at FlowParserMixin.parseBlockOrModuleBlockBody (/Users/java/Downloads/smart_unit_converter-main/SmartUnitConverterExpo/node_modules/@babel/parser/lib/index.js:13325:36)
+    at FlowParserMixin.parseBlockBody (/Users/java/Downloads/smart_unit_converter-main/SmartUnitConverterExpo/node_modules/@babel/parser/lib/index.js:13318:10)
+    at FlowParserMixin.parseProgram (/Users/java/Downloads/smart_unit_converter-main/SmartUnitConverterExpo/node_modules/@babel/parser/lib/index.js:12634:10)
+    at FlowParserMixin.parseTopLevel (/Users/java/Downloads/smart_unit_converter-main/SmartUnitConverterExpo/node_modules/@babel/parser/lib/index.js:12624:25)
+    at FlowParserMixin.parseTopLevel (/Users/java/Downloads/smart_unit_converter-main/SmartUnitConverterExpo/node_modules/@babel/parser/lib/index.js:3718:28)
+    at FlowParserMixin.parse (/Users/java/Downloads/smart_unit_converter-main/SmartUnitConverterExpo/node_modules/@babel/parser/lib/index.js:14501:10)
+    at parse (/Users/java/Downloads/smart_unit_converter-main/SmartUnitConverterExpo/node_modules/@babel/parser/lib/index.js:14514:26)
+    at parser (/Users/java/Downloads/smart_unit_converter-main/SmartUnitConverterExpo/node_modules/@babel/core/lib/parser/index.js:41:34)
+    at parser.next (<anonymous>)
+    at normalizeFile (/Users/java/Downloads/smart_unit_converter-main/SmartUnitConverterExpo/node_modules/@babel/core/lib/transformation/normalize-file.js:64:37)
+    at normalizeFile.next (<anonymous>)
+    at run (/Users/java/Downloads/smart_unit_converter-main/SmartUnitConverterExpo/node_modules/@babel/core/lib/transformation/index.js:22:50)
+    at run.next (<anonymous>)
+    at transform (/Users/java/Downloads/smart_unit_converter-main/SmartUnitConverterExpo/node_modules/@babel/core/lib/transform.js:22:33)
+    at transform.next (<anonymous>)
+    at evaluateSync (/Users/java/Downloads/smart_unit_converter-main/SmartUnitConverterExpo/node_modules/gensync/index.js:251:28)
+    at sync (/Users/java/Downloads/smart_unit_converter-main/SmartUnitConverterExpo/node_modules/gensync/index.js:89:14)
+    at stopHiding - secret - don't use this - v1 (/Users/java/Downloads/smart_unit_converter-main/SmartUnitConverterExpo/node_modules/@babel/core/lib/errors/rewrite-stack-trace.js:47:12)
+    at Object.transformSync (/Users/java/Downloads/smart_unit_converter-main/SmartUnitConverterExpo/node_modules/@babel/core/lib/transform.js:42:76)
+    at parseWithBabel (/Users/java/Downloads/smart_unit_converter-main/SmartUnitConverterExpo/node_modules/expo/node_modules/@expo/metro-config/build/transformSync.js:75:18)

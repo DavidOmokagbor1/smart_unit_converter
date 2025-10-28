@@ -43,3 +43,6 @@ echo "🛑 To stop:"
 echo "   pm2 stop smart-unit-converter-expo"
 echo ""
 echo "✅ PM2 setup complete!"
+
+
+

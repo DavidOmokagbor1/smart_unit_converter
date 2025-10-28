@@ -161,3 +161,6 @@ echo "To create new backup: ./protect_codebase.sh"
 echo ""
 echo "✅ Your codebase is now protected!"
 
+
+
+

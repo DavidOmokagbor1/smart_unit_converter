@@ -56,3 +56,6 @@ echo "🛑 To stop the server, run: pkill -f 'expo start'"
 echo "📊 To view logs, run: tail -f expo_persistent.log"
 echo ""
 echo "✅ Server is persistent and independent of Cursor!"
+
+
+
