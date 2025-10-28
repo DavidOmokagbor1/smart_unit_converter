@@ -8,10 +8,14 @@ class ConversionService {
     this.lastCryptoUpdate = null;
     this.CURRENCY_CACHE_DURATION = 5 * 60 * 1000; // 5 minutes
     this.CRYPTO_CACHE_DURATION = 5 * 60 * 1000; // 5 minutes
+    
+    // Initialize categories after constructor
+    this.initCategories();
   }
 
-  // Comprehensive conversion data with 15+ categories and 120+ units
-  categories = {
+  // Initialize comprehensive conversion data with 15+ categories and 120+ units
+  initCategories() {
+    this.categories = {
     length: {
       name: 'Length',
       icon: '📏',
@@ -407,6 +411,7 @@ class ConversionService {
       }
     }
   };
+  }
 
   // Load currency rates from API
   async loadCurrencyRates() {
