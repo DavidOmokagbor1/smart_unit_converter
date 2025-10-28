@@ -1406,7 +1406,7 @@
         }
 
         // Linear Conversion
-        function convertLinear(value, fromUnit, toUnit, category) {
+        function convertLinear(value, fromUnit, toUnit, categoryName) {
             // Comprehensive conversion factors (same as main web app)
             const conversionFactors = {
                 'length': {
@@ -1477,7 +1477,7 @@
                 }
             };
 
-            const factors = conversionFactors[category] || {};
+            const factors = conversionFactors[categoryName] || {};
             const fromFactor = factors[fromUnit] || 1;
             const toFactor = factors[toUnit] || 1;
             
