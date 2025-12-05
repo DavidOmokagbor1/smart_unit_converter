@@ -21,6 +21,90 @@ export default function SettingsScreen() {
   const [precision, setPrecision] = useState(6);
   const [notifications, setNotifications] = useState(true);
 
+  // Define styles first before any functions that use them
+  const dynamicStyles = StyleSheet.create({
+    container: {
+      flex: 1,
+      backgroundColor: colors.background,
+    },
+    section: {
+      padding: 20,
+      borderBottomWidth: 1,
+      borderBottomColor: colors.border,
+    },
+    sectionTitle: {
+      fontSize: 18,
+      fontWeight: 'bold',
+      color: colors.primary,
+      marginBottom: 15,
+    },
+    settingItem: {
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      alignItems: 'center',
+      paddingVertical: 15,
+      borderBottomWidth: 1,
+      borderBottomColor: colors.border,
+    },
+    settingInfo: {
+      flex: 1,
+      marginRight: 15,
+    },
+    settingTitle: {
+      color: colors.text,
+      fontSize: 16,
+      fontWeight: '500',
+    },
+    settingSubtitle: {
+      color: colors.textSecondary,
+      fontSize: 14,
+      marginTop: 2,
+    },
+    precisionContainer: {
+      flexDirection: 'row',
+      gap: 8,
+    },
+    precisionButton: {
+      paddingHorizontal: 12,
+      paddingVertical: 6,
+      borderRadius: 6,
+      borderWidth: 1,
+      borderColor: colors.border,
+      backgroundColor: colors.surface,
+    },
+    precisionButtonActive: {
+      backgroundColor: colors.primary,
+      borderColor: colors.primary,
+    },
+    precisionButtonText: {
+      color: colors.text,
+      fontSize: 14,
+      fontWeight: '500',
+    },
+    precisionButtonTextActive: {
+      color: '#fff',
+      fontWeight: 'bold',
+    },
+    actionButton: {
+      backgroundColor: colors.primary,
+      padding: 15,
+      borderRadius: 8,
+      alignItems: 'center',
+      marginBottom: 10,
+    },
+    dangerButton: {
+      backgroundColor: colors.error,
+    },
+    actionButtonText: {
+      color: '#fff',
+      fontSize: 16,
+      fontWeight: 'bold',
+    },
+    dangerButtonText: {
+      color: '#fff',
+    },
+  });
+
   useEffect(() => {
     loadSettings();
   }, []);
@@ -128,89 +212,6 @@ export default function SettingsScreen() {
       </Text>
     </TouchableOpacity>
   );
-
-  const dynamicStyles = StyleSheet.create({
-    container: {
-      flex: 1,
-      backgroundColor: colors.background,
-    },
-    section: {
-      padding: 20,
-      borderBottomWidth: 1,
-      borderBottomColor: colors.border,
-    },
-    sectionTitle: {
-      fontSize: 18,
-      fontWeight: 'bold',
-      color: colors.primary,
-      marginBottom: 15,
-    },
-    settingItem: {
-      flexDirection: 'row',
-      justifyContent: 'space-between',
-      alignItems: 'center',
-      paddingVertical: 15,
-      borderBottomWidth: 1,
-      borderBottomColor: colors.border,
-    },
-    settingInfo: {
-      flex: 1,
-      marginRight: 15,
-    },
-    settingTitle: {
-      color: colors.text,
-      fontSize: 16,
-      fontWeight: '500',
-    },
-    settingSubtitle: {
-      color: colors.textSecondary,
-      fontSize: 14,
-      marginTop: 2,
-    },
-    precisionContainer: {
-      flexDirection: 'row',
-      gap: 8,
-    },
-    precisionButton: {
-      paddingHorizontal: 12,
-      paddingVertical: 6,
-      borderRadius: 6,
-      borderWidth: 1,
-      borderColor: colors.border,
-      backgroundColor: colors.surface,
-    },
-    precisionButtonActive: {
-      backgroundColor: colors.primary,
-      borderColor: colors.primary,
-    },
-    precisionButtonText: {
-      color: colors.text,
-      fontSize: 14,
-      fontWeight: '500',
-    },
-    precisionButtonTextActive: {
-      color: '#fff',
-      fontWeight: 'bold',
-    },
-    actionButton: {
-      backgroundColor: colors.primary,
-      padding: 15,
-      borderRadius: 8,
-      alignItems: 'center',
-      marginBottom: 10,
-    },
-    dangerButton: {
-      backgroundColor: colors.error,
-    },
-    actionButtonText: {
-      color: '#fff',
-      fontSize: 16,
-      fontWeight: 'bold',
-    },
-    dangerButtonText: {
-      color: '#fff',
-    },
-  });
 
   return (
     <ScrollView style={dynamicStyles.container}>
