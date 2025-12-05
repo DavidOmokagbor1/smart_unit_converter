@@ -6,12 +6,12 @@
     <title>AI Smart Unit Converter - Mobile App</title>
     
     <!-- PWA Meta Tags -->
-    <link rel="manifest" href="/manifest.json">
+    <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#667eea">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="Unit Converter">
-    <link rel="apple-touch-icon" href="/icon-192x192.png">
+    <link rel="apple-touch-icon" href="icons/icon-192x192.png">
     
     <style>
         body {
@@ -124,9 +124,8 @@
         <h1>🚀 AI Smart Unit Converter</h1>
         <p>Professional unit converter with 15+ categories, 120+ units, and real-time rates</p>
         
-        <a href="docs/mobile.html" class="btn">📱 Mobile App (Compact)</a>
-        <a href="docs/index.html" class="btn">💻 Full Web App</a>
-        <a href="test_pwa.html" class="btn">🔧 Test PWA Features</a>
+        <a href="mobile.html" class="btn">📱 Mobile App (Compact)</a>
+        <a href="index.html" class="btn">💻 Full Web App</a>
         
         <div class="features">
             <div class="feature">
@@ -162,7 +161,7 @@
     <script>
         // Register service worker
         if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.register('/docs/service-worker-enhanced.js')
+            navigator.serviceWorker.register('service-worker-enhanced.js')
                 .then(registration => {
                     console.log('Service Worker registered:', registration);
                 })
@@ -174,7 +173,7 @@
         // Auto-redirect to mobile app after 3 seconds
         setTimeout(() => {
             if (window.innerWidth <= 768) {
-                window.location.href = 'docs/mobile.html';
+                window.location.href = 'mobile.html';
             }
         }, 3000);
     </script>
