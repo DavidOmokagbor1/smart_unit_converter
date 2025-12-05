@@ -1,155 +1,346 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <!-- Inline styles noted for refactoring -->
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Smart Unit Converter - QR Codes</title>
+    <title>📱 Smart Unit Converter - Expo QR Codes</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            background: #f0f2f5;
+        * {
             margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(-45deg, #0a0a0a, #1a1a2e, #16213e, #0f3460);
+            background-size: 400% 400%;
+            animation: gradientShift 15s ease infinite;
+            min-height: 100vh;
             padding: 20px;
+            color: #ffffff;
         }
+
+        @keyframes gradientShift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
         .container {
-            max-width: 800px;
+            max-width: 1000px;
             margin: 0 auto;
-            background: white;
-            border-radius: 10px;
-            padding: 30px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(20px);
+            border-radius: 20px;
+            padding: 40px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
         }
+
         h1 {
-            color: #333;
             text-align: center;
-            margin-bottom: 30px;
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            background: linear-gradient(45deg, #667eea, #f093fb, #4facfe);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
         }
+
+        .subtitle {
+            text-align: center;
+            color: #b0b0b0;
+            margin-bottom: 40px;
+            font-size: 1.1rem;
+        }
+
         .qr-section {
             margin: 30px 0;
-            padding: 20px;
-            border: 2px solid #e1e5e9;
-            border-radius: 10px;
-            text-align: center;
+            padding: 30px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
         }
+
         .qr-section h2 {
-            color: #2c3e50;
+            color: #f093fb;
+            margin-bottom: 20px;
+            font-size: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .qr-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 25px;
+            margin-top: 25px;
+        }
+
+        .qr-card {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 20px;
+            border-radius: 15px;
+            text-align: center;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .qr-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3);
+        }
+
+        .qr-card h3 {
+            color: #4facfe;
             margin-bottom: 15px;
+            font-size: 1.1rem;
         }
+
         .qr-code {
-            max-width: 300px;
+            max-width: 100%;
             height: auto;
-            border: 1px solid #ddd;
-            border-radius: 5px;
+            border-radius: 10px;
+            border: 2px solid rgba(255, 255, 255, 0.2);
             margin: 15px 0;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
         }
+
         .url {
-            background: #f8f9fa;
-            padding: 10px;
-            border-radius: 5px;
-            font-family: monospace;
+            background: rgba(0, 0, 0, 0.3);
+            padding: 12px;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
             word-break: break-all;
-            margin: 10px 0;
-        }
-        .instructions {
-            background: #e8f5e8;
-            padding: 15px;
-            border-radius: 5px;
             margin: 15px 0;
+            color: #4facfe;
+            font-size: 0.9rem;
+            border: 1px solid rgba(79, 172, 254, 0.3);
         }
-        .instructions h3 {
-            color: #155724;
-            margin-bottom: 10px;
-        }
-        .instructions ol {
-            color: #155724;
-            text-align: left;
-        }
+
         .status {
             display: inline-block;
-            padding: 5px 15px;
-            border-radius: 20px;
+            padding: 8px 20px;
+            border-radius: 25px;
             font-weight: bold;
-            margin: 10px 0;
+            margin: 15px 0;
+            font-size: 0.9rem;
         }
-        .success {
-            background: #d4edda;
-            color: #155724;
+
+        .status.success {
+            background: rgba(79, 172, 254, 0.3);
+            color: #4facfe;
+            border: 1px solid #4facfe;
         }
-        .warning {
-            background: #fff3cd;
-            color: #856404;
+
+        .status.warning {
+            background: rgba(255, 193, 7, 0.3);
+            color: #ffc107;
+            border: 1px solid #ffc107;
+        }
+
+        .instructions {
+            background: rgba(79, 172, 254, 0.1);
+            padding: 20px;
+            border-radius: 12px;
+            margin: 20px 0;
+            border: 1px solid rgba(79, 172, 254, 0.3);
+        }
+
+        .instructions h3 {
+            color: #4facfe;
+            margin-bottom: 15px;
+            font-size: 1.2rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .instructions ol {
+            color: #b0b0b0;
+            text-align: left;
+            padding-left: 25px;
+            line-height: 1.8;
+        }
+
+        .instructions li {
+            margin-bottom: 10px;
+        }
+
+        .instructions strong {
+            color: #ffffff;
+        }
+
+        .troubleshooting {
+            background: rgba(255, 107, 107, 0.1);
+            padding: 20px;
+            border-radius: 12px;
+            margin: 20px 0;
+            border: 1px solid rgba(255, 107, 107, 0.3);
+        }
+
+        .troubleshooting h3 {
+            color: #ff6b6b;
+            margin-bottom: 15px;
+        }
+
+        .troubleshooting ul {
+            color: #b0b0b0;
+            text-align: left;
+            padding-left: 25px;
+            line-height: 1.8;
+        }
+
+        .troubleshooting code {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-family: 'Courier New', monospace;
+            color: #4facfe;
+        }
+
+        .quick-links {
+            text-align: center;
+            margin-top: 40px;
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .quick-link {
+            display: inline-block;
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            padding: 15px 30px;
+            text-decoration: none;
+            border-radius: 10px;
+            font-weight: 600;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+        }
+
+        .quick-link:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.5);
+        }
+
+        .quick-link.web {
+            background: linear-gradient(45deg, #4facfe, #00f2fe);
+        }
+
+        .quick-link.main {
+            background: linear-gradient(45deg, #43e97b, #38f9d7);
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 20px;
+            }
+
+            h1 {
+                font-size: 1.8rem;
+            }
+
+            .qr-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .quick-links {
+                flex-direction: column;
+            }
+
+            .quick-link {
+                width: 100%;
+            }
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>📱 Smart Unit Converter - QR Codes</h1>
+        <h1><i class="fas fa-mobile-alt"></i> Smart Unit Converter</h1>
+        <p class="subtitle">Scan QR Code to Open in Expo Go App</p>
         
         <!-- Main QR Code -->
         <div class="qr-section">
-            <h2>🎯 Main QR Code (Recommended)</h2>
+            <h2><i class="fas fa-qrcode"></i> Main QR Code (Recommended)</h2>
             <div class="status success">✅ Ready to Scan</div>
-            <img src="expo_working_qr.png" alt="Main QR Code" class="qr-code">
-            <div class="url">exp://192.168.1.160:8083</div>
+            
+            <div class="qr-grid">
+                <div class="qr-card">
+                    <h3>🎯 Primary QR Code</h3>
+                    <img src="expo_working_qr.png" alt="Main QR Code" class="qr-code" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+                    <div style="display:none; color:#ff6b6b; padding:20px;">QR Code image not found. Please generate it first.</div>
+                    <div class="url">exp://192.168.1.160:8083</div>
+                </div>
+            </div>
             
             <div class="instructions">
-                <h3>📱 How to Use:</h3>
+                <h3><i class="fas fa-mobile-alt"></i> How to Use:</h3>
                 <ol>
-                    <li>Install <strong>Expo Go</strong> app on your phone</li>
-                    <li>Open Expo Go app</li>
-                    <li>Tap "Scan QR Code"</li>
-                    <li>Point camera at the QR code above</li>
-                    <li>Your app will load!</li>
+                    <li>Install <strong>Expo Go</strong> app on your phone (iOS App Store or Google Play)</li>
+                    <li>Open <strong>Expo Go</strong> app</li>
+                    <li>Tap <strong>"Scan QR Code"</strong> button</li>
+                    <li>Point your camera at the QR code above</li>
+                    <li>Your app will load automatically! 🚀</li>
                 </ol>
             </div>
         </div>
         
         <!-- Alternative QR Codes -->
         <div class="qr-section">
-            <h2>🔄 Alternative QR Codes</h2>
+            <h2><i class="fas fa-exchange-alt"></i> Alternative QR Codes</h2>
             
-            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px;">
-                <div>
+            <div class="qr-grid">
+                <div class="qr-card">
                     <h3>🌐 Local Network</h3>
-                    <img src="expo_local_qr.png" alt="Local QR Code" class="qr-code">
+                    <img src="expo_local_qr.png" alt="Local QR Code" class="qr-code" onerror="this.style.display='none';">
                     <div class="url">exp://192.168.1.160:8081</div>
+                    <p style="color: #b0b0b0; font-size: 0.85rem; margin-top: 10px;">Same WiFi network required</p>
                 </div>
                 
-                <div>
+                <div class="qr-card">
                     <h3>🌍 Web Fallback</h3>
-                    <img src="expo_web_fallback_qr.png" alt="Web QR Code" class="qr-code">
+                    <img src="expo_web_fallback_qr.png" alt="Web QR Code" class="qr-code" onerror="this.style.display='none';">
                     <div class="url">https://davidomokagbor1.github.io/smart_unit_converter/</div>
+                    <p style="color: #b0b0b0; font-size: 0.85rem; margin-top: 10px;">Works in any browser</p>
                 </div>
                 
-                <div>
-                    <h3>📱 Expo Go</h3>
-                    <img src="expo_go_qr.png" alt="Expo Go QR Code" class="qr-code">
+                <div class="qr-card">
+                    <h3>📱 Expo Go Direct</h3>
+                    <img src="expo_go_qr.png" alt="Expo Go QR Code" class="qr-code" onerror="this.style.display='none';">
                     <div class="url">exp://192.168.1.100:8081</div>
+                    <p style="color: #b0b0b0; font-size: 0.85rem; margin-top: 10px;">Alternative port</p>
                 </div>
             </div>
         </div>
         
         <!-- Troubleshooting -->
-        <div class="qr-section">
-            <h2>🔧 Troubleshooting</h2>
+        <div class="troubleshooting">
+            <h3><i class="fas fa-tools"></i> Troubleshooting</h3>
             <div class="status warning">⚠️ If QR codes don't work:</div>
-            <ul style="text-align: left; color: #666;">
-                <li>Make sure you're on the same WiFi network</li>
-                <li>Try the web version: <a href="mobile_test.html">mobile_test.html</a></li>
-                <li>Check that Expo is running: <code>npx expo start --tunnel</code></li>
-                <li>Try manually entering the URL in Expo Go</li>
+            <ul>
+                <li>Make sure you're on the <strong>same WiFi network</strong> as your computer</li>
+                <li>Try the <strong>web version</strong>: <a href="docs/mobile.html" style="color: #4facfe;">docs/mobile.html</a></li>
+                <li>Check that Expo is running: <code>cd SmartUnitConverterExpo && npx expo start --lan</code></li>
+                <li>Try manually entering the URL in Expo Go app</li>
+                <li>Use <code>--tunnel</code> mode: <code>npx expo start --tunnel</code></li>
+                <li>Restart Expo server and regenerate QR code</li>
             </ul>
         </div>
         
         <!-- Quick Links -->
-        <div style="text-align: center; margin-top: 30px;">
-            <a href="mobile_test.html" style="display: inline-block; background: #007bff; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px; margin: 5px;">🌐 Web Version</a>
-            <a href="index.html" style="display: inline-block; background: #28a745; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px; margin: 5px;">🏠 Main App</a>
+        <div class="quick-links">
+            <a href="docs/mobile.html" class="quick-link web">
+                <i class="fas fa-globe"></i> Web Version
+            </a>
+            <a href="docs/index.html" class="quick-link main">
+                <i class="fas fa-home"></i> Main App
+            </a>
         </div>
     </div>
 </body>
 </html>
-
-
-

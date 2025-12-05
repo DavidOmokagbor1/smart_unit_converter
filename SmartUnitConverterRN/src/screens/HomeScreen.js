@@ -1,5 +1,6 @@
 /**
- * HomeScreen - Main conversion screen
+ * HomeScreen - Main conversion screen matching web app design
+ * Features: Categories, Conversion, Live Market Data, Smart Suggestions, Quick Calculator
  */
 
 import React, { useState, useEffect } from 'react';
@@ -12,7 +13,9 @@ import {
   StyleSheet,
   Alert,
   ActivityIndicator,
+  FlatList,
 } from 'react-native';
+import LinearGradient from 'react-native-linear-gradient';
 import ConversionService from '../services/ConversionService';
 
 const HomeScreen = () => {
@@ -20,13 +23,24 @@ const HomeScreen = () => {
   const [fromUnit, setFromUnit] = useState('');
   const [toUnit, setToUnit] = useState('');
   const [result, setResult] = useState('');
-  const [currentCategory, setCurrentCategory] = useState('length');
+  const [currentCategory, setCurrentCategory] = useState(null);
   const [categories, setCategories] = useState([]);
   const [units, setUnits] = useState({});
   const [loading, setLoading] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [marketData, setMarketData] = useState({
+    usdEur: 'Loading...',
+    btcUsd: 'Loading...',
+    ethUsd: 'Loading...',
+    goldPrice: 'Loading...',
+  });
+  const [calcInput, setCalcInput] = useState('');
 
   useEffect(() => {
     initializeApp();
+    updateMarketData();
+    const marketInterval = setInterval(updateMarketData, 30000); // Update every 30 seconds
+    return () => clearInterval(marketInterval);
   }, []);
 
   const initializeApp = async () => {
@@ -34,14 +48,9 @@ const HomeScreen = () => {
       const cats = ConversionService.getCategories();
       setCategories(cats);
       
-      const categoryUnits = ConversionService.getUnitsForCategory(currentCategory);
-      setUnits(categoryUnits);
-      
-      // Set default units
-      const unitKeys = Object.keys(categoryUnits);
-      if (unitKeys.length > 0) {
-        setFromUnit(unitKeys[0]);
-        setToUnit(unitKeys[1] || unitKeys[0]);
+      // Set default category to Length
+      if (cats.length > 0) {
+        selectCategory(cats[0].key);
       }
     } catch (error) {
       console.error('Error initializing app:', error);
@@ -66,7 +75,7 @@ const HomeScreen = () => {
   };
 
   const performConversion = async () => {
-    if (!fromValue || !fromUnit || !toUnit) {
+    if (!fromValue || !fromUnit || !toUnit || !currentCategory) {
       Alert.alert('Error', 'Please fill in all fields');
       return;
     }
@@ -79,7 +88,7 @@ const HomeScreen = () => {
     setLoading(true);
     try {
       const convertedValue = await ConversionService.convert(
-        fromValue,
+        parseFloat(fromValue),
         fromUnit,
         toUnit,
         currentCategory
@@ -105,133 +114,307 @@ const HomeScreen = () => {
     }
   };
 
-  const renderCategoryButton = (category) => (
+  const quickSuggestion = (from, to, value) => {
+    // Find the category for these units
+    const category = categories.find(cat => {
+      const units = ConversionService.getUnitsForCategory(cat.key);
+      return units[from] && units[to];
+    });
+    
+    if (category) {
+      selectCategory(category.key);
+      setFromUnit(from);
+      setToUnit(to);
+      setFromValue(value.toString());
+      setTimeout(() => performConversion(), 100);
+    }
+  };
+
+  const updateMarketData = async () => {
+    try {
+      // USD/EUR
+      const currencyResponse = await fetch('https://api.exchangerate-api.com/v4/latest/USD');
+      if (currencyResponse.ok) {
+        const currencyData = await currencyResponse.json();
+        setMarketData(prev => ({
+          ...prev,
+          usdEur: currencyData.rates?.EUR?.toFixed(4) || 'Error',
+        }));
+      }
+
+      // BTC/USD
+      const btcResponse = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=usd');
+      if (btcResponse.ok) {
+        const btcData = await btcResponse.json();
+        setMarketData(prev => ({
+          ...prev,
+          btcUsd: btcData.bitcoin?.usd ? `$${btcData.bitcoin.usd.toLocaleString()}` : 'Error',
+        }));
+      }
+
+      // ETH/USD
+      const ethResponse = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=ethereum&vs_currencies=usd');
+      if (ethResponse.ok) {
+        const ethData = await ethResponse.json();
+        setMarketData(prev => ({
+          ...prev,
+          ethUsd: ethData.ethereum?.usd ? `$${ethData.ethereum.usd.toLocaleString()}` : 'Error',
+        }));
+      }
+
+      // Gold Price (fallback)
+      setMarketData(prev => ({
+        ...prev,
+        goldPrice: '$1950.38',
+      }));
+    } catch (error) {
+      console.error('Error updating market data:', error);
+    }
+  };
+
+  const handleCalcInput = (value) => {
+    if (value === '=') {
+      try {
+        const result = eval(calcInput);
+        setCalcInput(result.toString());
+      } catch (error) {
+        setCalcInput('Error');
+      }
+    } else if (value === 'C') {
+      setCalcInput('');
+    } else {
+      setCalcInput(prev => prev + value);
+    }
+  };
+
+  const filteredCategories = categories.filter(cat =>
+    cat.name.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
+  const renderCategoryCard = ({ item }) => (
     <TouchableOpacity
-      key={category.key}
       style={[
-        styles.categoryButton,
-        currentCategory === category.key && styles.categoryButtonActive
+        styles.categoryCard,
+        currentCategory === item.key && styles.categoryCardActive
       ]}
-      onPress={() => selectCategory(category.key)}
+      onPress={() => selectCategory(item.key)}
     >
-      <Text style={styles.categoryIcon}>{category.icon}</Text>
+      <Text style={styles.categoryIcon}>{item.icon}</Text>
       <Text style={[
         styles.categoryText,
-        currentCategory === category.key && styles.categoryTextActive
+        currentCategory === item.key && styles.categoryTextActive
       ]}>
-        {category.name}
+        {item.name}
       </Text>
     </TouchableOpacity>
   );
 
-  const renderUnitOption = (unitKey, unitData) => (
+  const renderUnitOption = (unitKey, unitData, isFrom) => (
     <TouchableOpacity
       key={unitKey}
       style={[
         styles.unitOption,
-        fromUnit === unitKey && styles.unitOptionActive
+        (isFrom ? fromUnit : toUnit) === unitKey && styles.unitOptionActive
       ]}
-      onPress={() => setFromUnit(unitKey)}
+      onPress={() => isFrom ? setFromUnit(unitKey) : setToUnit(unitKey)}
     >
       <Text style={[
         styles.unitText,
-        fromUnit === unitKey && styles.unitTextActive
+        (isFrom ? fromUnit : toUnit) === unitKey && styles.unitTextActive
       ]}>
-        {unitKey} - {unitData.name}
-      </Text>
-    </TouchableOpacity>
-  );
-
-  const renderToUnitOption = (unitKey, unitData) => (
-    <TouchableOpacity
-      key={unitKey}
-      style={[
-        styles.unitOption,
-        toUnit === unitKey && styles.unitOptionActive
-      ]}
-      onPress={() => setToUnit(unitKey)}
-    >
-      <Text style={[
-        styles.unitText,
-        toUnit === unitKey && styles.unitTextActive
-      ]}>
-        {unitKey} - {unitData.name}
+        {unitData.name || unitKey}
       </Text>
     </TouchableOpacity>
   );
 
   return (
-    <ScrollView style={styles.container}>
-      {/* Categories */}
-      <View style={styles.section}>
-        <Text style={styles.sectionTitle}>Choose Category</Text>
-        <View style={styles.categoryGrid}>
-          {categories.map(renderCategoryButton)}
-        </View>
+    <ScrollView style={styles.container} contentContainerStyle={styles.contentContainer}>
+      {/* Header */}
+      <View style={styles.header}>
+        <Text style={styles.title}>🧠 AI Smart Unit Converter</Text>
+        <Text style={styles.subtitle}>15+ Categories • 120+ Units • Real-time Rates</Text>
       </View>
 
-      {/* Converter */}
+      {/* Categories Section */}
       <View style={styles.section}>
-        <Text style={styles.sectionTitle}>Unit Converter</Text>
+        <Text style={styles.sectionTitle}>
+          <Text style={styles.sectionIcon}>📁</Text> Categories
+        </Text>
         
-        {/* From Value Input */}
+        <TextInput
+          style={styles.searchInput}
+          placeholder="Search categories..."
+          placeholderTextColor="#b0b0b0"
+          value={searchQuery}
+          onChangeText={setSearchQuery}
+        />
+
+        <FlatList
+          data={filteredCategories}
+          renderItem={renderCategoryCard}
+          keyExtractor={(item) => item.key}
+          numColumns={2}
+          scrollEnabled={false}
+          contentContainerStyle={styles.categoryGrid}
+        />
+      </View>
+
+      {/* Conversion Section */}
+      <View style={styles.section}>
+        <Text style={styles.sectionTitle}>
+          <Text style={styles.sectionIcon}>🔄</Text> Conversion
+        </Text>
+
+        {/* From */}
         <View style={styles.inputGroup}>
-          <Text style={styles.inputLabel}>Value</Text>
+          <Text style={styles.inputLabel}>→ From</Text>
+          <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.unitScroll}>
+            {Object.entries(units).map(([key, data]) => renderUnitOption(key, data, true))}
+          </ScrollView>
           <TextInput
-            style={styles.textInput}
+            style={styles.valueInput}
             value={fromValue}
             onChangeText={setFromValue}
-            placeholder="Enter value"
+            placeholder="Enter value..."
             keyboardType="numeric"
             placeholderTextColor="#666"
           />
         </View>
 
-        {/* From Unit Selection */}
-        <View style={styles.inputGroup}>
-          <Text style={styles.inputLabel}>From Unit</Text>
-          <ScrollView style={styles.unitList} horizontal showsHorizontalScrollIndicator={false}>
-            {Object.entries(units).map(([key, data]) => renderUnitOption(key, data))}
-          </ScrollView>
+        {/* Arrow */}
+        <View style={styles.arrowContainer}>
+          <Text style={styles.arrow}>→</Text>
         </View>
 
-        {/* Swap Button */}
-        <TouchableOpacity style={styles.swapButton} onPress={swapUnits}>
-          <Text style={styles.swapButtonText}>⇅ Swap</Text>
-        </TouchableOpacity>
-
-        {/* To Unit Selection */}
+        {/* To */}
         <View style={styles.inputGroup}>
-          <Text style={styles.inputLabel}>To Unit</Text>
-          <ScrollView style={styles.unitList} horizontal showsHorizontalScrollIndicator={false}>
-            {Object.entries(units).map(([key, data]) => renderToUnitOption(key, data))}
+          <Text style={styles.inputLabel}>← To</Text>
+          <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.unitScroll}>
+            {Object.entries(units).map(([key, data]) => renderUnitOption(key, data, false))}
           </ScrollView>
-        </View>
-
-        {/* Convert Button */}
-        <TouchableOpacity
-          style={[styles.convertButton, loading && styles.convertButtonDisabled]}
-          onPress={performConversion}
-          disabled={loading}
-        >
-          {loading ? (
-            <ActivityIndicator color="#fff" />
-          ) : (
-            <Text style={styles.convertButtonText}>Convert</Text>
-          )}
-        </TouchableOpacity>
-
-        {/* Result */}
-        {result && (
-          <View style={styles.resultContainer}>
+          <View style={styles.resultDisplay}>
             <Text style={styles.resultText}>
-              {fromValue} {fromUnit} = {result} {toUnit}
+              {result || 'Enter a value to see the conversion result'}
             </Text>
-            {(currentCategory === 'currency' || currentCategory === 'crypto') && (
-              <Text style={styles.liveRateText}>💱 Live Rate</Text>
-            )}
           </View>
-        )}
+        </View>
+
+        {/* Action Buttons */}
+        <View style={styles.buttonRow}>
+          <TouchableOpacity
+            style={[styles.actionButton, styles.convertButton]}
+            onPress={performConversion}
+            disabled={loading}
+          >
+            {loading ? (
+              <ActivityIndicator color="#fff" />
+            ) : (
+              <Text style={styles.buttonText}>🔄 Convert</Text>
+            )}
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={[styles.actionButton, styles.swapButton]}
+            onPress={swapUnits}
+          >
+            <Text style={styles.buttonText}>⇅ Swap</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={[styles.actionButton, styles.clearButton]}
+            onPress={() => {
+              setFromValue('');
+              setResult('');
+            }}
+          >
+            <Text style={styles.buttonText}>🗑️ Clear</Text>
+          </TouchableOpacity>
+        </View>
+      </View>
+
+      {/* Live Market Data */}
+      <View style={styles.section}>
+        <Text style={styles.sectionTitle}>
+          <Text style={styles.sectionIcon}>📈</Text> Live Market Data
+        </Text>
+        <View style={styles.marketGrid}>
+          <View style={styles.marketItem}>
+            <Text style={styles.marketLabel}>USD/EUR</Text>
+            <Text style={styles.marketValue}>{marketData.usdEur}</Text>
+          </View>
+          <View style={styles.marketItem}>
+            <Text style={styles.marketLabel}>BTC/USD</Text>
+            <Text style={styles.marketValue}>{marketData.btcUsd}</Text>
+          </View>
+          <View style={styles.marketItem}>
+            <Text style={styles.marketLabel}>ETH/USD</Text>
+            <Text style={styles.marketValue}>{marketData.ethUsd}</Text>
+          </View>
+          <View style={styles.marketItem}>
+            <Text style={styles.marketLabel}>Gold/Oz</Text>
+            <Text style={styles.marketValue}>{marketData.goldPrice}</Text>
+          </View>
+        </View>
+      </View>
+
+      {/* Smart Suggestions */}
+      <View style={styles.section}>
+        <Text style={styles.sectionTitle}>
+          <Text style={styles.sectionIcon}>💡</Text> Smart Suggestions
+        </Text>
+        <View style={styles.suggestionsGrid}>
+          <TouchableOpacity
+            style={styles.suggestionItem}
+            onPress={() => quickSuggestion('m', 'ft', 1)}
+          >
+            <Text style={styles.suggestionIcon}>📏</Text>
+            <Text style={styles.suggestionText}>1m → 3.28ft</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={styles.suggestionItem}
+            onPress={() => quickSuggestion('celsius', 'fahrenheit', 25)}
+          >
+            <Text style={styles.suggestionIcon}>🌡️</Text>
+            <Text style={styles.suggestionText}>25°C → 77°F</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={styles.suggestionItem}
+            onPress={() => quickSuggestion('kg', 'lb', 1)}
+          >
+            <Text style={styles.suggestionIcon}>⚖️</Text>
+            <Text style={styles.suggestionText}>1kg → 2.2lbs</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={styles.suggestionItem}
+            onPress={() => quickSuggestion('l', 'gal', 1)}
+          >
+            <Text style={styles.suggestionIcon}>💧</Text>
+            <Text style={styles.suggestionText}>1L → 0.26gal</Text>
+          </TouchableOpacity>
+        </View>
+      </View>
+
+      {/* Quick Calculator */}
+      <View style={styles.section}>
+        <Text style={styles.sectionTitle}>
+          <Text style={styles.sectionIcon}>🔢</Text> Quick Calculator
+        </Text>
+        <TextInput
+          style={styles.calcInput}
+          value={calcInput}
+          placeholder="Enter calculation..."
+          placeholderTextColor="#666"
+          editable={false}
+        />
+        <View style={styles.calcButtons}>
+          {['7', '8', '9', '+', '4', '5', '6', '-', '1', '2', '3', '*', '0', '.', '=', '/'].map((btn) => (
+            <TouchableOpacity
+              key={btn}
+              style={styles.calcButton}
+              onPress={() => handleCalcInput(btn === '=' ? '=' : btn)}
+            >
+              <Text style={styles.calcButtonText}>{btn}</Text>
+            </TouchableOpacity>
+          ))}
+        </View>
       </View>
     </ScrollView>
   );
@@ -242,191 +425,261 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: 'transparent',
   },
-  section: {
-    padding: 20,
-    marginBottom: 20,
-    backgroundColor: 'rgba(255, 255, 255, 0.1)',
-    borderRadius: 16,
-    borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.18)',
-    shadowColor: 'rgba(102, 126, 234, 0.3)',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.2,
-    shadowRadius: 8,
-    elevation: 6,
+  contentContainer: {
+    padding: 15,
   },
-  sectionTitle: {
+  header: {
+    alignItems: 'center',
+    marginBottom: 25,
+    padding: 20,
+    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+    borderRadius: 20,
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.2)',
+  },
+  title: {
     fontSize: 24,
     fontWeight: 'bold',
     color: '#ffffff',
-    marginBottom: 15,
+    marginBottom: 8,
     textAlign: 'center',
-    textShadowColor: '#667eea',
-    textShadowOffset: { width: 0, height: 2 },
-    textShadowRadius: 4,
   },
-  categoryGrid: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    justifyContent: 'space-between',
+  subtitle: {
+    fontSize: 14,
+    color: '#b0b0b0',
+    textAlign: 'center',
   },
-  categoryButton: {
-    width: '48%',
+  section: {
+    marginBottom: 20,
+    padding: 20,
     backgroundColor: 'rgba(255, 255, 255, 0.1)',
-    padding: 15,
     borderRadius: 16,
-    alignItems: 'center',
-    marginBottom: 10,
     borderWidth: 1,
     borderColor: 'rgba(255, 255, 255, 0.18)',
-    shadowColor: 'rgba(102, 126, 234, 0.3)',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.2,
-    shadowRadius: 4,
-    elevation: 3,
   },
-  categoryButtonActive: {
+  sectionTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: '#f093fb',
+    marginBottom: 15,
+  },
+  sectionIcon: {
+    fontSize: 20,
+    marginRight: 8,
+  },
+  searchInput: {
+    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+    borderRadius: 12,
+    padding: 12,
+    color: '#ffffff',
+    marginBottom: 15,
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.2)',
+  },
+  categoryGrid: {
+    gap: 10,
+  },
+  categoryCard: {
+    flex: 1,
+    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+    padding: 15,
+    borderRadius: 12,
+    alignItems: 'center',
+    margin: 5,
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.2)',
+    minHeight: 90,
+    justifyContent: 'center',
+  },
+  categoryCardActive: {
     backgroundColor: 'rgba(102, 126, 234, 0.3)',
     borderColor: '#667eea',
-    shadowOpacity: 0.4,
-    elevation: 6,
   },
   categoryIcon: {
     fontSize: 24,
     marginBottom: 5,
   },
   categoryText: {
-    color: '#fff',
+    color: '#ffffff',
     fontSize: 12,
     textAlign: 'center',
   },
   categoryTextActive: {
-    color: '#fff',
     fontWeight: 'bold',
+    color: '#ffffff',
   },
   inputGroup: {
-    marginBottom: 20,
+    marginBottom: 15,
   },
   inputLabel: {
-    color: '#fff',
+    color: '#ffffff',
     fontSize: 16,
-    marginBottom: 8,
-    fontWeight: '500',
-  },
-  textInput: {
-    backgroundColor: 'rgba(255, 255, 255, 0.1)',
-    borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.18)',
-    borderRadius: 16,
-    padding: 18,
-    color: '#fff',
-    fontSize: 18,
-    textAlign: 'center',
+    marginBottom: 10,
     fontWeight: '600',
-    shadowColor: 'rgba(102, 126, 234, 0.3)',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.2,
-    shadowRadius: 4,
-    elevation: 3,
   },
-  unitList: {
-    maxHeight: 120,
+  unitScroll: {
+    maxHeight: 50,
+    marginBottom: 10,
   },
   unitOption: {
     backgroundColor: 'rgba(255, 255, 255, 0.1)',
-    padding: 12,
-    borderRadius: 12,
-    marginRight: 10,
+    padding: 10,
+    borderRadius: 8,
+    marginRight: 8,
     borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.18)',
-    minWidth: 120,
-    shadowColor: 'rgba(102, 126, 234, 0.3)',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.2,
-    shadowRadius: 4,
-    elevation: 3,
+    borderColor: 'rgba(255, 255, 255, 0.2)',
+    minWidth: 100,
   },
   unitOptionActive: {
     backgroundColor: 'rgba(102, 126, 234, 0.3)',
     borderColor: '#667eea',
-    shadowOpacity: 0.4,
-    elevation: 6,
   },
   unitText: {
-    color: '#fff',
-    fontSize: 14,
+    color: '#ffffff',
+    fontSize: 12,
     textAlign: 'center',
   },
   unitTextActive: {
-    color: '#fff',
     fontWeight: 'bold',
+    color: '#ffffff',
   },
-  swapButton: {
-    backgroundColor: '#333',
-    padding: 12,
-    borderRadius: 8,
+  valueInput: {
+    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+    borderRadius: 12,
+    padding: 15,
+    color: '#ffffff',
+    fontSize: 18,
+    textAlign: 'center',
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.2)',
+  },
+  arrowContainer: {
     alignItems: 'center',
-    marginBottom: 20,
+    marginVertical: 10,
   },
-  swapButtonText: {
-    color: '#4facfe',
-    fontSize: 16,
+  arrow: {
+    fontSize: 32,
+    color: '#f093fb',
+  },
+  resultDisplay: {
+    backgroundColor: 'linear-gradient(45deg, #4facfe, #667eea)',
+    backgroundColor: '#4facfe',
+    padding: 20,
+    borderRadius: 12,
+    alignItems: 'center',
+    borderWidth: 1,
+    borderColor: 'rgba(79, 172, 254, 0.5)',
+  },
+  resultText: {
+    color: '#ffffff',
+    fontSize: 18,
     fontWeight: 'bold',
+    textAlign: 'center',
+  },
+  buttonRow: {
+    flexDirection: 'row',
+    gap: 10,
+    marginTop: 15,
+  },
+  actionButton: {
+    flex: 1,
+    padding: 15,
+    borderRadius: 12,
+    alignItems: 'center',
   },
   convertButton: {
     backgroundColor: '#667eea',
-    padding: 20,
-    borderRadius: 20,
-    alignItems: 'center',
-    marginBottom: 20,
-    shadowColor: 'rgba(102, 126, 234, 0.5)',
-    shadowOffset: { width: 0, height: 6 },
-    shadowOpacity: 0.4,
-    shadowRadius: 12,
-    elevation: 8,
-    borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.18)',
   },
-  convertButtonDisabled: {
-    backgroundColor: '#666',
-    shadowOpacity: 0.1,
-    elevation: 2,
+  swapButton: {
+    backgroundColor: '#764ba2',
   },
-  convertButtonText: {
-    color: '#fff',
-    fontSize: 20,
-    fontWeight: 'bold',
-    textShadowColor: 'rgba(0, 0, 0, 0.3)',
-    textShadowOffset: { width: 0, height: 1 },
-    textShadowRadius: 2,
+  clearButton: {
+    backgroundColor: '#ff6b6b',
   },
-  resultContainer: {
-    backgroundColor: 'rgba(255, 255, 255, 0.1)',
-    padding: 30,
-    borderRadius: 20,
-    borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.18)',
-    shadowColor: 'rgba(102, 126, 234, 0.5)',
-    shadowOffset: { width: 0, height: 6 },
-    shadowOpacity: 0.3,
-    shadowRadius: 12,
-    elevation: 8,
-    alignItems: 'center',
-  },
-  resultText: {
-    color: '#fff',
-    fontSize: 24,
-    fontWeight: 'bold',
-    textAlign: 'center',
-    marginBottom: 10,
-    textShadowColor: '#667eea',
-    textShadowOffset: { width: 0, height: 2 },
-    textShadowRadius: 4,
-  },
-  liveRateText: {
-    color: '#4facfe',
+  buttonText: {
+    color: '#ffffff',
     fontSize: 14,
-    textAlign: 'center',
+    fontWeight: 'bold',
+  },
+  marketGrid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 10,
+  },
+  marketItem: {
+    flex: 1,
+    minWidth: '45%',
+    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+    padding: 12,
+    borderRadius: 10,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  marketLabel: {
+    color: '#ffffff',
+    fontSize: 12,
+    fontWeight: '600',
+  },
+  marketValue: {
+    color: '#4facfe',
+    fontSize: 12,
+    fontWeight: 'bold',
+  },
+  suggestionsGrid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 10,
+  },
+  suggestionItem: {
+    flex: 1,
+    minWidth: '45%',
+    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+    padding: 15,
+    borderRadius: 10,
+    alignItems: 'center',
+    flexDirection: 'row',
+    gap: 10,
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.2)',
+  },
+  suggestionIcon: {
+    fontSize: 20,
+  },
+  suggestionText: {
+    color: '#ffffff',
+    fontSize: 12,
+    fontWeight: '500',
+  },
+  calcInput: {
+    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+    borderRadius: 12,
+    padding: 15,
+    color: '#ffffff',
+    fontSize: 18,
+    textAlign: 'right',
+    marginBottom: 10,
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.2)',
+  },
+  calcButtons: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 8,
+  },
+  calcButton: {
+    width: '22%',
+    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+    padding: 15,
+    borderRadius: 10,
+    alignItems: 'center',
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.2)',
+  },
+  calcButtonText: {
+    color: '#ffffff',
+    fontSize: 18,
+    fontWeight: '600',
   },
 });
 
