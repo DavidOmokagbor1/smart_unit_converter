@@ -150,11 +150,13 @@ self.addEventListener('periodicsync', (event) => {
 // Helper functions
 function isApiRequest(url) {
     return url.hostname.includes('api.exchangerate-api.com') ||
-           url.hostname.includes('api.coingecko.com') ||
+           url.hostname.includes('api.binance.com') ||
            url.hostname.includes('api.coincap.io') ||
            url.hostname.includes('api.fixer.io') ||
            url.hostname.includes('api.currencyapi.com') ||
-           url.hostname.includes('min-api.cryptocompare.com');
+           url.hostname.includes('min-api.cryptocompare.com') ||
+           url.hostname.includes('api.coinpaprika.com') ||
+           url.hostname.includes('api.coingecko.com');
 }
 
 function isStaticAsset(url) {
