@@ -147,7 +147,7 @@ export default function HomeScreen() {
   };
 
   // Floating logo component with enhanced animation
-  const FloatingLogo = ({ icon, top, left, right, delay = 0 }) => {
+  const FloatingLogo = ({ icon, top, left, delay = 0 }) => {
     const floatAnim = useRef(new Animated.Value(0)).current;
     const rotateAnim = useRef(new Animated.Value(0)).current;
     const translateXAnim = useRef(new Animated.Value(0)).current;
@@ -237,8 +237,7 @@ export default function HomeScreen() {
           styles.floatingLogo,
           {
             top,
-            left,
-            right,
+            left: left !== undefined ? left : width * 0.5,
             transform: [
               { translateY },
               { translateX },
@@ -247,6 +246,7 @@ export default function HomeScreen() {
             ],
           },
         ]}
+        pointerEvents="none"
       >
         {icon}
       </Animated.Text>
@@ -254,38 +254,38 @@ export default function HomeScreen() {
   };
 
   const FloatingConversionLogos = () => (
-    <View style={styles.floatingLogos}>
+    <View style={styles.floatingLogos} pointerEvents="none">
       {/* More logos distributed across the screen for better coverage */}
       <FloatingLogo icon="📏" top={height * 0.05} left={width * 0.05} delay={0} />
-      <FloatingLogo icon="⚖️" top={height * 0.12} right={width * 0.08} delay={1} />
+      <FloatingLogo icon="⚖️" top={height * 0.12} left={width * 0.85} delay={1} />
       <FloatingLogo icon="🌡️" top={height * 0.18} left={width * 0.12} delay={2} />
-      <FloatingLogo icon="📐" top={height * 0.25} right={width * 0.05} delay={3} />
+      <FloatingLogo icon="📐" top={height * 0.25} left={width * 0.88} delay={3} />
       <FloatingLogo icon="🧪" top={height * 0.32} left={width * 0.08} delay={4} />
-      <FloatingLogo icon="⏰" top={height * 0.38} right={width * 0.12} delay={5} />
+      <FloatingLogo icon="⏰" top={height * 0.38} left={width * 0.82} delay={5} />
       <FloatingLogo icon="🚀" top={height * 0.45} left={width * 0.15} delay={6} />
-      <FloatingLogo icon="💨" top={height * 0.52} right={width * 0.18} delay={7} />
+      <FloatingLogo icon="💨" top={height * 0.52} left={width * 0.75} delay={7} />
       <FloatingLogo icon="⚡" top={height * 0.58} left={width * 0.22} delay={8} />
-      <FloatingLogo icon="💾" top={height * 0.65} right={width * 0.25} delay={9} />
+      <FloatingLogo icon="💾" top={height * 0.65} left={width * 0.68} delay={9} />
       <FloatingLogo icon="💿" top={height * 0.72} left={width * 0.28} delay={10} />
-      <FloatingLogo icon="🔋" top={height * 0.78} right={width * 0.32} delay={11} />
+      <FloatingLogo icon="🔋" top={height * 0.78} left={width * 0.62} delay={11} />
       <FloatingLogo icon="📡" top={height * 0.15} left={width * 0.35} delay={12} />
-      <FloatingLogo icon="📻" top={height * 0.22} right={width * 0.38} delay={13} />
+      <FloatingLogo icon="📻" top={height * 0.22} left={width * 0.55} delay={13} />
       <FloatingLogo icon="🥄" top={height * 0.28} left={width * 0.42} delay={14} />
-      <FloatingLogo icon="🍽️" top={height * 0.35} right={width * 0.45} delay={15} />
+      <FloatingLogo icon="🍽️" top={height * 0.35} left={width * 0.48} delay={15} />
       <FloatingLogo icon="🔥" top={height * 0.42} left={width * 0.48} delay={16} />
-      <FloatingLogo icon="💵" top={height * 0.48} right={width * 0.52} delay={17} />
+      <FloatingLogo icon="💵" top={height * 0.48} left={width * 0.42} delay={17} />
       <FloatingLogo icon="₿" top={height * 0.55} left={width * 0.55} delay={18} />
-      <FloatingLogo icon="📏" top={height * 0.62} right={width * 0.58} delay={19} />
+      <FloatingLogo icon="📏" top={height * 0.62} left={width * 0.38} delay={19} />
       <FloatingLogo icon="⚖️" top={height * 0.68} left={width * 0.62} delay={20} />
-      <FloatingLogo icon="🌡️" top={height * 0.75} right={width * 0.65} delay={21} />
+      <FloatingLogo icon="🌡️" top={height * 0.75} left={width * 0.28} delay={21} />
       <FloatingLogo icon="📐" top={height * 0.82} left={width * 0.68} delay={22} />
-      <FloatingLogo icon="🧪" top={height * 0.88} right={width * 0.72} delay={23} />
+      <FloatingLogo icon="🧪" top={height * 0.88} left={width * 0.15} delay={23} />
       <FloatingLogo icon="⏰" top={height * 0.92} left={width * 0.75} delay={24} />
-      <FloatingLogo icon="🚀" top={height * 0.08} right={width * 0.78} delay={25} />
-      <FloatingLogo icon="💨" top={height * 0.15} left={width * 0.82} delay={26} />
-      <FloatingLogo icon="⚡" top={height * 0.25} right={width * 0.85} delay={27} />
-      <FloatingLogo icon="💾" top={height * 0.35} left={width * 0.88} delay={28} />
-      <FloatingLogo icon="💿" top={height * 0.45} right={width * 0.92} delay={29} />
+      <FloatingLogo icon="🚀" top={height * 0.08} left={width * 0.72} delay={25} />
+      <FloatingLogo icon="💨" top={height * 0.15} left={width * 0.18} delay={26} />
+      <FloatingLogo icon="⚡" top={height * 0.25} left={width * 0.78} delay={27} />
+      <FloatingLogo icon="💾" top={height * 0.35} left={width * 0.25} delay={28} />
+      <FloatingLogo icon="💿" top={height * 0.45} left={width * 0.82} delay={29} />
     </View>
   );
 
@@ -516,15 +516,16 @@ const styles = StyleSheet.create({
     right: 0,
     bottom: 0,
     zIndex: 0,
+    pointerEvents: 'none',
   },
   floatingLogo: {
     position: 'absolute',
-    fontSize: 32,
-    opacity: 0.25,
+    fontSize: 36,
+    opacity: 0.4,
     color: '#667eea',
-    textShadowColor: 'rgba(102, 126, 234, 0.5)',
+    textShadowColor: 'rgba(102, 126, 234, 0.8)',
     textShadowOffset: { width: 0, height: 0 },
-    textShadowRadius: 15,
+    textShadowRadius: 20,
     fontWeight: 'bold',
   },
   header: {

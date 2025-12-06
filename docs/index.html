@@ -83,6 +83,41 @@
             50% { transform: translateY(-20px) rotate(180deg); opacity: 0.5; }
         }
 
+        .floating-logo {
+            position: absolute;
+            font-size: 40px;
+            opacity: 0.35;
+            color: var(--primary);
+            text-shadow: 0 0 25px rgba(102, 126, 234, 0.9), 0 0 50px rgba(102, 126, 234, 0.5);
+            font-weight: bold;
+            pointer-events: none;
+            animation: floatLogo 5s ease-in-out infinite;
+            will-change: transform;
+        }
+
+        @keyframes floatLogo {
+            0% { 
+                transform: translateY(0px) translateX(0px) rotate(0deg) scale(1); 
+                opacity: 0.35;
+            }
+            25% { 
+                transform: translateY(-40px) translateX(25px) rotate(90deg) scale(1.15); 
+                opacity: 0.45;
+            }
+            50% { 
+                transform: translateY(-20px) translateX(-25px) rotate(180deg) scale(1); 
+                opacity: 0.35;
+            }
+            75% { 
+                transform: translateY(-40px) translateX(25px) rotate(270deg) scale(1.15); 
+                opacity: 0.45;
+            }
+            100% { 
+                transform: translateY(0px) translateX(0px) rotate(360deg) scale(1); 
+                opacity: 0.35;
+            }
+        }
+
         .container {
             position: relative;
             z-index: 2;
@@ -1500,6 +1535,7 @@
         // Initialize the app
         document.addEventListener('DOMContentLoaded', function() {
             createParticles();
+            createFloatingLogos();
             populateCategories();
             setupEventListeners();
             
@@ -1642,6 +1678,38 @@
                 particle.style.animationDuration = (Math.random() * 3 + 3) + 's';
                 particlesContainer.appendChild(particle);
             }
+        }
+
+        function createFloatingLogos() {
+            const particlesContainer = document.getElementById('particles');
+            
+            // Category icons (emojis matching the categories)
+            const categoryIcons = [
+                '📏', '⚖️', '🌡️', '📐', '🧪', '⏰', '🚀', '💨', '⚡', '💾',
+                '💿', '🔋', '📡', '📻', '🥄', '🍽️', '🔥', '💵', '₿', '📊',
+                '🔬', '🌍', '🎯', '⭐', '💫', '🌟', '🔮', '🎨', '🎭', '🎪',
+                '📏', '⚖️', '🌡️', '📐', '🧪', '⏰', '🚀', '💨', '⚡', '💾'
+            ];
+
+            const viewportWidth = window.innerWidth;
+            const viewportHeight = window.innerHeight;
+
+            categoryIcons.forEach((icon, index) => {
+                const logo = document.createElement('div');
+                logo.className = 'floating-logo';
+                logo.textContent = icon;
+                
+                // Better distribution across the screen
+                const leftPercent = 5 + (index * 2.5) % 90; // Spread across 90% of width, starting at 5%
+                const topPercent = 5 + (index * 2.8) % 90; // Spread across 90% of height, starting at 5%
+                
+                logo.style.left = leftPercent + '%';
+                logo.style.top = topPercent + '%';
+                logo.style.animationDelay = (index * 0.15) + 's';
+                logo.style.animationDuration = (4 + Math.random() * 2) + 's';
+                
+                particlesContainer.appendChild(logo);
+            });
         }
 
         function populateCategories() {
