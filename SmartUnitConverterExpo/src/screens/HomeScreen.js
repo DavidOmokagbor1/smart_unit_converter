@@ -146,24 +146,42 @@ export default function HomeScreen() {
     }
   };
 
-  // Floating logo component with animation
+  // Floating logo component with enhanced animation
   const FloatingLogo = ({ icon, top, left, right, delay = 0 }) => {
     const floatAnim = useRef(new Animated.Value(0)).current;
     const rotateAnim = useRef(new Animated.Value(0)).current;
+    const translateXAnim = useRef(new Animated.Value(0)).current;
+    const scaleAnim = useRef(new Animated.Value(1)).current;
 
     useEffect(() => {
       const startFloating = () => {
-        // Floating up and down animation
+        // Floating up and down animation (more pronounced)
         Animated.loop(
           Animated.sequence([
             Animated.timing(floatAnim, {
               toValue: 1,
-              duration: 3000 + delay * 200,
+              duration: 2000 + delay * 150,
               useNativeDriver: true,
             }),
             Animated.timing(floatAnim, {
               toValue: 0,
-              duration: 3000 + delay * 200,
+              duration: 2000 + delay * 150,
+              useNativeDriver: true,
+            }),
+          ])
+        ).start();
+
+        // Horizontal movement (drifting left and right)
+        Animated.loop(
+          Animated.sequence([
+            Animated.timing(translateXAnim, {
+              toValue: 1,
+              duration: 4000 + delay * 300,
+              useNativeDriver: true,
+            }),
+            Animated.timing(translateXAnim, {
+              toValue: 0,
+              duration: 4000 + delay * 300,
               useNativeDriver: true,
             }),
           ])
@@ -173,9 +191,25 @@ export default function HomeScreen() {
         Animated.loop(
           Animated.timing(rotateAnim, {
             toValue: 1,
-            duration: 8000 + delay * 500,
+            duration: 10000 + delay * 500,
             useNativeDriver: true,
           })
+        ).start();
+
+        // Pulsing scale animation
+        Animated.loop(
+          Animated.sequence([
+            Animated.timing(scaleAnim, {
+              toValue: 1.2,
+              duration: 1500 + delay * 100,
+              useNativeDriver: true,
+            }),
+            Animated.timing(scaleAnim, {
+              toValue: 1,
+              duration: 1500 + delay * 100,
+              useNativeDriver: true,
+            }),
+          ])
         ).start();
       };
 
@@ -184,7 +218,12 @@ export default function HomeScreen() {
 
     const translateY = floatAnim.interpolate({
       inputRange: [0, 1],
-      outputRange: [0, -15],
+      outputRange: [0, -30],
+    });
+
+    const translateX = translateXAnim.interpolate({
+      inputRange: [0, 1],
+      outputRange: [-20, 20],
     });
 
     const rotate = rotateAnim.interpolate({
@@ -202,7 +241,9 @@ export default function HomeScreen() {
             right,
             transform: [
               { translateY },
+              { translateX },
               { rotate },
+              { scale: scaleAnim },
             ],
           },
         ]}
@@ -214,25 +255,37 @@ export default function HomeScreen() {
 
   const FloatingConversionLogos = () => (
     <View style={styles.floatingLogos}>
-      <FloatingLogo icon="📏" top={height * 0.05} left={width * 0.1} delay={0} />
-      <FloatingLogo icon="⚖️" top={height * 0.15} right={width * 0.1} delay={1} />
-      <FloatingLogo icon="🌡️" top={height * 0.25} left={width * 0.05} delay={2} />
-      <FloatingLogo icon="📐" top={height * 0.35} right={width * 0.05} delay={3} />
-      <FloatingLogo icon="🧪" top={height * 0.45} left={width * 0.15} delay={4} />
-      <FloatingLogo icon="⏰" top={height * 0.55} right={width * 0.15} delay={5} />
-      <FloatingLogo icon="🚀" top={height * 0.65} left={width * 0.1} delay={6} />
-      <FloatingLogo icon="💨" top={height * 0.75} right={width * 0.1} delay={7} />
-      <FloatingLogo icon="⚡" top={height * 0.85} left={width * 0.2} delay={8} />
-      <FloatingLogo icon="💾" top={height * 0.1} right={width * 0.2} delay={9} />
-      <FloatingLogo icon="💿" top={height * 0.2} left={width * 0.25} delay={10} />
-      <FloatingLogo icon="🔋" top={height * 0.3} right={width * 0.25} delay={11} />
-      <FloatingLogo icon="📡" top={height * 0.4} left={width * 0.3} delay={12} />
-      <FloatingLogo icon="📻" top={height * 0.5} right={width * 0.3} delay={13} />
-      <FloatingLogo icon="🥄" top={height * 0.6} left={width * 0.35} delay={14} />
-      <FloatingLogo icon="🍽️" top={height * 0.7} right={width * 0.35} delay={15} />
-      <FloatingLogo icon="🔥" top={height * 0.8} left={width * 0.4} delay={16} />
-      <FloatingLogo icon="💵" top={height * 0.9} right={width * 0.4} delay={17} />
-      <FloatingLogo icon="₿" top={height * 0.95} left={width * 0.5} delay={18} />
+      {/* More logos distributed across the screen for better coverage */}
+      <FloatingLogo icon="📏" top={height * 0.05} left={width * 0.05} delay={0} />
+      <FloatingLogo icon="⚖️" top={height * 0.12} right={width * 0.08} delay={1} />
+      <FloatingLogo icon="🌡️" top={height * 0.18} left={width * 0.12} delay={2} />
+      <FloatingLogo icon="📐" top={height * 0.25} right={width * 0.05} delay={3} />
+      <FloatingLogo icon="🧪" top={height * 0.32} left={width * 0.08} delay={4} />
+      <FloatingLogo icon="⏰" top={height * 0.38} right={width * 0.12} delay={5} />
+      <FloatingLogo icon="🚀" top={height * 0.45} left={width * 0.15} delay={6} />
+      <FloatingLogo icon="💨" top={height * 0.52} right={width * 0.18} delay={7} />
+      <FloatingLogo icon="⚡" top={height * 0.58} left={width * 0.22} delay={8} />
+      <FloatingLogo icon="💾" top={height * 0.65} right={width * 0.25} delay={9} />
+      <FloatingLogo icon="💿" top={height * 0.72} left={width * 0.28} delay={10} />
+      <FloatingLogo icon="🔋" top={height * 0.78} right={width * 0.32} delay={11} />
+      <FloatingLogo icon="📡" top={height * 0.15} left={width * 0.35} delay={12} />
+      <FloatingLogo icon="📻" top={height * 0.22} right={width * 0.38} delay={13} />
+      <FloatingLogo icon="🥄" top={height * 0.28} left={width * 0.42} delay={14} />
+      <FloatingLogo icon="🍽️" top={height * 0.35} right={width * 0.45} delay={15} />
+      <FloatingLogo icon="🔥" top={height * 0.42} left={width * 0.48} delay={16} />
+      <FloatingLogo icon="💵" top={height * 0.48} right={width * 0.52} delay={17} />
+      <FloatingLogo icon="₿" top={height * 0.55} left={width * 0.55} delay={18} />
+      <FloatingLogo icon="📏" top={height * 0.62} right={width * 0.58} delay={19} />
+      <FloatingLogo icon="⚖️" top={height * 0.68} left={width * 0.62} delay={20} />
+      <FloatingLogo icon="🌡️" top={height * 0.75} right={width * 0.65} delay={21} />
+      <FloatingLogo icon="📐" top={height * 0.82} left={width * 0.68} delay={22} />
+      <FloatingLogo icon="🧪" top={height * 0.88} right={width * 0.72} delay={23} />
+      <FloatingLogo icon="⏰" top={height * 0.92} left={width * 0.75} delay={24} />
+      <FloatingLogo icon="🚀" top={height * 0.08} right={width * 0.78} delay={25} />
+      <FloatingLogo icon="💨" top={height * 0.15} left={width * 0.82} delay={26} />
+      <FloatingLogo icon="⚡" top={height * 0.25} right={width * 0.85} delay={27} />
+      <FloatingLogo icon="💾" top={height * 0.35} left={width * 0.88} delay={28} />
+      <FloatingLogo icon="💿" top={height * 0.45} right={width * 0.92} delay={29} />
     </View>
   );
 
@@ -466,12 +519,13 @@ const styles = StyleSheet.create({
   },
   floatingLogo: {
     position: 'absolute',
-    fontSize: 28,
-    opacity: 0.15,
+    fontSize: 32,
+    opacity: 0.25,
     color: '#667eea',
-    textShadowColor: 'rgba(102, 126, 234, 0.3)',
+    textShadowColor: 'rgba(102, 126, 234, 0.5)',
     textShadowOffset: { width: 0, height: 0 },
-    textShadowRadius: 10,
+    textShadowRadius: 15,
+    fontWeight: 'bold',
   },
   header: {
     backgroundColor: '#1a1a2e',
