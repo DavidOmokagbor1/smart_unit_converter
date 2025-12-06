@@ -10,17 +10,44 @@ self.addEventListener('install', (event) => {
     console.log('Service Worker installing...');
     event.waitUntil(
         caches.open(STATIC_CACHE_NAME).then((cache) => {
-            return cache.addAll([
+            // Cache only essential files that exist
+            // Use add() instead of addAll() to handle missing files gracefully
+            const filesToCache = [
                 './',
                 './index.html',
-                './manifest.json',
-                './security_utils.js',
-                './draggable_categories.js',
-                './user_friendly_preferences.js',
-                './icons/icon-192x192.png',
-                './icons/icon-512x512.png'
-            ]);
-        }).then(() => {
+                './manifest.json'
+            ];
+            
+            // Cache files one by one to handle failures gracefully
+            return Promise.allSettled(
+                filesToCache.map(url => 
+                    cache.add(url).catch(err => {
+                        console.log(`Failed to cache ${url}:`, err.message);
+                        return null; // Continue even if one file fails
+                    })
+                )
+            ).then(() => {
+                // Also try to cache optional files if they exist
+                const optionalFiles = [
+                    './security_utils.js',
+                    './draggable_categories.js',
+                    './user_friendly_preferences.js',
+                    './icons/icon-192x192.png',
+                    './icons/icon-512x512.png'
+                ];
+                
+                return Promise.allSettled(
+                    optionalFiles.map(url => 
+                        cache.add(url).catch(() => null) // Silently fail for optional files
+                    )
+                );
+            }).then(() => {
+                console.log('Service Worker cache populated');
+                return self.skipWaiting();
+            });
+        }).catch((error) => {
+            console.error('Service Worker installation failed:', error);
+            // Still skip waiting to activate even if cache fails
             return self.skipWaiting();
         })
     );
@@ -31,17 +58,24 @@ self.addEventListener('activate', (event) => {
     console.log('Service Worker activating...');
     event.waitUntil(
         caches.keys().then((cacheNames) => {
-            return Promise.all(
-                cacheNames.map((cacheName) => {
-                    if (cacheName !== CACHE_NAME && 
-                        cacheName !== API_CACHE_NAME && 
-                        cacheName !== STATIC_CACHE_NAME) {
-                        console.log('Deleting old cache:', cacheName);
-                        return caches.delete(cacheName);
-                    }
-                })
-            );
+            const validCaches = [CACHE_NAME, API_CACHE_NAME, STATIC_CACHE_NAME];
+            const deletePromises = cacheNames
+                .filter((cacheName) => !validCaches.includes(cacheName))
+                .map((cacheName) => {
+                    console.log('Deleting old cache:', cacheName);
+                    return caches.delete(cacheName).catch((err) => {
+                        console.log(`Failed to delete cache ${cacheName}:`, err.message);
+                        return null; // Continue even if deletion fails
+                    });
+                });
+            
+            return Promise.all(deletePromises);
         }).then(() => {
+            console.log('Service Worker activated, claiming clients');
+            return self.clients.claim();
+        }).catch((error) => {
+            console.error('Service Worker activation failed:', error);
+            // Still claim clients even if cache cleanup fails
             return self.clients.claim();
         })
     );
@@ -58,7 +92,20 @@ self.addEventListener('fetch', (event) => {
     if (isApiRequest(url)) {
         // Pass through API requests without interception
         // This avoids CORS issues - the main thread handles API calls directly
-        event.respondWith(fetch(request));
+        event.respondWith(
+            fetch(request).catch((error) => {
+                console.log('API request failed in service worker:', error.message);
+                // Return a proper error response instead of throwing
+                return new Response(JSON.stringify({ 
+                    error: 'Network error', 
+                    offline: true 
+                }), {
+                    status: 503,
+                    statusText: 'Service Unavailable',
+                    headers: { 'Content-Type': 'application/json' }
+                });
+            })
+        );
         return;
     }
 
