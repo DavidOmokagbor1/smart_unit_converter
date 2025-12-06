@@ -43,8 +43,8 @@ export default function HomeScreen() {
   const [toUnitSearch, setToUnitSearch] = useState('');
   const [favoriteUnits, setFavoriteUnits] = useState([]);
 
-  // Initialize conversion service
-  const conversionService = useMemo(() => new ConversionService(), []);
+  // Initialize conversion service (singleton instance)
+  const conversionService = useMemo(() => ConversionService, []);
 
   // Get categories and current units
   const categories = useMemo(() => {

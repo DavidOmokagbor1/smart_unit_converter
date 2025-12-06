@@ -57,7 +57,7 @@ export default function HomeScreen() {
 
   const initializeApp = async () => {
     try {
-      const conversionService = new ConversionService();
+      const conversionService = ConversionService;
       const cats = conversionService.getCategories();
       const unitsData = conversionService.getUnits();
       
@@ -149,7 +149,7 @@ export default function HomeScreen() {
     setLoading(true);
 
     try {
-      const conversionService = new ConversionService();
+      const conversionService = ConversionService;
       const convertedValue = await conversionService.convert(
         value,
         fromUnit,
