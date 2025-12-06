@@ -202,4 +202,58 @@ $RECYCLE.BIN/
 # ============================================
 test_planner_data.json
 *.test.js.snap
+test_*.py
+test_*.html
+test_*.sh
+test_*.md
+TEST_*.html
+docs/test_*.html
+docs/voice_*.html
+
+# ============================================
+# Utility Scripts (QR Code Generators, One-time Fixes)
+# ============================================
+create_*_qr.py
+generate_*_qr.py
+get_*_expo*.py
+fix_all_*.py
+FINAL_*.py
+run_error_*.py
+serve_expo_app.py
+setup_dev.py
+
+# ============================================
+# Redundant Start Scripts (keep only essential ones)
+# ============================================
+start_expo_*.py
+start_expo_*.sh
+!start_expo.sh
+start_rn.sh
+
+# ============================================
+# Temporary Documentation (Fix Guides, Error Docs)
+# ============================================
+*_FIX.md
+*_FIX_SUMMARY.md
+*_ERROR_FIX.md
+*_FIXED.md
+MANUAL_FIX_*.md
+SIMPLE_FIX_*.md
+TROUBLESHOOTING_GUIDE.md
+WHY_THINGS_WENT_WRONG.md
+EXACT_LINE_NUMBERS.md
+
+# ============================================
+# Redundant Dockerfiles
+# ============================================
+Dockerfile.fixed
+Dockerfile.node
+
+# ============================================
+# Temporary HTML Files (keep only main ones)
+# ============================================
+test_apis.html
+test_site_fix.html
+docs/voice_*.html
+docs/test_*.html
 
