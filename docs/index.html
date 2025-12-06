@@ -1441,13 +1441,61 @@
 
         let conversionHistory = [];
         let currentTheme = 'dark';
-        let currencyRates = {};
+        let currencyRates = { rates: {}, base: 'USD' };
         let lastCurrencyUpdate = 0;
         const CURRENCY_CACHE_DURATION = 2 * 60 * 1000; // 2 minutes (reduced for more frequent updates)
         
-        let cryptoRates = {};
+        let cryptoRates = { rates: {}, base: 'USD' };
         let lastCryptoUpdate = 0;
         const CRYPTO_CACHE_DURATION = 1 * 60 * 1000; // 1 minute (crypto changes very fast)
+        
+        // Initialize fallback rates immediately to ensure conversions work even if APIs fail
+        (function initializeFallbackRates() {
+            // Initialize currency fallback rates
+            const currencyFallback = {
+                USD: 1.0, EUR: 0.85, GBP: 0.78, JPY: 150.0, CAD: 1.36,
+                AUD: 1.48, CHF: 0.88, CNY: 7.15, INR: 83.25, BRL: 5.05,
+                MXN: 17.50, KRW: 1350.0, SGD: 1.33, HKD: 7.80, NZD: 1.62,
+                SEK: 10.85, NOK: 10.45, DKK: 6.50, PLN: 4.05, CZK: 22.80,
+                HUF: 365.0, RUB: 95.0, TRY: 30.25, ZAR: 18.50
+            };
+            if (!currencyRates.rates || Object.keys(currencyRates.rates).length === 0) {
+                currencyRates = { rates: currencyFallback, base: 'USD' };
+            }
+            
+            // Initialize crypto fallback rates (formatted as API format)
+            const symbolToApiId = {
+                'BTC': 'bitcoin', 'ETH': 'ethereum', 'USDT': 'tether', 'BNB': 'binancecoin',
+                'ADA': 'cardano', 'SOL': 'solana', 'DOT': 'polkadot', 'DOGE': 'dogecoin',
+                'XRP': 'ripple', 'MATIC': 'matic-network', 'LTC': 'litecoin', 'BCH': 'bitcoin-cash',
+                'LINK': 'chainlink', 'UNI': 'uniswap', 'ATOM': 'cosmos', 'ETC': 'ethereum-classic',
+                'XLM': 'stellar', 'VET': 'vechain', 'FIL': 'filecoin', 'TRX': 'tron',
+                'EOS': 'eos', 'AAVE': 'aave', 'ALGO': 'algorand', 'MKR': 'maker',
+                'COMP': 'compound', 'AVAX': 'avalanche-2', 'NEAR': 'near', 'FTM': 'fantom',
+                'SAND': 'the-sandbox', 'MANA': 'decentraland', 'AXS': 'axie-infinity',
+                'SHIB': 'shiba-inu', 'PEPE': 'pepe', 'FLOKI': 'floki', 'BONK': 'bonk', 'WIF': 'dogwifcoin'
+            };
+            const cryptoFallbackPrices = {
+                BTC: 115000.0, ETH: 3500.0, USDT: 1.0, BNB: 650.0,
+                ADA: 0.45, SOL: 180.0, DOT: 6.5, DOGE: 0.12, XRP: 0.55,
+                MATIC: 0.75, LTC: 95.0, BCH: 420.0, LINK: 18.0, UNI: 8.5,
+                ATOM: 12.0, ETC: 22.0, XLM: 0.15, VET: 0.035, FIL: 6.5,
+                TRX: 0.12, EOS: 0.85, AAVE: 120.0, ALGO: 0.25, MKR: 2800.0,
+                COMP: 65.0, AVAX: 35.0, NEAR: 4.5, FTM: 0.45, SAND: 0.55,
+                MANA: 0.45, AXS: 8.5, SHIB: 0.000025, PEPE: 0.0000015,
+                FLOKI: 0.000035, BONK: 0.000025, WIF: 2.5
+            };
+            if (!cryptoRates.rates || Object.keys(cryptoRates.rates).length === 0) {
+                const cryptoFallbackFormatted = {};
+                Object.keys(cryptoFallbackPrices).forEach(symbol => {
+                    const apiId = symbolToApiId[symbol];
+                    if (apiId) {
+                        cryptoFallbackFormatted[apiId] = { usd: cryptoFallbackPrices[symbol] };
+                    }
+                });
+                cryptoRates = { rates: cryptoFallbackFormatted, base: 'USD' };
+            }
+        })();
 
         // Initialize the app
         document.addEventListener('DOMContentLoaded', function() {
@@ -2132,6 +2180,7 @@
                 let apiUsed = '';
                 
                 // Try CoinGecko API first (most comprehensive)
+                // Note: CoinGecko may have CORS restrictions, so we handle errors gracefully
                 try {
                     const cryptoIds = [
                         'bitcoin', 'ethereum', 'tether', 'binancecoin', 'cardano', 
@@ -2148,14 +2197,29 @@
                         headers: {
                             'Accept': 'application/json',
                         },
+                        mode: 'cors',
+                        credentials: 'omit',
                         cache: 'no-cache'
+                    }).catch((fetchError) => {
+                        // CORS or network error - log but don't throw
+                        console.log('CoinGecko fetch error (CORS/network):', fetchError.message);
+                        return null;
                     });
-                    if (response.ok) {
-                        data = await response.json();
-                        apiUsed = 'CoinGecko';
+                    
+                    if (response && response.ok) {
+                        try {
+                            data = await response.json();
+                            if (data && Object.keys(data).length > 0) {
+                                apiUsed = 'CoinGecko';
+                            }
+                        } catch (jsonError) {
+                            console.log('CoinGecko JSON parse error:', jsonError);
+                        }
+                    } else if (response) {
+                        console.log('CoinGecko API returned non-OK status:', response.status);
                     }
                 } catch (e) {
-                    console.log('CoinGecko API failed, trying alternative...');
+                    console.log('CoinGecko API failed:', e.message);
                 }
                 
                 // Fallback to CoinCap API (real-time data)
@@ -2297,6 +2361,10 @@
                 
             } catch (error) {
                 console.error('Error fetching crypto rates:', error);
+                
+                // #region agent log
+                fetch('http://127.0.0.1:7242/ingest/798a8902-71c2-432a-b17d-0962c1cbafe3',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'index.html:2235',message:'crypto fetch error, using fallback',data:{errorMessage:error.message},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'C'})}).catch(()=>{});
+                // #endregion
                 
                 // Fallback to more current static rates if API fails
                 const fallbackRates = {

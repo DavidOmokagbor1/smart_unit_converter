@@ -183,16 +183,57 @@ async function handleApiRequest(request) {
     }
     
     try {
-        const response = await fetch(request);
-        if (response.ok) {
-            const responseClone = response.clone();
-            responseClone.headers.set('sw-cache-time', new Date().toISOString());
-            await cache.put(request, responseClone);
+        // Use no-cors mode for external APIs to avoid CORS issues
+        const fetchOptions = {
+            mode: 'cors',
+            credentials: 'omit',
+            cache: 'no-cache'
+        };
+        
+        const response = await fetch(request, fetchOptions).catch(async (fetchError) => {
+            // If CORS fails, try with no-cors mode (opaque response)
+            console.log('CORS failed, trying no-cors mode:', fetchError);
+            try {
+                return await fetch(request, { mode: 'no-cors', cache: 'no-cache' });
+            } catch (noCorsError) {
+                console.log('No-cors also failed:', noCorsError);
+                throw fetchError; // Re-throw original error
+            }
+        });
+        
+        if (response && response.ok && response.type !== 'opaque') {
+            // Only cache if response is not opaque (no-cors responses are opaque)
+            try {
+                // Create new headers object instead of modifying immutable headers
+                const newHeaders = new Headers(response.headers);
+                newHeaders.set('sw-cache-time', new Date().toISOString());
+                
+                // Create new response with modified headers
+                const responseClone = new Response(response.body, {
+                    status: response.status,
+                    statusText: response.statusText,
+                    headers: newHeaders
+                });
+                
+                await cache.put(request, responseClone);
+            } catch (cacheError) {
+                console.log('Cache error (non-critical):', cacheError);
+                // Continue even if caching fails
+            }
         }
         return response;
     } catch (error) {
         console.log('Network error, serving from cache:', error);
-        return cachedResponse || new Response('Offline', { status: 503 });
+        // Return cached response if available, otherwise return error response
+        if (cachedResponse) {
+            return cachedResponse;
+        }
+        // Return a proper Response object, not just a string
+        return new Response(JSON.stringify({ error: 'Network error', offline: true }), {
+            status: 503,
+            statusText: 'Service Unavailable',
+            headers: { 'Content-Type': 'application/json' }
+        });
     }
 }
 
