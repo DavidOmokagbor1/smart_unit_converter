@@ -2918,8 +2918,8 @@
                     }
                 });
 
-            // Update BTC/USD with better error handling
-            fetch('https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=usd&include_24hr_change=true', {
+            // Update BTC/USD with Binance API (CORS-friendly)
+            fetch('https://api.binance.com/api/v3/ticker/price?symbol=BTCUSDT', {
                 method: 'GET',
                 headers: { 'Accept': 'application/json' },
                 mode: 'cors',
@@ -2931,28 +2931,49 @@
                     return response.json();
                 })
                 .then(data => {
-                    if (data && data.bitcoin && data.bitcoin.usd) {
-                        const btcPrice = data.bitcoin.usd;
-                        const change = data.bitcoin.usd_24h_change || 0;
-                        const changeText = change >= 0 ? `+${change.toFixed(2)}%` : `${change.toFixed(2)}%`;
-                        document.getElementById('btcUsd').textContent = `$${btcPrice.toLocaleString()} (${changeText})`;
+                    if (data && data.price) {
+                        const btcPrice = parseFloat(data.price);
+                        document.getElementById('btcUsd').textContent = `$${btcPrice.toLocaleString()}`;
+                        // Update cryptoRates if available
+                        if (cryptoRates.rates && !cryptoRates.rates.bitcoin) {
+                            cryptoRates.rates.bitcoin = { usd: btcPrice };
+                        }
                     } else {
                         throw new Error('Invalid data format');
                     }
                 })
                 .catch((error) => {
-                    console.log('BTC/USD fetch error:', error);
-                    // Use fallback rate from cryptoRates
-                    if (cryptoRates.rates && cryptoRates.rates.bitcoin && cryptoRates.rates.bitcoin.usd) {
-                        const btcPrice = cryptoRates.rates.bitcoin.usd;
-                        document.getElementById('btcUsd').textContent = `$${btcPrice.toLocaleString()}`;
-                    } else {
-                        document.getElementById('btcUsd').textContent = '$115,000';
-                    }
+                    console.log('BTC/USD fetch error, trying fallback:', error);
+                    // Try CoinCap as fallback
+                    fetch('https://api.coincap.io/v2/assets/bitcoin', {
+                        method: 'GET',
+                        headers: { 'Accept': 'application/json' },
+                        mode: 'cors',
+                        credentials: 'omit',
+                        cache: 'no-cache'
+                    })
+                        .then(response => response.ok ? response.json() : null)
+                        .then(data => {
+                            if (data && data.data && data.data.priceUsd) {
+                                const btcPrice = parseFloat(data.data.priceUsd);
+                                document.getElementById('btcUsd').textContent = `$${btcPrice.toLocaleString()}`;
+                            } else {
+                                throw new Error('Fallback failed');
+                            }
+                        })
+                        .catch(() => {
+                            // Use fallback rate from cryptoRates
+                            if (cryptoRates.rates && cryptoRates.rates.bitcoin && cryptoRates.rates.bitcoin.usd) {
+                                const btcPrice = cryptoRates.rates.bitcoin.usd;
+                                document.getElementById('btcUsd').textContent = `$${btcPrice.toLocaleString()}`;
+                            } else {
+                                document.getElementById('btcUsd').textContent = '$115,000';
+                            }
+                        });
                 });
 
-            // Update ETH/USD with better error handling
-            fetch('https://api.coingecko.com/api/v3/simple/price?ids=ethereum&vs_currencies=usd&include_24hr_change=true', {
+            // Update ETH/USD with Binance API (CORS-friendly)
+            fetch('https://api.binance.com/api/v3/ticker/price?symbol=ETHUSDT', {
                 method: 'GET',
                 headers: { 'Accept': 'application/json' },
                 mode: 'cors',
@@ -2964,24 +2985,45 @@
                     return response.json();
                 })
                 .then(data => {
-                    if (data && data.ethereum && data.ethereum.usd) {
-                        const ethPrice = data.ethereum.usd;
-                        const change = data.ethereum.usd_24h_change || 0;
-                        const changeText = change >= 0 ? `+${change.toFixed(2)}%` : `${change.toFixed(2)}%`;
-                        document.getElementById('ethUsd').textContent = `$${ethPrice.toLocaleString()} (${changeText})`;
+                    if (data && data.price) {
+                        const ethPrice = parseFloat(data.price);
+                        document.getElementById('ethUsd').textContent = `$${ethPrice.toLocaleString()}`;
+                        // Update cryptoRates if available
+                        if (cryptoRates.rates && !cryptoRates.rates.ethereum) {
+                            cryptoRates.rates.ethereum = { usd: ethPrice };
+                        }
                     } else {
                         throw new Error('Invalid data format');
                     }
                 })
                 .catch((error) => {
-                    console.log('ETH/USD fetch error:', error);
-                    // Use fallback rate from cryptoRates
-                    if (cryptoRates.rates && cryptoRates.rates.ethereum && cryptoRates.rates.ethereum.usd) {
-                        const ethPrice = cryptoRates.rates.ethereum.usd;
-                        document.getElementById('ethUsd').textContent = `$${ethPrice.toLocaleString()}`;
-                    } else {
-                        document.getElementById('ethUsd').textContent = '$3,500';
-                    }
+                    console.log('ETH/USD fetch error, trying fallback:', error);
+                    // Try CoinCap as fallback
+                    fetch('https://api.coincap.io/v2/assets/ethereum', {
+                        method: 'GET',
+                        headers: { 'Accept': 'application/json' },
+                        mode: 'cors',
+                        credentials: 'omit',
+                        cache: 'no-cache'
+                    })
+                        .then(response => response.ok ? response.json() : null)
+                        .then(data => {
+                            if (data && data.data && data.data.priceUsd) {
+                                const ethPrice = parseFloat(data.data.priceUsd);
+                                document.getElementById('ethUsd').textContent = `$${ethPrice.toLocaleString()}`;
+                            } else {
+                                throw new Error('Fallback failed');
+                            }
+                        })
+                        .catch(() => {
+                            // Use fallback rate from cryptoRates
+                            if (cryptoRates.rates && cryptoRates.rates.ethereum && cryptoRates.rates.ethereum.usd) {
+                                const ethPrice = cryptoRates.rates.ethereum.usd;
+                                document.getElementById('ethUsd').textContent = `$${ethPrice.toLocaleString()}`;
+                            } else {
+                                document.getElementById('ethUsd').textContent = '$3,500';
+                            }
+                        });
                 });
 
             // Gold price from real API
