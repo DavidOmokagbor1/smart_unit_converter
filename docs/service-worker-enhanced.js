@@ -52,25 +52,13 @@ self.addEventListener('fetch', (event) => {
     const { request } = event;
     const url = new URL(request.url);
 
-    // Handle API requests with smart caching
-    // NOTE: Service workers can't bypass CORS, so we let the main thread handle API calls
-    // The service worker will only cache successful responses, not intercept them
+    // Handle API requests - don't intercept to avoid CORS issues
+    // Service workers cannot bypass CORS, so let the main thread handle all API calls
+    // The service worker will only handle static assets and navigation
     if (isApiRequest(url)) {
-        // Don't intercept - let browser handle CORS, but cache successful responses
-        event.respondWith(
-            fetch(request, { mode: 'cors', credentials: 'omit' })
-                .then(response => {
-                    // Only cache if successful and not opaque
-                    if (response.ok && response.type !== 'opaque') {
-                        handleApiRequest(request).catch(() => {}); // Cache in background
-                    }
-                    return response;
-                })
-                .catch(() => {
-                    // Try to serve from cache if network fails
-                    return handleApiRequest(request);
-                })
-        );
+        // Pass through API requests without interception
+        // This avoids CORS issues - the main thread handles API calls directly
+        event.respondWith(fetch(request));
         return;
     }
 
