@@ -1791,15 +1791,39 @@
         }
 
         function convertStandard(value, fromUnit, toUnit, category) {
-            const units = categories[category].units;
+            // #region agent log
+            fetch('http://127.0.0.1:7242/ingest/798a8902-71c2-432a-b17d-0962c1cbafe3',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'index.html:convertStandard',message:'convertStandard entry',data:{value:value,fromUnit:fromUnit,toUnit:toUnit,category:category,hasCategory:!!categories[category]},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'B'})}).catch(()=>{});
+            // #endregion
+            
+            const categoryData = categories[category];
+            if (!categoryData || !categoryData.units) {
+                throw new Error(`Category "${category}" not found or has no units`);
+            }
+            
+            const units = categoryData.units;
+            
+            // #region agent log
+            fetch('http://127.0.0.1:7242/ingest/798a8902-71c2-432a-b17d-0962c1cbafe3',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'index.html:convertStandard',message:'convertStandard units check',data:{hasUnits:!!units,hasFromUnit:!!(units&&units[fromUnit]),hasToUnit:!!(units&&units[toUnit])},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'B'})}).catch(()=>{});
+            // #endregion
             
             // Handle edge cases
             if (value === 0) return 0;
             if (fromUnit === toUnit) return value;
             
+            if (!units[fromUnit] || units[fromUnit] === undefined) {
+                throw new Error(`Unit "${fromUnit}" not found in category "${category}"`);
+            }
+            if (!units[toUnit] || units[toUnit] === undefined) {
+                throw new Error(`Unit "${toUnit}" not found in category "${category}"`);
+            }
+            
             // Use higher precision for calculations
             const baseValue = parseFloat((value * units[fromUnit]).toFixed(15));
             const result = parseFloat((baseValue / units[toUnit]).toFixed(15));
+            
+            // #region agent log
+            fetch('http://127.0.0.1:7242/ingest/798a8902-71c2-432a-b17d-0962c1cbafe3',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'index.html:convertStandard',message:'convertStandard result',data:{baseValue:baseValue,result:result},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'B'})}).catch(()=>{});
+            // #endregion
             
             return result;
         }
@@ -2386,15 +2410,39 @@
         }
 
         function convertStandard(value, fromUnit, toUnit, category) {
-            const units = categories[category].units;
+            // #region agent log
+            fetch('http://127.0.0.1:7242/ingest/798a8902-71c2-432a-b17d-0962c1cbafe3',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'index.html:convertStandard',message:'convertStandard entry',data:{value:value,fromUnit:fromUnit,toUnit:toUnit,category:category,hasCategory:!!categories[category]},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'B'})}).catch(()=>{});
+            // #endregion
+            
+            const categoryData = categories[category];
+            if (!categoryData || !categoryData.units) {
+                throw new Error(`Category "${category}" not found or has no units`);
+            }
+            
+            const units = categoryData.units;
+            
+            // #region agent log
+            fetch('http://127.0.0.1:7242/ingest/798a8902-71c2-432a-b17d-0962c1cbafe3',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'index.html:convertStandard',message:'convertStandard units check',data:{hasUnits:!!units,hasFromUnit:!!(units&&units[fromUnit]),hasToUnit:!!(units&&units[toUnit])},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'B'})}).catch(()=>{});
+            // #endregion
             
             // Handle edge cases
             if (value === 0) return 0;
             if (fromUnit === toUnit) return value;
             
+            if (!units[fromUnit] || units[fromUnit] === undefined) {
+                throw new Error(`Unit "${fromUnit}" not found in category "${category}"`);
+            }
+            if (!units[toUnit] || units[toUnit] === undefined) {
+                throw new Error(`Unit "${toUnit}" not found in category "${category}"`);
+            }
+            
             // Use higher precision for calculations
             const baseValue = parseFloat((value * units[fromUnit]).toFixed(15));
             const result = parseFloat((baseValue / units[toUnit]).toFixed(15));
+            
+            // #region agent log
+            fetch('http://127.0.0.1:7242/ingest/798a8902-71c2-432a-b17d-0962c1cbafe3',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'index.html:convertStandard',message:'convertStandard result',data:{baseValue:baseValue,result:result},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'B'})}).catch(()=>{});
+            // #endregion
             
             return result;
         }
