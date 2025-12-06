@@ -1,0 +1,205 @@
+# ============================================
+# IDE and Editor Files
+# ============================================
+.cursor/
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
+
+# ============================================
+# Node.js
+# ============================================
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.npm
+.node_repl_history
+
+# ============================================
+# Python
+# ============================================
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+ENV/
+.venv
+*.egg-info/
+*.egg
+
+# ============================================
+# Expo / React Native
+# ============================================
+.expo/
+.expo-shared/
+dist/
+*.jks
+*.p8
+*.p12
+*.key
+*.mobileprovision
+*.orig.*
+web-build/
+
+# ============================================
+# Android Build Files
+# ============================================
+*.apk
+*.aab
+*.ap_
+*.dex
+*.class
+bin/
+gen/
+out/
+.gradle/
+local.properties
+*.iml
+*.hprof
+*.keystore
+!debug.keystore
+
+# ============================================
+# iOS Build Files
+# ============================================
+*.pbxuser
+!default.pbxuser
+*.mode1v3
+!default.mode1v3
+*.mode2v3
+!default.mode2v3
+*.perspectivev3
+!default.perspectivev3
+xcuserdata/
+*.xccheckout
+*.moved-aside
+DerivedData/
+*.hmap
+*.ipa
+*.xcuserstate
+project.xcworkspace/
+
+# ============================================
+# Log Files
+# ============================================
+*.log
+*.txt
+!README.txt
+!README.md
+expo_*.log
+expo_*.txt
+*.persistent.log
+*.restart.log
+
+# ============================================
+# Generated QR Code Images
+# ============================================
+expo_*_qr.png
+expo_*.png
+qr_*.png
+mobile_app_qr.png
+smart_unit_converter_qr.png
+working_mobile_qr.png
+*_qr.png
+
+# ============================================
+# Temporary HTML Files
+# ============================================
+*_DISPLAY.html
+*_FIX.html
+TEST_*.html
+test_*.html
+expo_*_display.html
+ERROR_*.html
+COMMIT_*.html
+APP_*.html
+troubleshooting_guide.html
+test-manifest.html
+
+# ============================================
+# Temporary Assets
+# ============================================
+assets/frontednd_*.png
+assets/image-*.png
+assets/Ai_smart_Unit_Converter_*.png
+
+# ============================================
+# Backup and Temporary Files
+# ============================================
+codebase_backups/
+*.backup
+*.bak
+*.tmp
+*.temp
+*.patch
+*_backup.*
+*_old.*
+*_old2.*
+*_old3.*
+*_mess.*
+*_minimal.*
+*_simple.*
+*_optimized.*
+*_new.*
+*_enhanced.*
+*_fixed.*
+*_web_style.*
+
+# ============================================
+# Environment and Secrets
+# ============================================
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+*.pem
+*.key
+secrets/
+.secrets
+
+# ============================================
+# Build and Deployment
+# ============================================
+.next/
+.nuxt/
+.cache/
+.parcel-cache/
+.output/
+.nuxt/
+.vuepress/dist/
+.serverless/
+.fusebox/
+.dynamodb/
+.tern-port
+coverage/
+.nyc_output/
+*.tgz
+*.tar.gz
+
+# ============================================
+# OS Files
+# ============================================
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+
+# ============================================
+# Test and Debug Files
+# ============================================
+test_planner_data.json
+*.test.js.snap
+

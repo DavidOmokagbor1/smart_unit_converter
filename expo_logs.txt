@@ -1,1 +1,0 @@
-nohup: ./start_expo.sh: Permission denied
