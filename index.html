@@ -1474,9 +1474,16 @@
         });
 
         async function registerServiceWorker() {
+            // #region agent log
+            fetch('http://127.0.0.1:7242/ingest/798a8902-71c2-432a-b17d-0962c1cbafe3',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'index.html:1476',message:'registerServiceWorker entry',data:{hasServiceWorker:'serviceWorker' in navigator},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'D'})}).catch(()=>{});
+            // #endregion
+            
             if ('serviceWorker' in navigator) {
                 try {
                     const registration = await navigator.serviceWorker.register('service-worker-enhanced.js');
+                    // #region agent log
+                    fetch('http://127.0.0.1:7242/ingest/798a8902-71c2-432a-b17d-0962c1cbafe3',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'index.html:1479',message:'service worker registered',data:{hasRegistration:!!registration,hasSync:'sync' in registration},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'D'})}).catch(()=>{});
+                    // #endregion
                     console.log('Service Worker registered:', registration);
                     
                     // Request background sync permission
@@ -1484,6 +1491,9 @@
                         await registration.sync.register('update-rates');
                     }
                 } catch (error) {
+                    // #region agent log
+                    fetch('http://127.0.0.1:7242/ingest/798a8902-71c2-432a-b17d-0962c1cbafe3',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'index.html:1486',message:'service worker registration failed',data:{errorMessage:error.message,errorName:error.name},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'D'})}).catch(()=>{});
+                    // #endregion
                     console.log('Service Worker registration failed:', error);
                 }
             }
@@ -1579,27 +1589,67 @@
         }
 
         function selectCategory(category) {
+            // #region agent log
+            fetch('http://127.0.0.1:7242/ingest/798a8902-71c2-432a-b17d-0962c1cbafe3',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'index.html:1581',message:'selectCategory called',data:{category:category,eventDefined:typeof event!=='undefined'},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'A'})}).catch(()=>{});
+            // #endregion
+            
             // Remove active class from all cards
             document.querySelectorAll('.category-card').forEach(card => {
                 card.classList.remove('active');
             });
 
-            // Add active class to selected card
-            event.target.closest('.category-card').classList.add('active');
+            // #region agent log
+            try {
+                const closestCard = event.target.closest('.category-card');
+                fetch('http://127.0.0.1:7242/ingest/798a8902-71c2-432a-b17d-0962c1cbafe3',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'index.html:1588',message:'event.target access attempt',data:{eventExists:typeof event!=='undefined',closestCardFound:!!closestCard},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'A'})}).catch(()=>{});
+            } catch (error) {
+                fetch('http://127.0.0.1:7242/ingest/798a8902-71c2-432a-b17d-0962c1cbafe3',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'index.html:1588',message:'event.target error',data:{error:error.message,errorName:error.name},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'A'})}).catch(()=>{});
+            }
+            // #endregion
+            
+            // Add active class to selected card - FIXED: Find card by category name
+            const allCards = document.querySelectorAll('.category-card');
+            const activeCard = Array.from(allCards).find(card => {
+                const categoryText = card.querySelector('div:last-child')?.textContent;
+                return categoryText === category;
+            });
+            if (activeCard) {
+                activeCard.classList.add('active');
+            } else {
+                // #region agent log
+                fetch('http://127.0.0.1:7242/ingest/798a8902-71c2-432a-b17d-0962c1cbafe3',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'index.html:1595',message:'activeCard not found',data:{category:category,totalCards:allCards.length},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'A'})}).catch(()=>{});
+                // #endregion
+            }
 
             const fromUnit = document.getElementById('fromUnit');
             const toUnit = document.getElementById('toUnit');
 
             if (category) {
-                const units = Object.keys(categories[category].units);
+                // #region agent log
+                fetch('http://127.0.0.1:7242/ingest/798a8902-71c2-432a-b17d-0962c1cbafe3',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'index.html:1627',message:'selectCategory populating units',data:{category:category,hasCategory:!!categories[category],hasUnits:!!(categories[category]&&categories[category].units)},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'B'})}).catch(()=>{});
+                // #endregion
+                
+                const categoryData = categories[category];
+                if (!categoryData || !categoryData.units) {
+                    console.error(`Category "${category}" not found or has no units`);
+                    return;
+                }
+                
+                const units = Object.keys(categoryData.units);
+                
+                // #region agent log
+                fetch('http://127.0.0.1:7242/ingest/798a8902-71c2-432a-b17d-0962c1cbafe3',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'index.html:1634',message:'units extracted',data:{unitCount:units.length,units:units.slice(0,5)},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'B'})}).catch(()=>{});
+                // #endregion
                 
                 // Populate unit dropdowns
                 fromUnit.innerHTML = '<option value="">Select unit...</option>';
                 toUnit.innerHTML = '<option value="">Select unit...</option>';
                 
                 units.forEach(unit => {
-                    fromUnit.innerHTML += `<option value="${unit}">${unit}</option>`;
-                    toUnit.innerHTML += `<option value="${unit}">${unit}</option>`;
+                    if (unit && typeof unit === 'string') {
+                        fromUnit.innerHTML += `<option value="${unit}">${unit}</option>`;
+                        toUnit.innerHTML += `<option value="${unit}">${unit}</option>`;
+                    }
                 });
 
                 // Enable dropdowns
@@ -1611,6 +1661,10 @@
                     fromUnit.value = units[0];
                     toUnit.value = units.length > 1 ? units[1] : units[0];
                 }
+                
+                // #region agent log
+                fetch('http://127.0.0.1:7242/ingest/798a8902-71c2-432a-b17d-0962c1cbafe3',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'index.html:1650',message:'units populated',data:{fromUnitValue:fromUnit.value,toUnitValue:toUnit.value},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'B'})}).catch(()=>{});
+                // #endregion
             }
         }
 
@@ -1643,11 +1697,19 @@
         }
 
         async function convert() {
+            // #region agent log
+            fetch('http://127.0.0.1:7242/ingest/798a8902-71c2-432a-b17d-0962c1cbafe3',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'index.html:1645',message:'convert function entry',data:{},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'B'})}).catch(()=>{});
+            // #endregion
+            
             const category = getSelectedCategory();
             const fromUnit = document.getElementById('fromUnit').value;
             const toUnit = document.getElementById('toUnit').value;
             const value = parseFloat(document.getElementById('valueInput').value);
             const resultDiv = document.getElementById('result');
+            
+            // #region agent log
+            fetch('http://127.0.0.1:7242/ingest/798a8902-71c2-432a-b17d-0962c1cbafe3',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'index.html:1650',message:'convert values extracted',data:{category:category,fromUnit:fromUnit,toUnit:toUnit,value:value,hasResultDiv:!!resultDiv},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'B'})}).catch(()=>{});
+            // #endregion
 
             if (!category || !fromUnit || !toUnit) {
                 resultDiv.textContent = 'Please select all units';
@@ -1680,24 +1742,39 @@
             async function performConversion() {
                 let result;
                 try {
+                    // #region agent log
+                    fetch('http://127.0.0.1:7242/ingest/798a8902-71c2-432a-b17d-0962c1cbafe3',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'index.html:1680',message:'performConversion start',data:{category:category,fromUnit:fromUnit,toUnit:toUnit,value:value},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'B'})}).catch(()=>{});
+                    // #endregion
+                    
                     if (category === "Temperature") {
                         result = convertTemperature(value, fromUnit, toUnit);
                     } else if (category === "Currency (Real-time)") {
                         result = await convertCurrency(value, fromUnit, toUnit);
                                     } else if (category === "Cryptocurrency (Real-time)") {
-                    result = await convertCrypto(value, fromUnit, toUnit);
-                } else if (category === "Baking Temperature") {
-                    result = convertBakingTemperature(value, fromUnit, toUnit);
-                } else {
-                    result = convertStandard(value, fromUnit, toUnit, category);
-                }
+                        result = await convertCrypto(value, fromUnit, toUnit);
+                    } else if (category === "Baking Temperature") {
+                        result = convertBakingTemperature(value, fromUnit, toUnit);
+                    } else {
+                        result = convertStandard(value, fromUnit, toUnit, category);
+                    }
+                    
+                    // #region agent log
+                    fetch('http://127.0.0.1:7242/ingest/798a8902-71c2-432a-b17d-0962c1cbafe3',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'index.html:1694',message:'conversion result',data:{result:result,resultType:typeof result,isNaN:isNaN(result)},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'B'})}).catch(()=>{});
+                    // #endregion
 
                     // Format result with appropriate precision
                     const formattedResult = formatResult(result, fromUnit, toUnit);
                     const resultText = `${value} ${fromUnit} = ${formattedResult} ${toUnit}`;
                     resultDiv.textContent = resultText;
                     addToHistory(resultText);
+                    
+                    // #region agent log
+                    fetch('http://127.0.0.1:7242/ingest/798a8902-71c2-432a-b17d-0962c1cbafe3',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'index.html:1699',message:'conversion success',data:{formattedResult:formattedResult},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'B'})}).catch(()=>{});
+                    // #endregion
                 } catch (error) {
+                    // #region agent log
+                    fetch('http://127.0.0.1:7242/ingest/798a8902-71c2-432a-b17d-0962c1cbafe3',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'index.html:1700',message:'conversion error caught',data:{errorMessage:error.message,errorName:error.name,errorStack:error.stack},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'B'})}).catch(()=>{});
+                    // #endregion
                     console.error('Conversion error:', error);
                     resultDiv.textContent = `Error: ${error.message}`;
                 }
@@ -1714,15 +1791,39 @@
         }
 
         function convertStandard(value, fromUnit, toUnit, category) {
-            const units = categories[category].units;
+            // #region agent log
+            fetch('http://127.0.0.1:7242/ingest/798a8902-71c2-432a-b17d-0962c1cbafe3',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'index.html:convertStandard',message:'convertStandard entry',data:{value:value,fromUnit:fromUnit,toUnit:toUnit,category:category,hasCategory:!!categories[category]},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'B'})}).catch(()=>{});
+            // #endregion
+            
+            const categoryData = categories[category];
+            if (!categoryData || !categoryData.units) {
+                throw new Error(`Category "${category}" not found or has no units`);
+            }
+            
+            const units = categoryData.units;
+            
+            // #region agent log
+            fetch('http://127.0.0.1:7242/ingest/798a8902-71c2-432a-b17d-0962c1cbafe3',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'index.html:convertStandard',message:'convertStandard units check',data:{hasUnits:!!units,hasFromUnit:!!(units&&units[fromUnit]),hasToUnit:!!(units&&units[toUnit])},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'B'})}).catch(()=>{});
+            // #endregion
             
             // Handle edge cases
             if (value === 0) return 0;
             if (fromUnit === toUnit) return value;
             
+            if (!units[fromUnit] || units[fromUnit] === undefined) {
+                throw new Error(`Unit "${fromUnit}" not found in category "${category}"`);
+            }
+            if (!units[toUnit] || units[toUnit] === undefined) {
+                throw new Error(`Unit "${toUnit}" not found in category "${category}"`);
+            }
+            
             // Use higher precision for calculations
             const baseValue = parseFloat((value * units[fromUnit]).toFixed(15));
             const result = parseFloat((baseValue / units[toUnit]).toFixed(15));
+            
+            // #region agent log
+            fetch('http://127.0.0.1:7242/ingest/798a8902-71c2-432a-b17d-0962c1cbafe3',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'index.html:convertStandard',message:'convertStandard result',data:{baseValue:baseValue,result:result},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'B'})}).catch(()=>{});
+            // #endregion
             
             return result;
         }
@@ -1904,10 +2005,19 @@
                     currencyRates = data;
                     lastCurrencyUpdate = now;
                     
-                    // Update the currency units with real rates
+                    // Update the currency units - keep existing structure, just ensure all currencies are present
                     const currencyCategory = categories["Currency (Real-time)"];
-                    currencyCategory.units = data.rates;
-                    currencyCategory.units.USD = 1.0; // Base currency
+                    // Merge API rates with existing units to preserve structure
+                    if (data.rates) {
+                        Object.keys(data.rates).forEach(currency => {
+                            if (currencyCategory.units.hasOwnProperty(currency) || currency.length === 3) {
+                                // Only add valid 3-letter currency codes
+                                currencyCategory.units[currency] = 1.0; // Keep factor as 1.0, conversion uses rates
+                            }
+                        });
+                        // Ensure USD is always present
+                        currencyCategory.units.USD = 1.0;
+                    }
                     
                     console.log(`Currency rates updated via ${apiUsed}:`, data);
                     showCurrencyStatus(`✅ Rates updated via ${apiUsed}`, 'success');
@@ -1965,6 +2075,15 @@
                 
                 currencyRates = { rates: fallbackRates, base: 'USD' };
                 lastCurrencyUpdate = now;
+                
+                // Update category units with fallback currencies
+                const currencyCategory = categories["Currency (Real-time)"];
+                Object.keys(fallbackRates).forEach(currency => {
+                    if (currencyCategory.units.hasOwnProperty(currency) || currency.length === 3) {
+                        currencyCategory.units[currency] = 1.0;
+                    }
+                });
+                currencyCategory.units.USD = 1.0;
                 
                 showCurrencyStatus('⚠️ Using fallback rates', 'warning');
                 
@@ -2158,11 +2277,12 @@
                         'dogwifcoin': 'WIF'
                     };
                     
-                    // Update rates in the category
+                    // Update rates in the category - keep unit factors as 1.0, conversion uses API rates
                     Object.keys(cryptoMapping).forEach(apiId => {
                         const symbol = cryptoMapping[apiId];
-                        if (data[apiId] && data[apiId].usd) {
-                            cryptoCategory.units[symbol] = data[apiId].usd;
+                        if (data[apiId] && data[apiId].usd && cryptoCategory.units.hasOwnProperty(symbol)) {
+                            // Keep unit factor as 1.0 - actual conversion uses cryptoRates.rates, not units
+                            cryptoCategory.units[symbol] = 1.0;
                         }
                     });
                     
@@ -2218,8 +2338,36 @@
                     WIF: 2.5
                 };
                 
-                cryptoRates = { rates: fallbackRates, base: 'USD' };
+                // Convert fallback rates to API format (symbol -> { usd: price })
+                const fallbackRatesFormatted = {};
+                Object.keys(fallbackRates).forEach(symbol => {
+                    const symbolToApiId = {
+                        'BTC': 'bitcoin', 'ETH': 'ethereum', 'USDT': 'tether', 'BNB': 'binancecoin',
+                        'ADA': 'cardano', 'SOL': 'solana', 'DOT': 'polkadot', 'DOGE': 'dogecoin',
+                        'XRP': 'ripple', 'MATIC': 'matic-network', 'LTC': 'litecoin', 'BCH': 'bitcoin-cash',
+                        'LINK': 'chainlink', 'UNI': 'uniswap', 'ATOM': 'cosmos', 'ETC': 'ethereum-classic',
+                        'XLM': 'stellar', 'VET': 'vechain', 'FIL': 'filecoin', 'TRX': 'tron',
+                        'EOS': 'eos', 'AAVE': 'aave', 'ALGO': 'algorand', 'MKR': 'maker',
+                        'COMP': 'compound', 'AVAX': 'avalanche-2', 'NEAR': 'near', 'FTM': 'fantom',
+                        'SAND': 'the-sandbox', 'MANA': 'decentraland', 'AXS': 'axie-infinity',
+                        'SHIB': 'shiba-inu', 'PEPE': 'pepe', 'FLOKI': 'floki', 'BONK': 'bonk', 'WIF': 'dogwifcoin'
+                    };
+                    const apiId = symbolToApiId[symbol];
+                    if (apiId) {
+                        fallbackRatesFormatted[apiId] = { usd: fallbackRates[symbol] };
+                    }
+                });
+                
+                cryptoRates = { rates: fallbackRatesFormatted, base: 'USD' };
                 lastCryptoUpdate = now;
+                
+                // Update category units with fallback cryptos - keep factors as 1.0
+                const cryptoCategory = categories["Cryptocurrency (Real-time)"];
+                Object.keys(fallbackRates).forEach(symbol => {
+                    if (cryptoCategory.units.hasOwnProperty(symbol)) {
+                        cryptoCategory.units[symbol] = 1.0; // Keep as 1.0, conversion uses cryptoRates.rates
+                    }
+                });
                 
                 showCryptoStatus('⚠️ Using fallback crypto rates', 'warning');
                 
@@ -2262,15 +2410,39 @@
         }
 
         function convertStandard(value, fromUnit, toUnit, category) {
-            const units = categories[category].units;
+            // #region agent log
+            fetch('http://127.0.0.1:7242/ingest/798a8902-71c2-432a-b17d-0962c1cbafe3',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'index.html:convertStandard',message:'convertStandard entry',data:{value:value,fromUnit:fromUnit,toUnit:toUnit,category:category,hasCategory:!!categories[category]},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'B'})}).catch(()=>{});
+            // #endregion
+            
+            const categoryData = categories[category];
+            if (!categoryData || !categoryData.units) {
+                throw new Error(`Category "${category}" not found or has no units`);
+            }
+            
+            const units = categoryData.units;
+            
+            // #region agent log
+            fetch('http://127.0.0.1:7242/ingest/798a8902-71c2-432a-b17d-0962c1cbafe3',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'index.html:convertStandard',message:'convertStandard units check',data:{hasUnits:!!units,hasFromUnit:!!(units&&units[fromUnit]),hasToUnit:!!(units&&units[toUnit])},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'B'})}).catch(()=>{});
+            // #endregion
             
             // Handle edge cases
             if (value === 0) return 0;
             if (fromUnit === toUnit) return value;
             
+            if (!units[fromUnit] || units[fromUnit] === undefined) {
+                throw new Error(`Unit "${fromUnit}" not found in category "${category}"`);
+            }
+            if (!units[toUnit] || units[toUnit] === undefined) {
+                throw new Error(`Unit "${toUnit}" not found in category "${category}"`);
+            }
+            
             // Use higher precision for calculations
             const baseValue = parseFloat((value * units[fromUnit]).toFixed(15));
             const result = parseFloat((baseValue / units[toUnit]).toFixed(15));
+            
+            // #region agent log
+            fetch('http://127.0.0.1:7242/ingest/798a8902-71c2-432a-b17d-0962c1cbafe3',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'index.html:convertStandard',message:'convertStandard result',data:{baseValue:baseValue,result:result},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'B'})}).catch(()=>{});
+            // #endregion
             
             return result;
         }
@@ -2359,31 +2531,106 @@
         }
 
         async function convertCurrency(value, fromUnit, toUnit) {
+            // #region agent log
+            fetch('http://127.0.0.1:7242/ingest/798a8902-71c2-432a-b17d-0962c1cbafe3',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'index.html:2361',message:'convertCurrency entry',data:{value:value,fromUnit:fromUnit,toUnit:toUnit,hasRates:!!currencyRates.rates},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'C'})}).catch(()=>{});
+            // #endregion
+            
             // Ensure we have fresh rates
             await fetchCurrencyRates();
             
-            if (!currencyRates.rates || !currencyRates.rates[fromUnit] || !currencyRates.rates[toUnit]) {
+            // #region agent log
+            fetch('http://127.0.0.1:7242/ingest/798a8902-71c2-432a-b17d-0962c1cbafe3',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'index.html:2365',message:'after fetchCurrencyRates',data:{hasRates:!!currencyRates.rates,hasFromRate:!!(currencyRates.rates&&currencyRates.rates[fromUnit]),hasToRate:!!(currencyRates.rates&&currencyRates.rates[toUnit])},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'C'})}).catch(()=>{});
+            // #endregion
+            
+            // #region agent log
+            fetch('http://127.0.0.1:7242/ingest/798a8902-71c2-432a-b17d-0962c1cbafe3',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'index.html:2430',message:'checking currency rates',data:{hasRates:!!currencyRates.rates,fromUnit:fromUnit,toUnit:toUnit,fromUnitInRates:!!(currencyRates.rates&&currencyRates.rates[fromUnit]),toUnitInRates:!!(currencyRates.rates&&currencyRates.rates[toUnit]),usdInRates:!!(currencyRates.rates&&currencyRates.rates.USD)},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'C'})}).catch(()=>{});
+            // #endregion
+            
+            if (!currencyRates.rates) {
+                // #region agent log
+                fetch('http://127.0.0.1:7242/ingest/798a8902-71c2-432a-b17d-0962c1cbafe3',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'index.html:2433',message:'currency rates object missing',data:{},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'C'})}).catch(()=>{});
+                // #endregion
                 throw new Error('Currency rates not available');
             }
             
+            // Handle USD as base currency (rate is always 1.0)
+            const fromRate = (fromUnit === 'USD') ? 1.0 : currencyRates.rates[fromUnit];
+            const toRate = (toUnit === 'USD') ? 1.0 : currencyRates.rates[toUnit];
+            
+            if (!fromRate || !toRate) {
+                // #region agent log
+                fetch('http://127.0.0.1:7242/ingest/798a8902-71c2-432a-b17d-0962c1cbafe3',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'index.html:2440',message:'currency rate missing',data:{fromUnit:fromUnit,toUnit:toUnit,fromRate:fromRate,toRate:toRate},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'C'})}).catch(()=>{});
+                // #endregion
+                throw new Error(`Currency rate not available for ${fromUnit} or ${toUnit}`);
+            }
+            
             // Convert to USD first, then to target currency
-            const usdValue = value / currencyRates.rates[fromUnit];
-            const result = usdValue * currencyRates.rates[toUnit];
+            // Rates are relative to USD (e.g., EUR: 0.85 means 1 USD = 0.85 EUR, so 1 EUR = 1/0.85 USD)
+            const usdValue = value / fromRate; // Convert from currency to USD
+            const result = usdValue * toRate; // Convert from USD to target currency
+            
+            // #region agent log
+            fetch('http://127.0.0.1:7242/ingest/798a8902-71c2-432a-b17d-0962c1cbafe3',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'index.html:2448',message:'currency conversion calculation',data:{fromRate:fromRate,toRate:toRate,usdValue:usdValue,result:result},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'C'})}).catch(()=>{});
+            // #endregion
+            
+            // #region agent log
+            fetch('http://127.0.0.1:7242/ingest/798a8902-71c2-432a-b17d-0962c1cbafe3',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'index.html:2373',message:'convertCurrency result',data:{usdValue:usdValue,result:result},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'C'})}).catch(()=>{});
+            // #endregion
             
             return result;
         }
 
         async function convertCrypto(value, fromUnit, toUnit) {
+            // #region agent log
+            fetch('http://127.0.0.1:7242/ingest/798a8902-71c2-432a-b17d-0962c1cbafe3',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'index.html:2448',message:'convertCrypto entry',data:{value:value,fromUnit:fromUnit,toUnit:toUnit,hasRates:!!cryptoRates.rates,cryptoRatesKeys:Object.keys(cryptoRates.rates||{})},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'C'})}).catch(()=>{});
+            // #endregion
+            
             // Ensure we have fresh rates
             await fetchCryptoRates();
             
-            if (!cryptoRates.rates || !cryptoRates.rates[fromUnit] || !cryptoRates.rates[toUnit]) {
+            // #region agent log
+            fetch('http://127.0.0.1:7242/ingest/798a8902-71c2-432a-b17d-0962c1cbafe3',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'index.html:2450',message:'after fetchCryptoRates',data:{hasRates:!!cryptoRates.rates,ratesStructure:JSON.stringify(cryptoRates.rates).substring(0,200),fromUnitInRates:!!(cryptoRates.rates&&cryptoRates.rates[fromUnit]),toUnitInRates:!!(cryptoRates.rates&&cryptoRates.rates[toUnit])},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'C'})}).catch(()=>{});
+            // #endregion
+            
+            // Map symbols to API IDs for rate lookup
+            const symbolToApiId = {
+                'BTC': 'bitcoin', 'ETH': 'ethereum', 'USDT': 'tether', 'BNB': 'binancecoin',
+                'ADA': 'cardano', 'SOL': 'solana', 'DOT': 'polkadot', 'DOGE': 'dogecoin',
+                'XRP': 'ripple', 'MATIC': 'matic-network', 'LTC': 'litecoin', 'BCH': 'bitcoin-cash',
+                'LINK': 'chainlink', 'UNI': 'uniswap', 'ATOM': 'cosmos', 'ETC': 'ethereum-classic',
+                'XLM': 'stellar', 'VET': 'vechain', 'FIL': 'filecoin', 'TRX': 'tron',
+                'EOS': 'eos', 'AAVE': 'aave', 'ALGO': 'algorand', 'MKR': 'maker',
+                'COMP': 'compound', 'AVAX': 'avalanche-2', 'NEAR': 'near', 'FTM': 'fantom',
+                'SAND': 'the-sandbox', 'MANA': 'decentraland', 'AXS': 'axie-infinity',
+                'SHIB': 'shiba-inu', 'PEPE': 'pepe', 'FLOKI': 'floki', 'BONK': 'bonk', 'WIF': 'dogwifcoin'
+            };
+            
+            const fromApiId = symbolToApiId[fromUnit];
+            const toApiId = symbolToApiId[toUnit];
+            
+            // #region agent log
+            fetch('http://127.0.0.1:7242/ingest/798a8902-71c2-432a-b17d-0962c1cbafe3',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'index.html:2465',message:'crypto mapping',data:{fromApiId:fromApiId,toApiId:toApiId,hasFromRate:!!(cryptoRates.rates&&cryptoRates.rates[fromApiId]),hasToRate:!!(cryptoRates.rates&&cryptoRates.rates[toApiId])},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'C'})}).catch(()=>{});
+            // #endregion
+            
+            if (!cryptoRates.rates || !fromApiId || !toApiId || 
+                !cryptoRates.rates[fromApiId] || !cryptoRates.rates[toApiId] ||
+                !cryptoRates.rates[fromApiId].usd || !cryptoRates.rates[toApiId].usd) {
+                // #region agent log
+                fetch('http://127.0.0.1:7242/ingest/798a8902-71c2-432a-b17d-0962c1cbafe3',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'index.html:2470',message:'crypto rates not available',data:{hasRates:!!cryptoRates.rates,fromUnit:fromUnit,toUnit:toUnit,fromApiId:fromApiId,toApiId:toApiId},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'C'})}).catch(()=>{});
+                // #endregion
                 throw new Error('Cryptocurrency rates not available');
             }
             
             // Convert to USD first, then to target crypto
-            const usdValue = value * cryptoRates.rates[fromUnit];
-            const result = usdValue / cryptoRates.rates[toUnit];
+            // fromUnit is in crypto (e.g., 1 BTC), rate is USD per crypto (e.g., 50000 USD per BTC)
+            const fromRate = cryptoRates.rates[fromApiId].usd;
+            const toRate = cryptoRates.rates[toApiId].usd;
+            const usdValue = value * fromRate; // e.g., 1 BTC * 50000 = 50000 USD
+            const result = usdValue / toRate; // e.g., 50000 USD / 3000 = 16.67 ETH
+            
+            // #region agent log
+            fetch('http://127.0.0.1:7242/ingest/798a8902-71c2-432a-b17d-0962c1cbafe3',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'index.html:2478',message:'convertCrypto result',data:{fromRate:fromRate,toRate:toRate,usdValue:usdValue,result:result},timestamp:Date.now(),sessionId:'debug-session',runId:'run1',hypothesisId:'C'})}).catch(()=>{});
+            // #endregion
             
             return result;
         }
