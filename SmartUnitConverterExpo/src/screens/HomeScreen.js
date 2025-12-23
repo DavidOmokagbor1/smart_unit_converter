@@ -268,30 +268,27 @@ export default function HomeScreen() {
   };
 
   const getExclusionZones = (screenWidth, screenHeight) => {
+    // For mobile vertical layout: header at top, cards in ScrollView
+    const headerHeight = screenHeight * 0.12; // Header is ~12% of screen
+    const contentPadding = 16; // Content padding from styles
+    
     return [
-      // Header area (top 15% of screen)
+      // Header area (top 12% of screen with padding)
       {
         x: 0,
         y: 0,
         width: screenWidth,
-        height: screenHeight * 0.15,
-        padding: 20
+        height: headerHeight,
+        padding: 25
       },
-      // Category panel (left 25% of screen, below header)
+      // Main content area (center region where cards are, with generous padding)
+      // This protects the conversion card and category grid
       {
-        x: 0,
-        y: screenHeight * 0.15,
-        width: screenWidth * 0.25,
-        height: screenHeight * 0.85,
-        padding: 15
-      },
-      // Conversion panel (center-right, below header)
-      {
-        x: screenWidth * 0.3,
-        y: screenHeight * 0.15,
-        width: screenWidth * 0.65,
-        height: screenHeight * 0.45,
-        padding: 20
+        x: contentPadding,
+        y: headerHeight,
+        width: screenWidth - (contentPadding * 2),
+        height: screenHeight * 0.6, // Protect top 60% of content area
+        padding: 30
       }
     ];
   };
@@ -329,6 +326,7 @@ export default function HomeScreen() {
   const calculatePosition = (colIndex, rowIndex, screenWidth, screenHeight, cols, rows) => {
     const cellWidth = screenWidth / cols;
     const cellHeight = screenHeight / rows;
+    const edgePadding = 20; // Minimum distance from screen edges
     
     // Base position (grid center)
     const gridX = (colIndex + 0.5) * cellWidth;
@@ -339,9 +337,17 @@ export default function HomeScreen() {
     const jitterX = (Math.random() - 0.5) * jitterRange;
     const jitterY = (Math.random() - 0.5) * jitterRange;
     
+    // Calculate final position with edge padding constraint
+    let finalX = gridX + jitterX;
+    let finalY = gridY + jitterY;
+    
+    // Ensure position respects edge padding
+    finalX = Math.max(edgePadding, Math.min(screenWidth - edgePadding, finalX));
+    finalY = Math.max(edgePadding, Math.min(screenHeight - edgePadding, finalY));
+    
     return {
-      x: gridX + jitterX,
-      y: gridY + jitterY
+      x: finalX,
+      y: finalY
     };
   };
 
@@ -363,8 +369,11 @@ export default function HomeScreen() {
     for (let row = 0; row < rows; row++) {
       for (let col = 0; col < cols; col++) {
         const pos = calculatePosition(col, row, screenWidth, screenHeight, cols, rows);
-        if (!isInExclusionZone(pos.x, pos.y, exclusionZones)) {
-          candidates.push(pos);
+        // Ensure position is within screen bounds
+        if (pos.x >= 0 && pos.x <= screenWidth && pos.y >= 0 && pos.y <= screenHeight) {
+          if (!isInExclusionZone(pos.x, pos.y, exclusionZones)) {
+            candidates.push(pos);
+          }
         }
       }
     }
@@ -373,10 +382,26 @@ export default function HomeScreen() {
     shuffleArray(candidates);
     
     // Select positions with minimum spacing
-    for (const candidate of candidates) {
+    let attempts = 0;
+    const maxAttempts = candidates.length * 2; // Allow multiple passes if needed
+    
+    for (let i = 0; i < candidates.length && positions.length < iconCount && attempts < maxAttempts; i++) {
+      const candidate = candidates[i];
       if (isValidPosition(candidate, positions, minSpacing)) {
         positions.push(candidate);
-        if (positions.length >= iconCount) break;
+      }
+      attempts++;
+      
+      // If we've gone through all candidates and don't have enough, reduce spacing requirement
+      if (i === candidates.length - 1 && positions.length < iconCount && attempts < maxAttempts) {
+        const reducedSpacing = minSpacing * 0.8; // Reduce by 20%
+        for (const candidate of candidates) {
+          if (positions.length >= iconCount) break;
+          if (isValidPosition(candidate, positions, reducedSpacing)) {
+            positions.push(candidate);
+          }
+        }
+        break;
       }
     }
     

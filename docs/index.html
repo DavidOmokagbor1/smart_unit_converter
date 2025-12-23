@@ -1756,6 +1756,7 @@
         function calculatePosition(colIndex, rowIndex, width, height, cols, rows) {
             const cellWidth = width / cols;
             const cellHeight = height / rows;
+            const edgePadding = 20; // Minimum distance from screen edges
             
             // Base position (grid center)
             const gridX = (colIndex + 0.5) * cellWidth;
@@ -1766,9 +1767,17 @@
             const jitterX = (Math.random() - 0.5) * jitterRange;
             const jitterY = (Math.random() - 0.5) * jitterRange;
             
+            // Calculate final position with edge padding constraint
+            let finalX = gridX + jitterX;
+            let finalY = gridY + jitterY;
+            
+            // Ensure position respects edge padding
+            finalX = Math.max(edgePadding, Math.min(width - edgePadding, finalX));
+            finalY = Math.max(edgePadding, Math.min(height - edgePadding, finalY));
+            
             return {
-                x: gridX + jitterX,
-                y: gridY + jitterY
+                x: finalX,
+                y: finalY
             };
         }
 
@@ -1789,8 +1798,11 @@
             for (let row = 0; row < rows; row++) {
                 for (let col = 0; col < cols; col++) {
                     const pos = calculatePosition(col, row, width, height, cols, rows);
-                    if (!isInExclusionZone(pos.x, pos.y, exclusionZones)) {
-                        candidates.push(pos);
+                    // Ensure position is within screen bounds
+                    if (pos.x >= 0 && pos.x <= width && pos.y >= 0 && pos.y <= height) {
+                        if (!isInExclusionZone(pos.x, pos.y, exclusionZones)) {
+                            candidates.push(pos);
+                        }
                     }
                 }
             }
@@ -1799,10 +1811,26 @@
             shuffleArray(candidates);
             
             // Select positions with minimum spacing
-            for (const candidate of candidates) {
+            let attempts = 0;
+            const maxAttempts = candidates.length * 2; // Allow multiple passes if needed
+            
+            for (let i = 0; i < candidates.length && positions.length < iconCount && attempts < maxAttempts; i++) {
+                const candidate = candidates[i];
                 if (isValidPosition(candidate, positions, minSpacing)) {
                     positions.push(candidate);
-                    if (positions.length >= iconCount) break;
+                }
+                attempts++;
+                
+                // If we've gone through all candidates and don't have enough, reduce spacing requirement
+                if (i === candidates.length - 1 && positions.length < iconCount && attempts < maxAttempts) {
+                    const reducedSpacing = minSpacing * 0.8; // Reduce by 20%
+                    for (const candidate of candidates) {
+                        if (positions.length >= iconCount) break;
+                        if (isValidPosition(candidate, positions, reducedSpacing)) {
+                            positions.push(candidate);
+                        }
+                    }
+                    break;
                 }
             }
             
