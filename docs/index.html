@@ -2184,11 +2184,11 @@
             return true;
         }
 
-        async function fetchCurrencyRates() {
+        async function fetchCurrencyRates(forceRefresh = false) {
             const now = Date.now();
             
-            // Check if we have recent cached rates
-            if (currencyRates.rates && (now - lastCurrencyUpdate) < CURRENCY_CACHE_DURATION) {
+            // Check if we have recent cached rates (skip if force refresh)
+            if (!forceRefresh && currencyRates.rates && (now - lastCurrencyUpdate) < CURRENCY_CACHE_DURATION) {
                 return currencyRates;
             }
 
@@ -2200,13 +2200,15 @@
                 let apiUsed = '';
                 
                 // Try ExchangeRate API first (most reliable free API)
+                // Add timestamp to URL to force fresh data
+                const cacheBuster = forceRefresh ? `&_t=${now}` : '';
                 try {
-                    const response = await fetch('https://api.exchangerate-api.com/v4/latest/USD', {
+                    const response = await fetch(`https://api.exchangerate-api.com/v4/latest/USD${cacheBuster}`, {
                         method: 'GET',
                         headers: {
                             'Accept': 'application/json',
                         },
-                        cache: 'no-cache'
+                        cache: 'no-store' // Changed from 'no-cache' to 'no-store' for stronger cache bypass
                     });
                     if (response.ok) {
                         data = await response.json();
@@ -2219,12 +2221,12 @@
                 // Fallback to CurrencyAPI (more currencies)
                 if (!data) {
                     try {
-                        const response = await fetch('https://api.currencyapi.com/v3/latest?apikey=free&base_currency=USD', {
+                        const response = await fetch(`https://api.currencyapi.com/v3/latest?apikey=free&base_currency=USD${cacheBuster}`, {
                             method: 'GET',
                             headers: {
                                 'Accept': 'application/json',
                             },
-                            cache: 'no-cache'
+                            cache: 'no-store' // Changed from 'no-cache' to 'no-store' for stronger cache bypass
                         });
                         if (response.ok) {
                             const rawData = await response.json();
@@ -2239,12 +2241,12 @@
                 // Fallback to Fixer.io API
                 if (!data) {
                     try {
-                        const response = await fetch('https://api.fixer.io/latest?base=USD', {
+                        const response = await fetch(`https://api.fixer.io/latest?base=USD${cacheBuster}`, {
                             method: 'GET',
                             headers: {
                                 'Accept': 'application/json',
                             },
-                            cache: 'no-cache'
+                            cache: 'no-store' // Changed from 'no-cache' to 'no-store' for stronger cache bypass
                         });
                         if (response.ok) {
                             data = await response.json();
@@ -2258,12 +2260,12 @@
                 // Fallback to exchangerate.host
                 if (!data) {
                     try {
-                        const response = await fetch('https://api.exchangerate.host/latest?base=USD', {
+                        const response = await fetch(`https://api.exchangerate.host/latest?base=USD${cacheBuster}`, {
                             method: 'GET',
                             headers: {
                                 'Accept': 'application/json',
                             },
-                            cache: 'no-cache'
+                            cache: 'no-store' // Changed from 'no-cache' to 'no-store' for stronger cache bypass
                         });
                         if (response.ok) {
                             data = await response.json();
@@ -2389,11 +2391,11 @@
             statusDiv.classList.add('hidden');
         }
 
-        async function fetchCryptoRates() {
+        async function fetchCryptoRates(forceRefresh = false) {
             const now = Date.now();
             
-            // Check if we have recent cached rates
-            if (cryptoRates.rates && (now - lastCryptoUpdate) < CRYPTO_CACHE_DURATION) {
+            // Check if we have recent cached rates (skip if force refresh)
+            if (!forceRefresh && cryptoRates.rates && (now - lastCryptoUpdate) < CRYPTO_CACHE_DURATION) {
                 return cryptoRates;
             }
 
@@ -3013,8 +3015,10 @@
             // Force refresh of both currency and crypto rates
             lastCurrencyUpdate = 0;
             lastCryptoUpdate = 0;
-            fetchCurrencyRates();
-            fetchCryptoRates();
+            fetchCurrencyRates(true); // Force refresh - bypass cache
+            if (typeof fetchCryptoRates === 'function') {
+                fetchCryptoRates(true); // Force refresh - bypass cache
+            }
             updateLastUpdateStatus();
         }
 

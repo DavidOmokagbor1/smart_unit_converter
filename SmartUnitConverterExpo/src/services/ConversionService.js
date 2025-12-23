@@ -414,16 +414,24 @@ class ConversionService {
   }
 
   // Load currency rates from API
-  async loadCurrencyRates() {
+  async loadCurrencyRates(forceRefresh = false) {
     const now = Date.now();
     
-    // Check if we have recent data
-    if (this.lastCurrencyUpdate && (now - this.lastCurrencyUpdate) < this.CURRENCY_CACHE_DURATION) {
+    // Check if we have recent data (skip if force refresh)
+    if (!forceRefresh && this.lastCurrencyUpdate && (now - this.lastCurrencyUpdate) < this.CURRENCY_CACHE_DURATION) {
       return this.currencyRates;
     }
 
     try {
-      const response = await fetch('https://api.exchangerate-api.com/v4/latest/USD');
+      // Add cache-busting parameter if force refresh
+      const cacheBuster = forceRefresh ? `?_t=${now}` : '';
+      const response = await fetch(`https://api.exchangerate-api.com/v4/latest/USD${cacheBuster}`, {
+        method: 'GET',
+        headers: {
+          'Accept': 'application/json',
+        },
+        cache: 'no-store' // Force no cache
+      });
       const data = await response.json();
       
       if (data.rates) {
@@ -445,16 +453,24 @@ class ConversionService {
   }
 
   // Load cryptocurrency rates from API
-  async loadCryptoRates() {
+  async loadCryptoRates(forceRefresh = false) {
     const now = Date.now();
     
-    // Check if we have recent data
-    if (this.lastCryptoUpdate && (now - this.lastCryptoUpdate) < this.CRYPTO_CACHE_DURATION) {
+    // Check if we have recent data (skip if force refresh)
+    if (!forceRefresh && this.lastCryptoUpdate && (now - this.lastCryptoUpdate) < this.CRYPTO_CACHE_DURATION) {
       return this.cryptoRates;
     }
 
     try {
-      const response = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=bitcoin,ethereum,binancecoin,cardano,solana,ripple,polkadot,dogecoin,avalanche-2,shiba-inu,matic-network,litecoin,uniswap,chainlink,cosmos,fantom,near,algorand,vechain,internet-computer,filecoin,tron,ethereum-classic,stellar,decentraland,the-sandbox,axie-infinity,chiliz,enjincoin,gala&vs_currencies=usd');
+      // Add cache-busting parameter if force refresh
+      const cacheBuster = forceRefresh ? `&_t=${now}` : '';
+      const response = await fetch(`https://api.coingecko.com/api/v3/simple/price?ids=bitcoin,ethereum,binancecoin,cardano,solana,ripple,polkadot,dogecoin,avalanche-2,shiba-inu,matic-network,litecoin,uniswap,chainlink,cosmos,fantom,near,algorand,vechain,internet-computer,filecoin,tron,ethereum-classic,stellar,decentraland,the-sandbox,axie-infinity,chiliz,enjincoin,gala&vs_currencies=usd${cacheBuster}`, {
+        method: 'GET',
+        headers: {
+          'Accept': 'application/json',
+        },
+        cache: 'no-store' // Force no cache
+      });
       const data = await response.json();
       
       if (data) {

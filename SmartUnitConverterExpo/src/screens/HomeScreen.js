@@ -96,8 +96,8 @@ export default function HomeScreen() {
       if (currentCategory === 'currency' || currentCategory === 'crypto') {
         setIsUpdating(true);
         try {
-          await ConversionService.loadCurrencyRates();
-          await ConversionService.loadCryptoRates();
+          await ConversionService.loadCurrencyRates(true); // Force refresh
+          await ConversionService.loadCryptoRates(true); // Force refresh
           setLastUpdate(new Date());
     } catch (error) {
           console.log('Rate update failed:', error);
