@@ -272,40 +272,31 @@ export default function HomeScreen() {
   // Grid-based position generator utilities
   const getGridConfig = (screenWidth, screenHeight) => {
     if (screenWidth < 768) {
-      // Mobile: 8 cols × 12 rows = 96 cells (increased density for better alignment)
-      return { cols: 8, rows: 12, minSpacing: 45, iconCount: 28 };
+      // Mobile: 8 cols × 12 rows = 96 cells - spread icons everywhere
+      return { cols: 8, rows: 12, minSpacing: 40, iconCount: 32 };
     } else if (screenWidth < 1024) {
-      // Tablet: 10 cols × 14 rows = 140 cells (increased density)
-      return { cols: 10, rows: 14, minSpacing: 55, iconCount: 32 };
+      // Tablet: 10 cols × 14 rows = 140 cells - spread icons everywhere
+      return { cols: 10, rows: 14, minSpacing: 50, iconCount: 38 };
     } else {
-      // Desktop: 12 cols × 16 rows = 192 cells (increased density)
-      return { cols: 12, rows: 16, minSpacing: 65, iconCount: 35 };
+      // Desktop: 12 cols × 16 rows = 192 cells - spread icons everywhere
+      return { cols: 12, rows: 16, minSpacing: 60, iconCount: 42 };
     }
   };
 
   const getExclusionZones = (screenWidth, screenHeight) => {
-    // For mobile vertical layout: header at top, cards in ScrollView
-    const headerHeight = screenHeight * 0.12; // Header is ~12% of screen
-    const contentPadding = 16; // Content padding from styles
+    // Minimal exclusion zones - only protect critical interactive areas
+    const headerHeight = screenHeight * 0.08; // Smaller header zone (8% instead of 12%)
     
     return [
-      // Header area (top 12% of screen with padding)
+      // Only protect the very top header area with minimal padding
       {
         x: 0,
         y: 0,
         width: screenWidth,
         height: headerHeight,
-        padding: 25
-      },
-      // Main content area (center region where cards are, with generous padding)
-      // This protects the conversion card and category grid
-      {
-        x: contentPadding,
-        y: headerHeight,
-        width: screenWidth - (contentPadding * 2),
-        height: screenHeight * 0.6, // Protect top 60% of content area
-        padding: 30
+        padding: 15 // Reduced padding
       }
+      // Removed large content exclusion zone - allow icons everywhere else
     ];
   };
 
@@ -342,22 +333,22 @@ export default function HomeScreen() {
   const calculatePosition = (colIndex, rowIndex, screenWidth, screenHeight, cols, rows) => {
     const cellWidth = screenWidth / cols;
     const cellHeight = screenHeight / rows;
-    const edgePadding = 20; // Minimum distance from screen edges
+    const edgePadding = 10; // Reduced from 20 to 10 - allow icons closer to edges
     
     // Base position (grid center)
     const gridX = (colIndex + 0.5) * cellWidth;
     const gridY = (rowIndex + 0.5) * cellHeight;
     
-    // Jitter (random offset within cell bounds - 30% of cell size)
-    const jitterRange = Math.min(cellWidth, cellHeight) * 0.3;
+    // Jitter (random offset within cell bounds - 40% of cell size for more spread)
+    const jitterRange = Math.min(cellWidth, cellHeight) * 0.4;
     const jitterX = (Math.random() - 0.5) * jitterRange;
     const jitterY = (Math.random() - 0.5) * jitterRange;
     
-    // Calculate final position with edge padding constraint
+    // Calculate final position with minimal edge padding constraint
     let finalX = gridX + jitterX;
     let finalY = gridY + jitterY;
     
-    // Ensure position respects edge padding
+    // Ensure position respects minimal edge padding (allow more spread)
     finalX = Math.max(edgePadding, Math.min(screenWidth - edgePadding, finalX));
     finalY = Math.max(edgePadding, Math.min(screenHeight - edgePadding, finalY));
     
@@ -686,11 +677,11 @@ const styles = StyleSheet.create({
   floatingLogo: {
     position: 'absolute',
     fontSize: 24, // Reduced from 36 to 24 (33% smaller)
-    opacity: 0.18, // Reduced from 0.4 to 0.18 (more faded/subtle)
+    opacity: 0.12, // Reduced from 0.18 to 0.12 (even more faded/subtle)
     color: '#667eea',
-    textShadowColor: 'rgba(102, 126, 234, 0.4)', // Reduced shadow intensity
+    textShadowColor: 'rgba(102, 126, 234, 0.3)', // Further reduced shadow intensity
     textShadowOffset: { width: 0, height: 0 },
-    textShadowRadius: 8, // Reduced shadow radius
+    textShadowRadius: 6, // Further reduced shadow radius
     fontWeight: 'normal', // Changed from bold to normal for subtler look
   },
   header: {
