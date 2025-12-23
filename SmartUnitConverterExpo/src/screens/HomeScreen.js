@@ -16,6 +16,7 @@ import {
   Dimensions,
   Modal,
   Animated,
+  Easing,
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import ConversionService from '../services/ConversionService';
@@ -155,63 +156,73 @@ export default function HomeScreen() {
 
     useEffect(() => {
       const startFloating = () => {
-        // Create unique animation pattern for each icon based on delay
-        const baseDuration = 3000 + (delay % 5) * 500; // Vary duration 3-5.5s
-        const reverseDuration = baseDuration * 1.2;
+        // Create unique animation pattern for each icon - much slower and smoother
+        const baseDuration = 8000 + (delay % 7) * 1000; // Vary duration 8-14s (much slower)
+        const reverseDuration = baseDuration * 1.1;
         
-        // Vertical floating (up and down)
+        // Use Easing for smooth animations
+        const smoothEasing = Easing.inOut(Easing.ease); // Very smooth easing
+        
+        // Vertical floating (up and down) - slower and smoother
         Animated.loop(
           Animated.sequence([
             Animated.timing(floatAnim, {
               toValue: 1,
               duration: baseDuration,
+              easing: smoothEasing,
               useNativeDriver: true,
             }),
             Animated.timing(floatAnim, {
               toValue: 0,
               duration: reverseDuration,
+              easing: smoothEasing,
               useNativeDriver: true,
             }),
           ])
         ).start();
 
-        // Horizontal movement (left and right)
+        // Horizontal movement (left and right) - slower and smoother
         Animated.loop(
           Animated.sequence([
             Animated.timing(translateXAnim, {
               toValue: 1,
-              duration: baseDuration * 1.5,
+              duration: baseDuration * 1.8,
+              easing: smoothEasing,
               useNativeDriver: true,
             }),
             Animated.timing(translateXAnim, {
               toValue: 0,
-              duration: baseDuration * 1.5,
+              duration: baseDuration * 1.8,
+              easing: smoothEasing,
               useNativeDriver: true,
             }),
           ])
         ).start();
 
-        // Diagonal movement (circular-like path)
+        // Diagonal movement (circular-like path) - slower and smoother
         Animated.loop(
           Animated.sequence([
             Animated.timing(diagonalAnim, {
               toValue: 1,
-              duration: baseDuration * 2,
+              duration: baseDuration * 2.5,
+              easing: smoothEasing,
               useNativeDriver: true,
             }),
             Animated.timing(diagonalAnim, {
               toValue: 0,
-              duration: baseDuration * 2,
+              duration: baseDuration * 2.5,
+              easing: smoothEasing,
               useNativeDriver: true,
             }),
           ])
         ).start();
 
-        // Slow, gentle rotation
+        // Very slow, gentle rotation - much slower for calming effect
         Animated.loop(
           Animated.timing(rotateAnim, {
             toValue: 1,
-            duration: 15000 + delay * 1000, // 15-25 seconds for full rotation
+            duration: 30000 + delay * 2000, // 30-44 seconds for full rotation (very slow)
+            easing: Easing.linear,
             useNativeDriver: true,
           })
         ).start();
@@ -220,26 +231,26 @@ export default function HomeScreen() {
       startFloating();
     }, [delay]);
 
-    // Multi-directional movement interpolation
+    // Multi-directional movement interpolation - reduced range for calmer feel
     const translateY = Animated.add(
       floatAnim.interpolate({
         inputRange: [0, 1],
-        outputRange: [-25, 25], // Up and down
+        outputRange: [-15, 15], // Reduced from -25,25 to -15,15 (calmer movement)
       }),
       diagonalAnim.interpolate({
       inputRange: [0, 1],
-        outputRange: [-15, 15], // Additional vertical component
+        outputRange: [-8, 8], // Reduced from -15,15 to -8,8 (gentler)
       })
     );
 
     const translateX = Animated.add(
       translateXAnim.interpolate({
         inputRange: [0, 1],
-        outputRange: [-30, 30], // Left and right
+        outputRange: [-18, 18], // Reduced from -30,30 to -18,18 (calmer movement)
       }),
       diagonalAnim.interpolate({
       inputRange: [0, 1],
-        outputRange: [-20, 20], // Additional horizontal component
+        outputRange: [-10, 10], // Reduced from -20,20 to -10,10 (gentler)
       })
     );
 
@@ -676,12 +687,12 @@ const styles = StyleSheet.create({
   },
   floatingLogo: {
     position: 'absolute',
-    fontSize: 24, // Reduced from 36 to 24 (33% smaller)
-    opacity: 0.12, // Reduced from 0.18 to 0.12 (even more faded/subtle)
+    fontSize: 18, // Reduced from 24 to 18 (25% smaller - very subtle)
+    opacity: 0.08, // Reduced from 0.12 to 0.08 (much more faded - calming)
     color: '#667eea',
-    textShadowColor: 'rgba(102, 126, 234, 0.3)', // Further reduced shadow intensity
+    textShadowColor: 'rgba(102, 126, 234, 0.2)', // Further reduced shadow for softer look
     textShadowOffset: { width: 0, height: 0 },
-    textShadowRadius: 6, // Further reduced shadow radius
+    textShadowRadius: 4, // Further reduced shadow radius
     fontWeight: 'normal', // Changed from bold to normal for subtler look
   },
   header: {
