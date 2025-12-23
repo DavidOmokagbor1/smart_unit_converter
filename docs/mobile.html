@@ -1,0 +1,2141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Unit Converter - Mobile</title>
+    
+    <!-- PWA Meta Tags -->
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#667eea">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Unit Converter">
+    <link rel="apple-touch-icon" href="icons/icon-192x192.png">
+    
+    <!-- External Resources -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <script src="draggable_categories.js"></script>
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #667eea;
+            --secondary: #764ba2;
+            --accent: #f093fb;
+            --success: #4facfe;
+            --dark-bg: #0a0a0a;
+            --dark-card: #1a1a1a;
+            --dark-text: #ffffff;
+            --dark-text-secondary: #b0b0b0;
+            --glass: rgba(255, 255, 255, 0.1);
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            min-height: 100vh;
+            background: linear-gradient(-45deg, #0a0a0a, #1a1a2e, #16213e, #0f3460);
+            background-size: 400% 400%;
+            animation: gradientShift 15s ease infinite;
+            color: var(--dark-text);
+            overflow-x: hidden;
+            padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
+        }
+
+        @keyframes gradientShift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        /* Mobile Header - Compact */
+        .mobile-header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            background: rgba(26, 26, 46, 0.95);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 8px 16px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            height: 50px;
+        }
+
+        .mobile-title {
+            font-size: 18px;
+            font-weight: 600;
+            background: linear-gradient(45deg, #667eea, #f093fb);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .mobile-menu-btn {
+            background: none;
+            border: none;
+            color: var(--dark-text);
+            font-size: 20px;
+            cursor: pointer;
+            padding: 8px;
+            border-radius: 8px;
+            transition: background 0.3s ease;
+        }
+
+        .mobile-menu-btn:hover {
+            background: var(--glass);
+        }
+
+        /* Main Content - Mobile Optimized */
+        .mobile-content {
+            padding-top: 50px;
+            padding-bottom: 80px;
+        }
+
+        /* Category Selector - Compact - Now at Bottom */
+        .mobile-category-selector {
+            padding: 12px 16px;
+            background: var(--glass);
+            margin: 8px 16px 8px 16px;
+            border-radius: 12px;
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .mobile-category-title {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 12px;
+            color: var(--accent);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .mobile-category-title::before {
+            content: "📋";
+            font-size: 14px;
+        }
+
+        .mobile-category-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 8px;
+        }
+
+        .mobile-category-btn {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: var(--dark-text);
+            padding: 12px 8px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .mobile-category-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-2px);
+        }
+
+        .mobile-category-btn.active {
+            background: linear-gradient(45deg, var(--primary), var(--secondary));
+            border-color: var(--accent);
+        }
+
+        .mobile-category-icon {
+            font-size: 16px;
+        }
+
+        /* Converter Section - Mobile Optimized - Now at Top */
+        .mobile-converter {
+            margin: 8px 16px 16px 16px;
+            background: var(--glass);
+            border-radius: 12px;
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 20px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+        }
+
+        .mobile-converter-title {
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 20px;
+            color: var(--accent);
+            text-align: center;
+            background: linear-gradient(45deg, #667eea, #f093fb);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .mobile-converter-title::before {
+            content: "⚡";
+            font-size: 16px;
+            background: none;
+            -webkit-background-clip: initial;
+            -webkit-text-fill-color: initial;
+        }
+
+        .mobile-input-group {
+            margin-bottom: 16px;
+        }
+
+        .mobile-input-label {
+            display: block;
+            font-size: 14px;
+            font-weight: 500;
+            margin-bottom: 8px;
+            color: var(--dark-text-secondary);
+        }
+
+        .mobile-input-container {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
+
+        .mobile-input {
+            flex: 1;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: var(--dark-text);
+            padding: 12px 16px;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .mobile-input:focus {
+            outline: none;
+            border-color: var(--primary);
+            background: rgba(255, 255, 255, 0.15);
+        }
+
+        .mobile-unit-select {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: var(--dark-text);
+            padding: 12px 16px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            min-width: 120px;
+            transition: all 0.3s ease;
+        }
+
+        .mobile-unit-select:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+
+        .mobile-result {
+            background: linear-gradient(45deg, var(--primary), var(--secondary));
+            color: white;
+            padding: 16px;
+            border-radius: 8px;
+            text-align: center;
+            font-size: 18px;
+            font-weight: 600;
+            margin-top: 16px;
+            min-height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Mobile Bottom Navigation */
+        .mobile-bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: rgba(26, 26, 46, 0.95);
+            backdrop-filter: blur(20px);
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 8px 16px;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            height: 60px;
+        }
+
+        .mobile-nav-btn {
+            background: none;
+            border: none;
+            color: var(--dark-text-secondary);
+            font-size: 12px;
+            cursor: pointer;
+            padding: 8px;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            min-width: 60px;
+        }
+
+        .mobile-nav-btn:hover,
+        .mobile-nav-btn.active {
+            color: var(--accent);
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .mobile-nav-icon {
+            font-size: 18px;
+        }
+
+        /* Mobile Menu Overlay */
+        .mobile-menu-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(10px);
+            z-index: 2000;
+            display: none;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .mobile-menu-content {
+            background: var(--dark-card);
+            border-radius: 16px;
+            padding: 24px;
+            margin: 16px;
+            max-width: 300px;
+            width: 100%;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .mobile-menu-title {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 16px;
+            color: var(--accent);
+            text-align: center;
+        }
+
+        .mobile-menu-item {
+            display: block;
+            width: 100%;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: var(--dark-text);
+            padding: 12px 16px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-bottom: 8px;
+            text-align: center;
+        }
+
+        .mobile-menu-item:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        /* Responsive Design */
+        @media (max-width: 480px) {
+            .mobile-category-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .mobile-category-btn {
+                padding: 10px 6px;
+                font-size: 12px;
+            }
+            
+            .mobile-category-icon {
+                font-size: 14px;
+            }
+        }
+
+        @media (max-width: 360px) {
+            .mobile-category-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .mobile-category-btn {
+                padding: 8px 4px;
+                font-size: 11px;
+            }
+            
+            .mobile-category-icon {
+                font-size: 12px;
+            }
+        }
+
+        /* Hide scrollbars on mobile */
+        ::-webkit-scrollbar {
+            display: none;
+        }
+
+        /* Loading Animation */
+        .mobile-loading {
+            display: none;
+            text-align: center;
+            padding: 20px;
+            color: var(--dark-text-secondary);
+        }
+
+        .mobile-spinner {
+            width: 20px;
+            height: 20px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-top: 2px solid var(--accent);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 10px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Settings Section */
+        .mobile-settings {
+            margin: 8px 16px;
+            background: var(--glass);
+            border-radius: 12px;
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 20px;
+        }
+
+        .mobile-settings-content h3 {
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 20px;
+            color: var(--accent);
+            text-align: center;
+        }
+
+        .mobile-setting-group {
+            margin-bottom: 24px;
+        }
+
+        .mobile-setting-group h4 {
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 8px;
+            color: var(--dark-text);
+        }
+
+
+        .mobile-setting-options {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .mobile-setting-btn {
+            background: linear-gradient(135deg, #a0aec0, #718096);
+            border: 1px solid #cbd5e0;
+            color: #2d3748;
+            padding: 14px 18px;
+            border-radius: 8px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            flex: 1;
+            min-width: 120px;
+            margin: 4px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+        }
+
+        .mobile-setting-btn:hover {
+            background: linear-gradient(135deg, #90a3b8, #6b7c93);
+            transform: translateY(-1px);
+            box-shadow: 0 3px 6px rgba(0, 0, 0, 0.15);
+        }
+
+        .mobile-setting-btn.active {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            border: 1px solid #5a67d8;
+            color: white;
+            transform: scale(1.01);
+            box-shadow: 0 3px 8px rgba(102, 126, 234, 0.3);
+        }
+
+        .mobile-setting-btn:active {
+            transform: scale(0.98);
+        }
+
+        /* About Section */
+        .mobile-about {
+            margin: 8px 16px;
+            background: var(--glass);
+            border-radius: 12px;
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 20px;
+        }
+
+        .mobile-about-content h3 {
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 20px;
+            color: var(--accent);
+            text-align: center;
+        }
+
+        .mobile-about-info h4 {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: var(--dark-text);
+        }
+
+        .mobile-about-info p {
+            color: var(--dark-text-secondary);
+            margin-bottom: 16px;
+        }
+
+        .mobile-about-features h5,
+        .mobile-about-stats h5 {
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: var(--accent);
+        }
+
+        .mobile-about-features ul {
+            list-style: none;
+            padding: 0;
+            margin-bottom: 16px;
+        }
+
+        .mobile-about-features li {
+            color: var(--dark-text-secondary);
+            margin-bottom: 4px;
+            padding-left: 16px;
+            position: relative;
+        }
+
+        .mobile-about-features li::before {
+            content: "✓";
+            position: absolute;
+            left: 0;
+            color: var(--accent);
+            font-weight: bold;
+        }
+
+        .mobile-stats-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+
+        .mobile-stat {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 8px;
+            padding: 12px;
+            text-align: center;
+        }
+
+        .mobile-stat-number {
+            display: block;
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--accent);
+        }
+
+        .mobile-stat-label {
+            display: block;
+            font-size: 12px;
+            color: var(--dark-text-secondary);
+            margin-top: 4px;
+        }
+
+        .mobile-about-version {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 8px;
+            padding: 12px;
+            margin-top: 16px;
+        }
+
+        .mobile-about-version p {
+            margin: 4px 0;
+            font-size: 14px;
+            color: var(--dark-text-secondary);
+        }
+
+        /* History Section */
+        .mobile-history {
+            background: var(--glass);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 20px;
+        }
+
+        .mobile-history-content h3 {
+            margin-bottom: 16px;
+            color: var(--accent);
+            text-align: center;
+        }
+
+        .mobile-history-actions {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 16px;
+            justify-content: center;
+        }
+
+        .mobile-history-list {
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .history-item {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 8px;
+            padding: 12px;
+            margin-bottom: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .history-item:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-1px);
+        }
+
+        .history-main {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 4px;
+        }
+
+        .history-value {
+            font-weight: 600;
+            color: var(--dark-text);
+        }
+
+        .history-arrow {
+            color: var(--accent);
+            font-weight: bold;
+        }
+
+        .history-meta {
+            display: flex;
+            justify-content: space-between;
+            font-size: 12px;
+            color: var(--dark-text-secondary);
+        }
+
+        /* Favorites Section */
+        .mobile-favorites {
+            background: var(--glass);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 20px;
+        }
+
+        .mobile-favorites-content h3 {
+            margin-bottom: 16px;
+            color: var(--accent);
+            text-align: center;
+        }
+
+        .mobile-favorites-list {
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .favorite-item {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 8px;
+            padding: 12px;
+            margin-bottom: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .favorite-item:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-1px);
+        }
+
+        .favorite-main {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 4px;
+        }
+
+        .favorite-units {
+            font-weight: 600;
+            color: var(--dark-text);
+        }
+
+        .favorite-remove {
+            background: #f56565;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            cursor: pointer;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .favorite-category {
+            font-size: 12px;
+            color: var(--dark-text-secondary);
+        }
+
+        /* Batch Section */
+        .mobile-batch {
+            background: var(--glass);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 20px;
+        }
+
+        .mobile-batch-content h3 {
+            margin-bottom: 16px;
+            color: var(--accent);
+            text-align: center;
+        }
+
+        .mobile-batch-actions {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 16px;
+            justify-content: center;
+        }
+
+        .mobile-batch-list {
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .batch-input-group {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 8px;
+            padding: 8px;
+            margin-bottom: 8px;
+        }
+
+        .batch-value {
+            flex: 1;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: var(--dark-text);
+            padding: 8px;
+            border-radius: 4px;
+        }
+
+        .batch-convert, .batch-remove {
+            padding: 8px 12px;
+            font-size: 12px;
+        }
+
+        .batch-result {
+            background: rgba(102, 126, 234, 0.2);
+            border: 1px solid rgba(102, 126, 234, 0.3);
+            border-radius: 4px;
+            padding: 8px;
+            margin-top: 8px;
+            font-size: 14px;
+            color: var(--dark-text);
+        }
+    </style>
+</head>
+<body>
+    <!-- Mobile Header -->
+    <div class="mobile-header">
+        <div class="mobile-title">Unit Converter</div>
+        <button class="mobile-menu-btn" onclick="toggleMobileMenu()">
+            <i class="fas fa-bars"></i>
+        </button>
+    </div>
+
+    <!-- Main Content -->
+    <div class="mobile-content">
+        <!-- Converter Section - Moved to Top -->
+        <div class="mobile-converter">
+            <div class="mobile-converter-title">Convert Units</div>
+            
+            <div class="mobile-input-group">
+                <label class="mobile-input-label">From</label>
+                <div class="mobile-input-container">
+                    <input type="number" class="mobile-input" id="mobileFromValue" placeholder="0" step="any">
+                    <select class="mobile-unit-select" id="mobileFromUnit">
+                        <option>Select unit</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="mobile-input-group">
+                <label class="mobile-input-label">To</label>
+                <div class="mobile-input-container">
+                    <input type="number" class="mobile-input" id="mobileToValue" placeholder="0" readonly>
+                    <select class="mobile-unit-select" id="mobileToUnit">
+                        <option>Select unit</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="mobile-result" id="mobileResult">
+                Enter values to convert
+            </div>
+            
+        </div>
+
+        <!-- Category Selector - Moved to Bottom -->
+        <div class="mobile-category-selector">
+            <div class="mobile-category-title">Choose Category</div>
+            <div class="mobile-category-grid" id="mobileCategoryGrid">
+                <!-- Categories will be populated by JavaScript -->
+            </div>
+        </div>
+
+        <!-- Settings Section -->
+        <div class="mobile-settings" style="display: none;">
+            <div class="mobile-settings-content">
+                <h3>⚙️ Settings</h3>
+                
+                <div class="mobile-setting-group">
+                    <h4>Theme</h4>
+                    <div class="mobile-setting-options">
+                        <button class="mobile-setting-btn active" onclick="setTheme('dark')">
+                            Dark
+                        </button>
+                        <button class="mobile-setting-btn" onclick="setTheme('light')">
+                            Light
+                        </button>
+                    </div>
+                </div>
+
+                <div class="mobile-setting-group">
+                    <h4>Currency Updates</h4>
+                    <div class="mobile-setting-options">
+                        <button class="mobile-setting-btn active" onclick="setUpdateFrequency('auto')">
+                            Auto (5 min)
+                        </button>
+                        <button class="mobile-setting-btn" onclick="setUpdateFrequency('manual')">
+                            Manual
+                        </button>
+                    </div>
+                </div>
+
+                <div class="mobile-setting-group">
+                    <h4>Notifications</h4>
+                    <div class="mobile-setting-options">
+                        <button class="mobile-setting-btn active" onclick="toggleNotifications(true)">
+                            On
+                        </button>
+                        <button class="mobile-setting-btn" onclick="toggleNotifications(false)">
+                            Off
+                        </button>
+                    </div>
+                </div>
+
+
+                <div class="mobile-setting-group">
+                    <h4>Data & Privacy</h4>
+                    <div class="mobile-setting-options">
+                        <button class="mobile-setting-btn" onclick="clearHistory()">
+                            Clear History
+                        </button>
+                        <button class="mobile-setting-btn" onclick="exportData()">
+                            Export Data
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- History Section -->
+        <div class="mobile-history" id="mobileHistory" style="display: none;">
+            <div class="mobile-history-content">
+                <h3>📚 Conversion History</h3>
+                <div class="mobile-history-actions">
+                    <button class="mobile-btn" onclick="clearHistory()">Clear History</button>
+                    <button class="mobile-btn" onclick="exportHistory()">Export</button>
+                </div>
+                <div id="conversionHistory" class="mobile-history-list">
+                    <!-- History items will be populated here -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Favorites Section -->
+        <div class="mobile-favorites" id="mobileFavorites" style="display: none;">
+            <div class="mobile-favorites-content">
+                <h3>⭐ Favorite Conversions</h3>
+                <div id="conversionFavorites" class="mobile-favorites-list">
+                    <!-- Favorites will be populated here -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Batch Section -->
+        <div class="mobile-batch" id="mobileBatch" style="display: none;">
+            <div class="mobile-batch-content">
+                <h3>📊 Batch Conversions</h3>
+                <div class="mobile-batch-actions">
+                    <button class="mobile-btn" onclick="addBatchInput()">Add Input</button>
+                    <button class="mobile-btn" onclick="clearBatch()">Clear All</button>
+                </div>
+                <div id="batchContainer" class="mobile-batch-list">
+                    <!-- Batch inputs will be added here -->
+                </div>
+            </div>
+        </div>
+
+        <!-- About Section -->
+        <div class="mobile-about" style="display: none;">
+            <div class="mobile-about-content">
+                <h3>ℹ️ About</h3>
+                
+                <div class="mobile-about-info">
+                    <h4>🚀 AI Smart Unit Converter</h4>
+                    <p>Professional unit converter with global accessibility</p>
+                    
+                    <div class="mobile-about-features">
+                        <h5>✨ Features:</h5>
+                        <ul>
+                            <li>20+ Categories</li>
+                            <li>170+ Currencies</li>
+                            <li>25+ Cryptocurrencies</li>
+                            <li>Real-time Rates</li>
+                            <li>Offline Support</li>
+                            <li>Mobile Optimized</li>
+                        </ul>
+                    </div>
+
+                    <div class="mobile-about-stats">
+                        <h5>📊 Statistics:</h5>
+                        <div class="mobile-stats-grid">
+                            <div class="mobile-stat">
+                                <span class="mobile-stat-number">20+</span>
+                                <span class="mobile-stat-label">Categories</span>
+                            </div>
+                            <div class="mobile-stat">
+                                <span class="mobile-stat-number">170+</span>
+                                <span class="mobile-stat-label">Currencies</span>
+                            </div>
+                            <div class="mobile-stat">
+                                <span class="mobile-stat-number">25+</span>
+                                <span class="mobile-stat-label">Crypto</span>
+                            </div>
+                            <div class="mobile-stat">
+                                <span class="mobile-stat-number">120+</span>
+                                <span class="mobile-stat-label">Units</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mobile-about-version">
+                        <p><strong>Version:</strong> 2.0.0</p>
+                        <p><strong>Last Updated:</strong> September 2025</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Loading Indicator -->
+        <div class="mobile-loading" id="mobileLoading">
+            <div class="mobile-spinner"></div>
+            <div>Loading...</div>
+        </div>
+    </div>
+
+    <!-- Mobile Bottom Navigation -->
+    <div class="mobile-bottom-nav">
+        <button class="mobile-nav-btn active" onclick="showConverter()">
+            <i class="fas fa-exchange-alt mobile-nav-icon"></i>
+            <span>Convert</span>
+        </button>
+        <button class="mobile-nav-btn" onclick="showCategories()">
+            <i class="fas fa-th-large mobile-nav-icon"></i>
+            <span>Categories</span>
+        </button>
+        <button class="mobile-nav-btn" onclick="showHistory()">
+            <i class="fas fa-history mobile-nav-icon"></i>
+            <span>History</span>
+        </button>
+        <button class="mobile-nav-btn" onclick="showFavorites()">
+            <i class="fas fa-star mobile-nav-icon"></i>
+            <span>Favorites</span>
+        </button>
+        <button class="mobile-nav-btn" onclick="showBatch()">
+            <i class="fas fa-list mobile-nav-icon"></i>
+            <span>Batch</span>
+        </button>
+        <button class="mobile-nav-btn" onclick="showSettings()">
+            <i class="fas fa-cog mobile-nav-icon"></i>
+            <span>Settings</span>
+        </button>
+    </div>
+
+    <!-- Mobile Menu Overlay -->
+    <div class="mobile-menu-overlay" id="mobileMenuOverlay">
+        <div class="mobile-menu-content">
+            <div class="mobile-menu-title">Menu</div>
+            <button class="mobile-menu-item" onclick="showConverter()">
+                <i class="fas fa-exchange-alt"></i> Converter
+            </button>
+            <button class="mobile-menu-item" onclick="showCategories()">
+                <i class="fas fa-th-large"></i> Categories
+            </button>
+            <button class="mobile-menu-item" onclick="showSettings()">
+                <i class="fas fa-cog"></i> Settings
+            </button>
+            <button class="mobile-menu-item" onclick="showAbout()">
+                <i class="fas fa-info-circle"></i> About
+            </button>
+            <button class="mobile-menu-item" onclick="toggleMobileMenu()">
+                <i class="fas fa-times"></i> Close
+            </button>
+        </div>
+    </div>
+
+    <script>
+        // Mobile App State
+        let currentCategory = null;
+        let currentUnits = {};
+        let conversionRates = {};
+        let currencyRates = {};
+        let cryptoRates = {};
+        let lastCurrencyUpdate = 0;
+        let lastCryptoUpdate = 0;
+        const CURRENCY_CACHE_DURATION = 5 * 60 * 1000; // 5 minutes
+        const CRYPTO_CACHE_DURATION = 2 * 60 * 1000; // 2 minutes
+
+        // Full Categories Data - Same as main web app
+        const mobileCategories = {
+            'length': { 
+                name: 'Length', 
+                icon: 'fas fa-ruler', 
+                units: ['meters', 'kilometers', 'centimeters', 'millimeters', 'micrometers', 'nanometers', 'miles', 'yards', 'feet', 'inches', 'nautical_miles', 'light_years', 'astronomical_units', 'parsecs', 'angstroms'],
+                conversionType: 'linear'
+            },
+            'weight': { 
+                name: 'Weight', 
+                icon: 'fas fa-weight-hanging', 
+                units: ['kilograms', 'grams', 'milligrams', 'micrograms', 'pounds', 'ounces', 'tons', 'metric_tons', 'stone', 'carats', 'atomic_mass_units'],
+                conversionType: 'linear'
+            },
+            'temperature': { 
+                name: 'Temperature', 
+                icon: 'fas fa-thermometer-half', 
+                units: ['celsius', 'fahrenheit', 'kelvin', 'rankine'],
+                conversionType: 'temperature'
+            },
+            'volume': { 
+                name: 'Volume', 
+                icon: 'fas fa-cube', 
+                units: ['liters', 'milliliters', 'cubic_meters', 'gallons', 'quarts', 'pints', 'cups', 'cubic_feet', 'cubic_yards'],
+                conversionType: 'linear'
+            },
+            'area': { 
+                name: 'Area', 
+                icon: 'fas fa-square', 
+                units: ['square_meters', 'square_kilometers', 'square_feet', 'square_yards', 'acres', 'hectares', 'square_miles'],
+                conversionType: 'linear'
+            },
+            'speed': { 
+                name: 'Speed', 
+                icon: 'fas fa-tachometer-alt', 
+                units: ['meters_per_second', 'kilometers_per_hour', 'miles_per_hour', 'knots', 'feet_per_second', 'mach'],
+                conversionType: 'linear'
+            },
+            'time': { 
+                name: 'Time', 
+                icon: 'fas fa-clock', 
+                units: ['seconds', 'minutes', 'hours', 'days', 'weeks', 'years', 'decades', 'centuries'],
+                conversionType: 'linear'
+            },
+            'digital_storage_binary': { 
+                name: 'Digital Storage (Binary)', 
+                icon: 'fas fa-hdd', 
+                units: ['bytes', 'kibibytes', 'mebibytes', 'gibibytes', 'tebibytes', 'pebibytes'],
+                conversionType: 'linear'
+            },
+            'digital_storage_decimal': { 
+                name: 'Digital Storage (Decimal)', 
+                icon: 'fas fa-hdd', 
+                units: ['bytes', 'kilobytes', 'megabytes', 'gigabytes', 'terabytes', 'petabytes'],
+                conversionType: 'linear'
+            },
+            'energy': { 
+                name: 'Energy', 
+                icon: 'fas fa-bolt', 
+                units: ['joules', 'kilojoules', 'calories', 'kilocalories', 'watt_hours', 'kilowatt_hours', 'electron_volts'],
+                conversionType: 'linear'
+            },
+            'power': { 
+                name: 'Power', 
+                icon: 'fas fa-power-off', 
+                units: ['watts', 'kilowatts', 'megawatts', 'horsepower', 'btu_per_hour'],
+                conversionType: 'linear'
+            },
+            'pressure': { 
+                name: 'Pressure', 
+                icon: 'fas fa-compress-alt', 
+                units: ['pascals', 'kilopascals', 'megapascals', 'bars', 'atmospheres', 'psi', 'torr'],
+                conversionType: 'linear'
+            },
+            'currency': { 
+                name: 'Currency (Real-time)', 
+                icon: 'fas fa-dollar-sign', 
+                units: ['USD', 'EUR', 'GBP', 'JPY', 'CAD', 'AUD', 'CHF', 'CNY', 'INR', 'BRL', 'MXN', 'KRW', 'SGD', 'HKD', 'NZD', 'RUB', 'TRY', 'ZAR', 'SEK', 'NOK', 'DKK', 'PLN', 'CZK', 'HUF', 'AED', 'AFN', 'ALL', 'AMD', 'ANG', 'AOA', 'ARS', 'AWG', 'AZN', 'BAM', 'BBD', 'BDT', 'BGN', 'BHD', 'BIF', 'BMD', 'BND', 'BOB', 'BSD', 'BTN', 'BWP', 'BYN', 'BZD', 'CDF', 'CLP', 'COP', 'CRC', 'CUP', 'CVE', 'DJF', 'DOP', 'DZD', 'EGP', 'ERN', 'ETB', 'FJD', 'FKP', 'GEL', 'GHS', 'GIP', 'GMD', 'GNF', 'GTQ', 'GYD', 'HNL', 'HRK', 'HTG', 'IDR', 'ILS', 'IQD', 'IRR', 'ISK', 'JMD', 'JOD', 'KES', 'KGS', 'KHR', 'KMF', 'KPW', 'KWD', 'KYD', 'KZT', 'LAK', 'LBP', 'LKR', 'LRD', 'LSL', 'LYD', 'MAD', 'MDL', 'MGA', 'MKD', 'MMK', 'MNT', 'MOP', 'MRU', 'MUR', 'MVR', 'MWK', 'MYR', 'MZN', 'NAD', 'NGN', 'NIO', 'NPR', 'OMR', 'PAB', 'PEN', 'PGK', 'PHP', 'PKR', 'PYG', 'QAR', 'RON', 'RSD', 'RWF', 'SAR', 'SBD', 'SCR', 'SDG', 'SLL', 'SOS', 'SRD', 'STN', 'SYP', 'SZL', 'THB', 'TJS', 'TMT', 'TND', 'TOP', 'TTD', 'TVD', 'TWD', 'TZS', 'UAH', 'UGX', 'UYU', 'UZS', 'VES', 'VND', 'VUV', 'WST', 'XAF', 'XCD', 'XDR', 'XOF', 'XPF', 'YER', 'ZMW', 'ZWL'],
+                conversionType: 'currency'
+            },
+            'crypto': { 
+                name: 'Cryptocurrency (Real-time)', 
+                icon: 'fab fa-bitcoin', 
+                units: ['BTC', 'ETH', 'USDT', 'BNB', 'ADA', 'SOL', 'DOT', 'DOGE', 'XRP', 'MATIC', 'LTC', 'BCH', 'LINK', 'UNI', 'ATOM', 'ETC', 'XLM', 'VET', 'FIL', 'TRX', 'EOS', 'AAVE', 'ALGO', 'MKR', 'COMP'],
+                conversionType: 'crypto'
+            },
+            'gold': { 
+                name: 'Gold', 
+                icon: 'fas fa-coins', 
+                units: ['grams', 'ounces', 'pounds', 'kilograms', 'troy_ounces'],
+                conversionType: 'linear'
+            },
+            'data_transfer': { 
+                name: 'Data Transfer', 
+                icon: 'fas fa-wifi', 
+                units: ['bits_per_second', 'kilobits_per_second', 'megabits_per_second', 'gigabits_per_second', 'bytes_per_second', 'kilobytes_per_second', 'megabytes_per_second'],
+                conversionType: 'linear'
+            },
+            'frequency': { 
+                name: 'Frequency', 
+                icon: 'fas fa-wave-square', 
+                units: ['hertz', 'kilohertz', 'megahertz', 'gigahertz', 'terahertz'],
+                conversionType: 'linear'
+            },
+            'cooking_volume': { 
+                name: 'Cooking Volume', 
+                icon: 'fas fa-utensils', 
+                units: ['cups', 'tablespoons', 'teaspoons', 'fluid_ounces', 'pints', 'quarts', 'gallons', 'milliliters', 'liters', 'cubic_inches', 'cubic_centimeters'],
+                conversionType: 'linear'
+            },
+            'cooking_weight': { 
+                name: 'Cooking Weight', 
+                icon: 'fas fa-weight-hanging', 
+                units: ['ounces', 'pounds', 'grams', 'kilograms', 'cups_flour', 'cups_sugar', 'cups_butter', 'tablespoons_butter', 'teaspoons_salt'],
+                conversionType: 'linear'
+            },
+            'baking_temperature': { 
+                name: 'Baking Temperature', 
+                icon: 'fas fa-thermometer-half', 
+                units: ['fahrenheit', 'celsius', 'gas_mark_1', 'gas_mark_2', 'gas_mark_3', 'gas_mark_4', 'gas_mark_5', 'gas_mark_6', 'gas_mark_7', 'gas_mark_8', 'gas_mark_9'],
+                conversionType: 'baking_temperature'
+            }
+        };
+
+        // Initialize Mobile App
+        function initMobileApp() {
+            populateMobileCategories();
+            setupMobileEventListeners();
+            loadMobileConversionRates();
+        }
+
+        // Populate Mobile Categories
+        function populateMobileCategories() {
+            const grid = document.getElementById('mobileCategoryGrid');
+            grid.innerHTML = '';
+
+            Object.entries(mobileCategories).forEach(([key, category]) => {
+                const btn = document.createElement('button');
+                btn.className = 'mobile-category-btn';
+                btn.innerHTML = `
+                    <i class="${category.icon} mobile-category-icon"></i>
+                    <span>${category.name}</span>
+                `;
+                btn.onclick = () => selectMobileCategory(key);
+                grid.appendChild(btn);
+            });
+        }
+
+        // Select Mobile Category
+        function selectMobileCategory(categoryKey) {
+            currentCategory = categoryKey;
+            const category = mobileCategories[categoryKey];
+            
+            // Update active category button
+            document.querySelectorAll('.mobile-category-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.closest('.mobile-category-btn').classList.add('active');
+
+            // Populate unit selectors
+            populateMobileUnits(category.units);
+            
+            // Clear previous values
+            document.getElementById('mobileFromValue').value = '';
+            document.getElementById('mobileToValue').value = '';
+            document.getElementById('mobileResult').textContent = 'Enter values to convert';
+        }
+
+        // Populate Mobile Units
+        function populateMobileUnits(units) {
+            const fromUnit = document.getElementById('mobileFromUnit');
+            const toUnit = document.getElementById('mobileToUnit');
+            
+            fromUnit.innerHTML = '<option>Select unit</option>';
+            toUnit.innerHTML = '<option>Select unit</option>';
+            
+            units.forEach(unit => {
+                const option1 = document.createElement('option');
+                option1.value = unit;
+                option1.textContent = unit;
+                fromUnit.appendChild(option1);
+                
+                const option2 = document.createElement('option');
+                option2.value = unit;
+                option2.textContent = unit;
+                toUnit.appendChild(option2);
+            });
+        }
+
+        // Setup Mobile Event Listeners
+        function setupMobileEventListeners() {
+            document.getElementById('mobileFromValue').addEventListener('input', performMobileConversion);
+            document.getElementById('mobileFromUnit').addEventListener('change', performMobileConversion);
+            document.getElementById('mobileToUnit').addEventListener('change', performMobileConversion);
+        }
+
+        // Perform Mobile Conversion
+        async function performMobileConversion() {
+            const fromValue = parseFloat(document.getElementById('mobileFromValue').value);
+            const fromUnit = document.getElementById('mobileFromUnit').value;
+            const toUnit = document.getElementById('mobileToUnit').value;
+            
+            if (!fromValue || !fromUnit || !toUnit || fromUnit === 'Select unit' || toUnit === 'Select unit') {
+                document.getElementById('mobileResult').textContent = 'Enter values to convert';
+                return;
+            }
+
+            if (fromUnit === toUnit) {
+                document.getElementById('mobileToValue').value = fromValue;
+                document.getElementById('mobileResult').textContent = `${fromValue} ${fromUnit} = ${fromValue} ${toUnit}`;
+                return;
+            }
+
+            // Show loading
+            document.getElementById('mobileLoading').style.display = 'block';
+            
+            try {
+                // Perform conversion with real-time rates
+                const result = await performSimpleConversion(fromValue, fromUnit, toUnit, currentCategory);
+                
+                // Format result based on category
+                let formattedResult;
+                if (currentCategory === 'currency' || currentCategory === 'crypto') {
+                    formattedResult = result.toFixed(2);
+                } else if (currentCategory === 'temperature' || currentCategory === 'baking_temperature') {
+                    formattedResult = result.toFixed(1);
+                } else {
+                    formattedResult = result.toFixed(6);
+                }
+                
+                document.getElementById('mobileToValue').value = formattedResult;
+                document.getElementById('mobileResult').textContent = `${fromValue} ${fromUnit} = ${formattedResult} ${toUnit}`;
+                
+                // Add real-time indicator for currency/crypto
+                if (currentCategory === 'currency' || currentCategory === 'crypto') {
+                    document.getElementById('mobileResult').innerHTML = `
+                        ${fromValue} ${fromUnit} = ${formattedResult} ${toUnit}
+                        <br><small style="color: #4facfe;">💱 Live Rate</small>
+                        <br><button class="mobile-btn-small" onclick="toggleFavorite('${fromUnit}', '${toUnit}', '${currentCategory}')" style="margin-top: 8px; padding: 4px 8px; font-size: 12px;">⭐ Favorite</button>
+                    `;
+                } else {
+                    document.getElementById('mobileResult').innerHTML = `
+                        ${fromValue} ${fromUnit} = ${formattedResult} ${toUnit}
+                        <br><button class="mobile-btn-small" onclick="toggleFavorite('${fromUnit}', '${toUnit}', '${currentCategory}')" style="margin-top: 8px; padding: 4px 8px; font-size: 12px;">⭐ Favorite</button>
+                    `;
+                }
+                
+                // Save to history
+                saveConversion(fromValue, fromUnit, formattedResult, toUnit, currentCategory);
+                
+            } catch (error) {
+                console.error('Conversion error:', error);
+                document.getElementById('mobileResult').textContent = 'Conversion error. Please try again.';
+            } finally {
+                document.getElementById('mobileLoading').style.display = 'none';
+            }
+        }
+
+        // Comprehensive Conversion Function
+        async function performSimpleConversion(value, fromUnit, toUnit, category) {
+            const categoryData = mobileCategories[category];
+            if (!categoryData) return value;
+
+            // Handle real-time currency conversions
+            if (categoryData.conversionType === 'currency') {
+                await loadCurrencyRates();
+                const fromRate = currencyRates[fromUnit] || 1;
+                const toRate = currencyRates[toUnit] || 1;
+                return (value * fromRate) / toRate;
+            }
+
+            // Handle real-time crypto conversions
+            if (categoryData.conversionType === 'crypto') {
+                await loadCryptoRates();
+                const fromRate = cryptoRates[fromUnit] || 1;
+                const toRate = cryptoRates[toUnit] || 1;
+                return (value * fromRate) / toRate;
+            }
+
+            // Handle temperature conversions
+            if (categoryData.conversionType === 'temperature') {
+                return convertTemperature(value, fromUnit, toUnit);
+            }
+
+            // Handle baking temperature conversions
+            if (categoryData.conversionType === 'baking_temperature') {
+                return convertBakingTemperature(value, fromUnit, toUnit);
+            }
+
+            // Handle linear conversions (most categories)
+            if (categoryData.conversionType === 'linear') {
+                return convertLinear(value, fromUnit, toUnit, category);
+            }
+
+            return value;
+        }
+
+        // Temperature Conversion
+        function convertTemperature(value, fromUnit, toUnit) {
+            // Convert to Celsius first
+            let celsius;
+            switch (fromUnit) {
+                case 'celsius': celsius = value; break;
+                case 'fahrenheit': celsius = (value - 32) * 5/9; break;
+                case 'kelvin': celsius = value - 273.15; break;
+                case 'rankine': celsius = (value - 491.67) * 5/9; break;
+                default: return value;
+            }
+
+            // Convert from Celsius to target unit
+            switch (toUnit) {
+                case 'celsius': return celsius;
+                case 'fahrenheit': return celsius * 9/5 + 32;
+                case 'kelvin': return celsius + 273.15;
+                case 'rankine': return celsius * 9/5 + 491.67;
+                default: return value;
+            }
+        }
+
+        // Baking Temperature Conversion
+        function convertBakingTemperature(value, fromUnit, toUnit) {
+            // Convert to Fahrenheit first
+            let fahrenheit;
+            if (fromUnit.startsWith('gas_mark_')) {
+                const gasMark = parseInt(fromUnit.split('_')[2]);
+                fahrenheit = 250 + (gasMark - 1) * 25; // Gas mark to Fahrenheit
+            } else if (fromUnit === 'celsius') {
+                fahrenheit = value * 9/5 + 32;
+            } else if (fromUnit === 'fahrenheit') {
+                fahrenheit = value;
+            } else {
+                return value;
+            }
+
+            // Convert from Fahrenheit to target unit
+            if (toUnit.startsWith('gas_mark_')) {
+                const gasMark = parseInt(toUnit.split('_')[2]);
+                return gasMark;
+            } else if (toUnit === 'celsius') {
+                return (fahrenheit - 32) * 5/9;
+            } else if (toUnit === 'fahrenheit') {
+                return fahrenheit;
+            }
+            return value;
+        }
+
+        // Linear Conversion
+        function convertLinear(value, fromUnit, toUnit, categoryName) {
+            // Comprehensive conversion factors (same as main web app)
+            const conversionFactors = {
+                'length': {
+                    'meters': 1.0, 'kilometers': 1000.0, 'centimeters': 0.01, 'millimeters': 0.001,
+                    'micrometers': 0.000001, 'nanometers': 1e-9, 'miles': 1609.344, 'yards': 0.9144,
+                    'feet': 0.3048, 'inches': 0.0254, 'nautical_miles': 1852.0, 'light_years': 9.461e15,
+                    'astronomical_units': 1.496e11, 'parsecs': 3.086e16, 'angstroms': 1e-10
+                },
+                'weight': {
+                    'kilograms': 1.0, 'grams': 0.001, 'milligrams': 0.000001, 'micrograms': 1e-9,
+                    'pounds': 0.45359237, 'ounces': 0.028349523125, 'tons': 1000.0, 'metric_tons': 1000.0,
+                    'stone': 6.35029318, 'carats': 0.0002, 'atomic_mass_units': 1.66053907e-27
+                },
+                'volume': {
+                    'liters': 1.0, 'milliliters': 0.001, 'cubic_meters': 1000.0, 'gallons': 3.78541,
+                    'quarts': 0.946353, 'pints': 0.473176, 'cups': 0.236588, 'cubic_feet': 28.3168, 'cubic_yards': 764.555
+                },
+                'area': {
+                    'square_meters': 1.0, 'square_kilometers': 1000000.0, 'square_feet': 0.092903,
+                    'square_yards': 0.836127, 'acres': 4046.86, 'hectares': 10000.0, 'square_miles': 2589988.0
+                },
+                'speed': {
+                    'meters_per_second': 1.0, 'kilometers_per_hour': 0.277778, 'miles_per_hour': 0.44704,
+                    'knots': 0.514444, 'feet_per_second': 0.3048, 'mach': 340.29
+                },
+                'time': {
+                    'seconds': 1.0, 'minutes': 60.0, 'hours': 3600.0, 'days': 86400.0, 'weeks': 604800.0,
+                    'years': 31536000.0, 'decades': 315360000.0, 'centuries': 3153600000.0
+                },
+                'digital_storage_binary': {
+                    'bytes': 1.0, 'kibibytes': 1024.0, 'mebibytes': 1048576.0, 'gibibytes': 1073741824.0,
+                    'tebibytes': 1099511627776.0, 'pebibytes': 1125899906842624.0
+                },
+                'digital_storage_decimal': {
+                    'bytes': 1.0, 'kilobytes': 1000.0, 'megabytes': 1000000.0, 'gigabytes': 1000000000.0,
+                    'terabytes': 1000000000000.0, 'petabytes': 1000000000000000.0
+                },
+                'energy': {
+                    'joules': 1.0, 'kilojoules': 1000.0, 'calories': 4.184, 'kilocalories': 4184.0,
+                    'watt_hours': 3600.0, 'kilowatt_hours': 3600000.0, 'electron_volts': 1.602e-19
+                },
+                'power': {
+                    'watts': 1.0, 'kilowatts': 1000.0, 'megawatts': 1000000.0, 'horsepower': 745.7, 'btu_per_hour': 0.293
+                },
+                'pressure': {
+                    'pascals': 1.0, 'kilopascals': 1000.0, 'megapascals': 1000000.0, 'bars': 100000.0,
+                    'atmospheres': 101325.0, 'psi': 6894.76, 'torr': 133.322
+                },
+                'gold': {
+                    'grams': 1.0, 'ounces': 31.1035, 'pounds': 453.592, 'kilograms': 1000.0, 'troy_ounces': 31.1035
+                },
+                'data_transfer': {
+                    'bits_per_second': 1.0, 'kilobits_per_second': 1000.0, 'megabits_per_second': 1000000.0,
+                    'gigabits_per_second': 1000000000.0, 'bytes_per_second': 8.0, 'kilobytes_per_second': 8000.0,
+                    'megabytes_per_second': 8000000.0
+                },
+                'frequency': {
+                    'hertz': 1.0, 'kilohertz': 1000.0, 'megahertz': 1000000.0, 'gigahertz': 1000000000.0, 'terahertz': 1000000000000.0
+                },
+                'cooking_volume': {
+                    'cups': 1.0, 'tablespoons': 0.0625, 'teaspoons': 0.0208333, 'fluid_ounces': 0.125,
+                    'pints': 2.0, 'quarts': 4.0, 'gallons': 16.0, 'milliliters': 236.588, 'liters': 0.236588,
+                    'cubic_inches': 14.4375, 'cubic_centimeters': 236.588
+                },
+                'cooking_weight': {
+                    'ounces': 1.0, 'pounds': 16.0, 'grams': 28.3495, 'kilograms': 28349.5, 'cups_flour': 4.25,
+                    'cups_sugar': 7.0, 'cups_butter': 8.0, 'tablespoons_butter': 0.5, 'teaspoons_salt': 5.69
+                }
+            };
+
+            const factors = conversionFactors[categoryName] || {};
+            const fromFactor = factors[fromUnit] || 1;
+            const toFactor = factors[toUnit] || 1;
+            
+            return (value * fromFactor) / toFactor;
+        }
+
+        // Load Mobile Conversion Rates
+        function loadMobileConversionRates() {
+            loadCurrencyRates();
+            loadCryptoRates();
+        }
+
+        // Load Currency Rates
+        async function loadCurrencyRates() {
+            const now = Date.now();
+            if (now - lastCurrencyUpdate < CURRENCY_CACHE_DURATION && Object.keys(currencyRates).length > 0) {
+                return currencyRates;
+            }
+
+            try {
+                const response = await fetch('https://api.exchangerate-api.com/v4/latest/USD');
+                const data = await response.json();
+                currencyRates = data.rates;
+                lastCurrencyUpdate = now;
+                console.log('Currency rates loaded:', Object.keys(currencyRates).length, 'currencies');
+                return currencyRates;
+            } catch (error) {
+                console.log('Failed to load currency rates, using fallback:', error);
+                // Fallback rates - Global coverage
+                currencyRates = {
+                    'USD': 1.0, 'EUR': 0.85, 'GBP': 0.73, 'JPY': 110.0, 'CAD': 1.25, 'AUD': 1.35,
+                    'CHF': 0.92, 'CNY': 6.45, 'INR': 74.0, 'BRL': 5.2, 'MXN': 20.0, 'KRW': 1180.0,
+                    'SGD': 1.35, 'HKD': 7.8, 'NZD': 1.42, 'RUB': 73.0, 'TRY': 8.5, 'ZAR': 14.5,
+                    'SEK': 8.6, 'NOK': 8.5, 'DKK': 6.3, 'PLN': 3.9, 'CZK': 21.5, 'HUF': 300.0,
+                    'AED': 3.67, 'AFN': 70.0, 'ALL': 100.0, 'AMD': 400.0, 'ANG': 1.8, 'AOA': 500.0,
+                    'ARS': 200.0, 'AWG': 1.8, 'AZN': 1.7, 'BAM': 1.7, 'BBD': 2.0, 'BDT': 85.0,
+                    'BGN': 1.7, 'BHD': 0.38, 'BIF': 2000.0, 'BMD': 1.0, 'BND': 1.35, 'BOB': 6.9,
+                    'BSD': 1.0, 'BTN': 74.0, 'BWP': 13.0, 'BYN': 2.5, 'BZD': 2.0, 'CDF': 2000.0,
+                    'CLP': 800.0, 'COP': 4000.0, 'CRC': 500.0, 'CUP': 24.0, 'CVE': 100.0, 'DJF': 180.0,
+                    'DOP': 50.0, 'DZD': 140.0, 'EGP': 30.0, 'ERN': 15.0, 'ETB': 50.0, 'FJD': 2.1,
+                    'FKP': 0.73, 'GEL': 2.6, 'GHS': 6.0, 'GIP': 0.73, 'GMD': 50.0, 'GNF': 9000.0,
+                    'GTQ': 7.8, 'GYD': 210.0, 'HNL': 24.0, 'HRK': 6.3, 'HTG': 100.0, 'IDR': 14000.0,
+                    'ILS': 3.2, 'IQD': 1460.0, 'IRR': 42000.0, 'ISK': 130.0, 'JMD': 150.0, 'JOD': 0.71,
+                    'KES': 110.0, 'KGS': 85.0, 'KHR': 4000.0, 'KMF': 450.0, 'KPW': 900.0, 'KWD': 0.30,
+                    'KYD': 0.83, 'KZT': 420.0, 'LAK': 10000.0, 'LBP': 1500.0, 'LKR': 200.0, 'LRD': 150.0,
+                    'LSL': 14.5, 'LYD': 4.8, 'MAD': 9.0, 'MDL': 18.0, 'MGA': 4000.0, 'MKD': 50.0,
+                    'MMK': 2000.0, 'MNT': 3000.0, 'MOP': 8.0, 'MRU': 40.0, 'MUR': 40.0, 'MVR': 15.0,
+                    'MWK': 800.0, 'MYR': 4.2, 'MZN': 60.0, 'NAD': 14.5, 'NGN': 410.0, 'NIO': 36.0,
+                    'NPR': 120.0, 'OMR': 0.38, 'PAB': 1.0, 'PEN': 3.7, 'PGK': 3.5, 'PHP': 50.0,
+                    'PKR': 170.0, 'PYG': 7000.0, 'QAR': 3.64, 'RON': 4.2, 'RSD': 100.0, 'RWF': 1000.0,
+                    'SAR': 3.75, 'SBD': 8.0, 'SCR': 13.0, 'SDG': 450.0, 'SLL': 10000.0, 'SOS': 570.0,
+                    'SRD': 20.0, 'STN': 20.0, 'SYP': 2500.0, 'SZL': 14.5, 'THB': 33.0, 'TJS': 10.0,
+                    'TMT': 3.5, 'TND': 2.9, 'TOP': 2.3, 'TTD': 6.8, 'TVD': 1.42, 'TWD': 28.0,
+                    'TZS': 2300.0, 'UAH': 27.0, 'UGX': 3700.0, 'UYU': 40.0, 'UZS': 11000.0, 'VES': 3600000.0,
+                    'VND': 24000.0, 'VUV': 110.0, 'WST': 2.6, 'XAF': 550.0, 'XCD': 2.7, 'XDR': 0.72,
+                    'XOF': 550.0, 'XPF': 100.0, 'YER': 250.0, 'ZMW': 18.0, 'ZWL': 360.0
+                };
+                return currencyRates;
+            }
+        }
+
+        // Load Crypto Rates
+        async function loadCryptoRates() {
+            const now = Date.now();
+            if (now - lastCryptoUpdate < CRYPTO_CACHE_DURATION && Object.keys(cryptoRates).length > 0) {
+                return cryptoRates;
+            }
+
+            try {
+                const response = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=bitcoin,ethereum,tether,binancecoin,cardano,solana,polkadot,dogecoin,ripple,polygon,litecoin,bitcoin-cash,chainlink,uniswap,cosmos,ethereum-classic,stellar,vechain,filecoin,tron,eos,aave,algorand,maker,compound&vs_currencies=usd');
+                const data = await response.json();
+                
+                // Map to our crypto symbols
+                cryptoRates = {
+                    'BTC': data.bitcoin?.usd || 45000,
+                    'ETH': data.ethereum?.usd || 3000,
+                    'USDT': data.tether?.usd || 1.0,
+                    'BNB': data.binancecoin?.usd || 400,
+                    'ADA': data.cardano?.usd || 1.2,
+                    'SOL': data.solana?.usd || 100,
+                    'DOT': data.polkadot?.usd || 25,
+                    'DOGE': data.dogecoin?.usd || 0.25,
+                    'XRP': data.ripple?.usd || 0.8,
+                    'MATIC': data.polygon?.usd || 1.5,
+                    'LTC': data.litecoin?.usd || 150,
+                    'BCH': data['bitcoin-cash']?.usd || 600,
+                    'LINK': data.chainlink?.usd || 25,
+                    'UNI': data.uniswap?.usd || 20,
+                    'ATOM': data.cosmos?.usd || 15,
+                    'ETC': data['ethereum-classic']?.usd || 50,
+                    'XLM': data.stellar?.usd || 0.3,
+                    'VET': data.vechain?.usd || 0.1,
+                    'FIL': data.filecoin?.usd || 60,
+                    'TRX': data.tron?.usd || 0.1,
+                    'EOS': data.eos?.usd || 4,
+                    'AAVE': data.aave?.usd || 300,
+                    'ALGO': data.algorand?.usd || 1.5,
+                    'MKR': data.maker?.usd || 2500,
+                    'COMP': data.compound?.usd || 400
+                };
+                lastCryptoUpdate = now;
+                console.log('Crypto rates loaded:', Object.keys(cryptoRates).length, 'cryptocurrencies');
+                return cryptoRates;
+            } catch (error) {
+                console.log('Failed to load crypto rates, using fallback:', error);
+                // Fallback rates
+                cryptoRates = {
+                    'BTC': 45000, 'ETH': 3000, 'USDT': 1.0, 'BNB': 400, 'ADA': 1.2, 'SOL': 100,
+                    'DOT': 25, 'DOGE': 0.25, 'XRP': 0.8, 'MATIC': 1.5, 'LTC': 150, 'BCH': 600,
+                    'LINK': 25, 'UNI': 20, 'ATOM': 15, 'ETC': 50, 'XLM': 0.3, 'VET': 0.1,
+                    'FIL': 60, 'TRX': 0.1, 'EOS': 4, 'AAVE': 300, 'ALGO': 1.5, 'MKR': 2500, 'COMP': 400
+                };
+                return cryptoRates;
+            }
+        }
+
+        // Mobile Navigation Functions
+        function showConverter() {
+            console.log('showConverter called');
+            setActiveNavButton(0);
+            // Show converter section, hide others
+            document.querySelector('.mobile-converter').style.display = 'block';
+            document.querySelector('.mobile-category-selector').style.display = 'block';
+            document.querySelector('.mobile-settings').style.display = 'none';
+            document.querySelector('.mobile-about').style.display = 'none';
+            document.querySelector('.mobile-history').style.display = 'none';
+            document.querySelector('.mobile-favorites').style.display = 'none';
+            document.querySelector('.mobile-batch').style.display = 'none';
+            
+            // Scroll to top
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function showCategories() {
+            console.log('showCategories called');
+            setActiveNavButton(1);
+            // Show categories section, hide others
+            document.querySelector('.mobile-converter').style.display = 'block';
+            document.querySelector('.mobile-category-selector').style.display = 'block';
+            document.querySelector('.mobile-settings').style.display = 'none';
+            document.querySelector('.mobile-about').style.display = 'none';
+            document.querySelector('.mobile-history').style.display = 'none';
+            document.querySelector('.mobile-favorites').style.display = 'none';
+            document.querySelector('.mobile-batch').style.display = 'none';
+            
+            // Scroll to categories
+            document.querySelector('.mobile-category-selector').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function showSettings() {
+            console.log('showSettings called');
+            setActiveNavButton(2);
+            // Show settings section, hide others
+            document.querySelector('.mobile-converter').style.display = 'none';
+            document.querySelector('.mobile-category-selector').style.display = 'none';
+            document.querySelector('.mobile-settings').style.display = 'block';
+            document.querySelector('.mobile-about').style.display = 'none';
+        }
+
+        function showHistory() {
+            console.log('showHistory called');
+            setActiveNavButton(3);
+            // Show history section, hide others
+            document.querySelector('.mobile-converter').style.display = 'none';
+            document.querySelector('.mobile-category-selector').style.display = 'none';
+            document.querySelector('.mobile-settings').style.display = 'none';
+            document.querySelector('.mobile-about').style.display = 'none';
+            document.querySelector('.mobile-history').style.display = 'none';
+            document.querySelector('.mobile-favorites').style.display = 'none';
+            document.querySelector('.mobile-batch').style.display = 'none';
+            document.querySelector('.mobile-favorites').style.display = 'none';
+            document.querySelector('.mobile-batch').style.display = 'none';
+            document.querySelector('.mobile-history').style.display = 'block';
+        }
+
+        function showFavorites() {
+            console.log('showFavorites called');
+            setActiveNavButton(4);
+            // Show favorites section, hide others
+            document.querySelector('.mobile-converter').style.display = 'none';
+            document.querySelector('.mobile-category-selector').style.display = 'none';
+            document.querySelector('.mobile-settings').style.display = 'none';
+            document.querySelector('.mobile-about').style.display = 'none';
+            document.querySelector('.mobile-history').style.display = 'none';
+            document.querySelector('.mobile-favorites').style.display = 'none';
+            document.querySelector('.mobile-batch').style.display = 'none';
+            document.querySelector('.mobile-history').style.display = 'none';
+            document.querySelector('.mobile-batch').style.display = 'none';
+            document.querySelector('.mobile-favorites').style.display = 'block';
+        }
+
+        function showBatch() {
+            console.log('showBatch called');
+            setActiveNavButton(5);
+            // Show batch section, hide others
+            document.querySelector('.mobile-converter').style.display = 'none';
+            document.querySelector('.mobile-category-selector').style.display = 'none';
+            document.querySelector('.mobile-settings').style.display = 'none';
+            document.querySelector('.mobile-about').style.display = 'none';
+            document.querySelector('.mobile-history').style.display = 'none';
+            document.querySelector('.mobile-favorites').style.display = 'none';
+            document.querySelector('.mobile-batch').style.display = 'none';
+            document.querySelector('.mobile-history').style.display = 'none';
+            document.querySelector('.mobile-favorites').style.display = 'none';
+            document.querySelector('.mobile-batch').style.display = 'block';
+        }
+
+        function showAbout() {
+            console.log('showAbout called');
+            setActiveNavButton(6);
+            // Show about section, hide others
+            document.querySelector('.mobile-converter').style.display = 'none';
+            document.querySelector('.mobile-category-selector').style.display = 'none';
+            document.querySelector('.mobile-settings').style.display = 'none';
+            document.querySelector('.mobile-history').style.display = 'none';
+            document.querySelector('.mobile-favorites').style.display = 'none';
+            document.querySelector('.mobile-batch').style.display = 'none';
+            document.querySelector('.mobile-about').style.display = 'block';
+        }
+
+        function setActiveNavButton(index) {
+            document.querySelectorAll('.mobile-nav-btn').forEach((btn, i) => {
+                btn.classList.toggle('active', i === index);
+            });
+        }
+
+        // Mobile Menu Functions
+        function toggleMobileMenu() {
+            const overlay = document.getElementById('mobileMenuOverlay');
+            overlay.style.display = overlay.style.display === 'flex' ? 'none' : 'flex';
+        }
+
+        // Close menu when clicking outside
+        document.getElementById('mobileMenuOverlay').addEventListener('click', (e) => {
+            if (e.target.id === 'mobileMenuOverlay') {
+                toggleMobileMenu();
+            }
+        });
+
+        // Settings Functions
+        function setTheme(theme) {
+            // Update active button
+            document.querySelectorAll('.mobile-setting-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            if (event && event.target) {
+                event.target.classList.add('active');
+            }
+            
+            // Apply theme with reduced whiteness
+            if (theme === 'light') {
+                document.body.style.background = 'linear-gradient(-45deg, #f1f5f9, #e2e8f0, #cbd5e0, #a0aec0)';
+                document.body.style.color = '#1a202c';
+                
+                // Update mobile elements for better contrast
+                document.querySelectorAll('.mobile-converter, .mobile-category-selector, .mobile-settings, .mobile-about').forEach(el => {
+                    el.style.background = 'rgba(248, 250, 252, 0.95)';
+                    el.style.color = '#1a202c';
+                    el.style.border = '1px solid #d1d5db';
+                    el.style.boxShadow = '0 2px 8px rgba(0, 0, 0, 0.08)';
+                });
+                
+                // Update input fields
+                document.querySelectorAll('.mobile-input, .mobile-unit-select').forEach(el => {
+                    el.style.background = '#f9fafb';
+                    el.style.color = '#1a202c';
+                    el.style.border = '1px solid #d1d5db';
+                });
+                
+                // Update buttons
+                document.querySelectorAll('.mobile-btn, .mobile-category-btn').forEach(el => {
+                    el.style.background = '#667eea';
+                    el.style.color = '#ffffff';
+                    el.style.border = '1px solid #5a67d8';
+                });
+                
+                // Update header
+                document.querySelector('.mobile-header').style.background = 'rgba(248, 250, 252, 0.95)';
+                document.querySelector('.mobile-header').style.color = '#1a202c';
+                document.querySelector('.mobile-header').style.borderBottom = '1px solid #d1d5db';
+                
+            } else {
+                document.body.style.background = 'linear-gradient(-45deg, #0a0a0a, #1a1a2e, #16213e, #0f3460)';
+                document.body.style.color = '#ffffff';
+                
+                // Update mobile elements
+                document.querySelectorAll('.mobile-converter, .mobile-category-selector, .mobile-settings, .mobile-about').forEach(el => {
+                    el.style.background = 'rgba(26, 32, 44, 0.95)';
+                    el.style.color = '#f7fafc';
+                    el.style.border = '2px solid #4a5568';
+                    el.style.boxShadow = '0 4px 12px rgba(0, 0, 0, 0.3)';
+                });
+                
+                // Update input fields
+                document.querySelectorAll('.mobile-input, .mobile-unit-select').forEach(el => {
+                    el.style.background = '#2d3748';
+                    el.style.color = '#f7fafc';
+                    el.style.border = '2px solid #4a5568';
+                });
+                
+                // Update buttons
+                document.querySelectorAll('.mobile-btn, .mobile-category-btn').forEach(el => {
+                    el.style.background = '#667eea';
+                    el.style.color = '#ffffff';
+                    el.style.border = '2px solid #5a67d8';
+                });
+                
+                // Update header
+                document.querySelector('.mobile-header').style.background = 'rgba(26, 32, 44, 0.95)';
+                document.querySelector('.mobile-header').style.color = '#f7fafc';
+                document.querySelector('.mobile-header').style.borderBottom = '2px solid #4a5568';
+            }
+            
+            // Save preference
+            localStorage.setItem('mobileTheme', theme);
+            showNotification(`Theme changed to ${theme}`, 'success');
+        }
+
+        function setUpdateFrequency(frequency) {
+            // Update active button
+            document.querySelectorAll('.mobile-setting-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            if (event && event.target) {
+                event.target.classList.add('active');
+            }
+            
+            // Save preference
+            localStorage.setItem('updateFrequency', frequency);
+            showNotification(`Update frequency set to ${frequency}`, 'success');
+        }
+
+        function toggleNotifications(enabled) {
+            // Update active button
+            document.querySelectorAll('.mobile-setting-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            if (event && event.target) {
+                event.target.classList.add('active');
+            }
+            
+            // Save preference
+            localStorage.setItem('notifications', enabled);
+            showNotification(`Notifications ${enabled ? 'enabled' : 'disabled'}`, 'success');
+        }
+
+        function clearHistory() {
+            if (confirm('Are you sure you want to clear all conversion history?')) {
+                localStorage.removeItem('conversionHistory');
+                showNotification('History cleared successfully', 'success');
+            }
+        }
+
+        function exportData() {
+            const data = {
+                conversionHistory: JSON.parse(localStorage.getItem('conversionHistory') || '[]'),
+                settings: {
+                    theme: localStorage.getItem('mobileTheme') || 'dark',
+                    updateFrequency: localStorage.getItem('updateFrequency') || 'auto',
+                    notifications: localStorage.getItem('notifications') || 'true'
+                },
+                exportDate: new Date().toISOString()
+            };
+            
+            const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'unit-converter-data.json';
+            a.click();
+            URL.revokeObjectURL(url);
+            
+            showNotification('Data exported successfully', 'success');
+        }
+
+        // Notification function
+        function showNotification(message, type = 'info') {
+            // Create notification element
+            const notification = document.createElement('div');
+            notification.style.cssText = `
+                position: fixed;
+                top: 70px;
+                left: 50%;
+                transform: translateX(-50%);
+                background: ${type === 'success' ? '#4facfe' : '#667eea'};
+                color: white;
+                padding: 12px 20px;
+                border-radius: 8px;
+                font-size: 14px;
+                font-weight: 500;
+                z-index: 10000;
+                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+                animation: slideDown 0.3s ease;
+            `;
+            notification.textContent = message;
+            
+            // Add animation keyframes
+            if (!document.querySelector('#notification-styles')) {
+                const style = document.createElement('style');
+                style.id = 'notification-styles';
+                style.textContent = `
+                    @keyframes slideDown {
+                        from { transform: translateX(-50%) translateY(-20px); opacity: 0; }
+                        to { transform: translateX(-50%) translateY(0); opacity: 1; }
+                    }
+                `;
+                document.head.appendChild(style);
+            }
+            
+            document.body.appendChild(notification);
+            
+            // Remove after 3 seconds
+            setTimeout(() => {
+                notification.remove();
+            }, 3000);
+        }
+
+
+
+
+
+
+
+        // Conversion History Management
+        let conversionHistory = JSON.parse(localStorage.getItem('conversionHistory') || '[]');
+        const MAX_HISTORY = 50; // Keep last 50 conversions
+
+        function saveConversion(fromValue, fromUnit, toValue, toUnit, category) {
+            const conversion = {
+                id: Date.now(),
+                timestamp: new Date().toISOString(),
+                fromValue: parseFloat(fromValue),
+                fromUnit: fromUnit,
+                toValue: parseFloat(toValue),
+                toUnit: toUnit,
+                category: category
+            };
+            
+            conversionHistory.unshift(conversion);
+            
+            // Keep only the last MAX_HISTORY conversions
+            if (conversionHistory.length > MAX_HISTORY) {
+                conversionHistory = conversionHistory.slice(0, MAX_HISTORY);
+            }
+            
+            localStorage.setItem('conversionHistory', JSON.stringify(conversionHistory));
+            updateHistoryDisplay();
+        }
+
+        function updateHistoryDisplay() {
+            const historyContainer = document.getElementById('conversionHistory');
+            if (!historyContainer) return;
+            
+            if (conversionHistory.length === 0) {
+                historyContainer.innerHTML = '<p style="text-align: center; color: var(--dark-text-secondary); padding: 20px;">No conversions yet</p>';
+                return;
+            }
+            
+            historyContainer.innerHTML = conversionHistory.map(conv => `
+                <div class="history-item" onclick="loadFromHistory('${conv.id}')">
+                    <div class="history-main">
+                        <span class="history-value">${conv.fromValue} ${conv.fromUnit}</span>
+                        <span class="history-arrow">→</span>
+                        <span class="history-value">${conv.toValue} ${conv.toUnit}</span>
+                    </div>
+                    <div class="history-meta">
+                        <span class="history-category">${conv.category}</span>
+                        <span class="history-time">${formatTime(conv.timestamp)}</span>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function loadFromHistory(conversionId) {
+            const conversion = conversionHistory.find(c => c.id == conversionId);
+            if (!conversion) return;
+            
+            document.getElementById('mobileFromValue').value = conversion.fromValue;
+            document.getElementById('mobileFromUnit').value = conversion.fromUnit;
+            document.getElementById('mobileToUnit').value = conversion.toUnit;
+            
+            // Auto-convert
+            performMobileConversion();
+            showNotification('Loaded from history', 'success');
+        }
+
+        function formatTime(timestamp) {
+            const date = new Date(timestamp);
+            const now = new Date();
+            const diff = now - date;
+            
+            if (diff < 60000) return 'Just now';
+            if (diff < 3600000) return `${Math.floor(diff / 60000)}m ago`;
+            if (diff < 86400000) return `${Math.floor(diff / 3600000)}h ago`;
+            return date.toLocaleDateString();
+        }
+
+        function clearHistory() {
+            conversionHistory = [];
+            localStorage.removeItem('conversionHistory');
+            updateHistoryDisplay();
+            showNotification('History cleared', 'success');
+        }
+
+        function exportHistory() {
+            if (conversionHistory.length === 0) {
+                showNotification('No history to export', 'info');
+                return;
+            }
+            
+            const csv = 'Timestamp,From Value,From Unit,To Value,To Unit,Category\n' +
+                conversionHistory.map(conv => 
+                    `${conv.timestamp},${conv.fromValue},${conv.fromUnit},${conv.toValue},${conv.toUnit},${conv.category}`
+                ).join('\n');
+            
+            const blob = new Blob([csv], { type: 'text/csv' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'conversion_history.csv';
+            a.click();
+            window.URL.revokeObjectURL(url);
+            
+            showNotification('History exported', 'success');
+        }
+
+        // Favorites Management
+        let favorites = JSON.parse(localStorage.getItem('conversionFavorites') || '[]');
+
+        function toggleFavorite(fromUnit, toUnit, category) {
+            const favoriteId = `${fromUnit}-${toUnit}-${category}`;
+            const existingIndex = favorites.findIndex(f => f.id === favoriteId);
+            
+            if (existingIndex >= 0) {
+                favorites.splice(existingIndex, 1);
+                showNotification('Removed from favorites', 'info');
+            } else {
+                favorites.push({
+                    id: favoriteId,
+                    fromUnit: fromUnit,
+                    toUnit: toUnit,
+                    category: category,
+                    timestamp: new Date().toISOString()
+                });
+                showNotification('Added to favorites', 'success');
+            }
+            
+            localStorage.setItem('conversionFavorites', JSON.stringify(favorites));
+            updateFavoritesDisplay();
+        }
+
+        function updateFavoritesDisplay() {
+            const favoritesContainer = document.getElementById('conversionFavorites');
+            if (!favoritesContainer) return;
+            
+            if (favorites.length === 0) {
+                favoritesContainer.innerHTML = '<p style="text-align: center; color: var(--dark-text-secondary); padding: 20px;">No favorites yet</p>';
+                return;
+            }
+            
+            favoritesContainer.innerHTML = favorites.map(fav => `
+                <div class="favorite-item" onclick="loadFavorite('${fav.id}')">
+                    <div class="favorite-main">
+                        <span class="favorite-units">${fav.fromUnit} → ${fav.toUnit}</span>
+                        <button class="favorite-remove" onclick="event.stopPropagation(); removeFavorite('${fav.id}')">×</button>
+                    </div>
+                    <div class="favorite-category">${fav.category}</div>
+                </div>
+            `).join('');
+        }
+
+        function loadFavorite(favoriteId) {
+            const favorite = favorites.find(f => f.id === favoriteId);
+            if (!favorite) return;
+            
+            document.getElementById('mobileFromUnit').value = favorite.fromUnit;
+            document.getElementById('mobileToUnit').value = favorite.toUnit;
+            
+            // Auto-select the category
+            const categoryBtn = document.querySelector(`[data-category="${favorite.category}"]`);
+            if (categoryBtn) {
+                categoryBtn.click();
+            }
+            
+            showNotification('Loaded favorite', 'success');
+        }
+
+        function removeFavorite(favoriteId) {
+            favorites = favorites.filter(f => f.id !== favoriteId);
+            localStorage.setItem('conversionFavorites', JSON.stringify(favorites));
+            updateFavoritesDisplay();
+            showNotification('Removed from favorites', 'info');
+        }
+
+        // Batch Conversion Feature
+        function addBatchInput() {
+            const batchContainer = document.getElementById('batchContainer');
+            if (!batchContainer) return;
+            
+            const inputGroup = document.createElement('div');
+            inputGroup.className = 'batch-input-group';
+            inputGroup.innerHTML = `
+                <input type="number" class="mobile-input batch-value" placeholder="Value" step="any">
+                <button class="mobile-btn batch-convert" onclick="convertBatchItem(this)">Convert</button>
+                <button class="mobile-btn batch-remove" onclick="removeBatchItem(this)">×</button>
+            `;
+            
+            batchContainer.appendChild(inputGroup);
+        }
+
+        function convertBatchItem(button) {
+            const group = button.parentElement;
+            const valueInput = group.querySelector('.batch-value');
+            const value = parseFloat(valueInput.value);
+            
+            if (!value || isNaN(value)) {
+                showNotification('Please enter a valid number', 'error');
+                return;
+            }
+            
+            const fromUnit = document.getElementById('mobileFromUnit').value;
+            const toUnit = document.getElementById('mobileToUnit').value;
+            
+            if (!fromUnit || !toUnit) {
+                showNotification('Please select units first', 'error');
+                return;
+            }
+            
+            // Perform conversion
+            const result = performSimpleConversion(value, fromUnit, toUnit, getCurrentCategory());
+            if (result !== null) {
+                const resultSpan = document.createElement('span');
+                resultSpan.className = 'batch-result';
+                resultSpan.textContent = `${value} ${fromUnit} = ${result} ${toUnit}`;
+                group.appendChild(resultSpan);
+                button.style.display = 'none';
+            }
+        }
+
+        function removeBatchItem(button) {
+            button.parentElement.remove();
+        }
+
+        function clearBatch() {
+            const batchContainer = document.getElementById('batchContainer');
+            if (batchContainer) {
+                batchContainer.innerHTML = '';
+            }
+        }
+
+        // Initialize when page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('Mobile app initializing...');
+            initMobileApp();
+            updateHistoryDisplay();
+            updateFavoritesDisplay();
+            console.log('Mobile app initialized successfully');
+        });
+    </script>
+</body>
+</html>

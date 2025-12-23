@@ -1,0 +1,53 @@
+# Ignore documentation and development files
+*.md
+!README.md
+
+# Ignore Python scripts
+*.py
+__pycache__/
+*.pyc
+
+# Ignore shell scripts
+*.sh
+
+# Ignore deployment configs
+netlify.toml
+vercel.json
+deploy*.sh
+
+# Ignore test files
+test_*.html
+*_test.html
+debug_*.html
+
+# Ignore QR code images (not needed in container)
+qr_*.png
+expo_*.png
+
+# Ignore git files
+.git/
+.gitignore
+
+# Ignore IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Ignore temporary files
+*.tmp
+*.temp
+.DS_Store
+Thumbs.db
+
+# Ignore mobile app directories (not needed for web deployment)
+SmartUnitConverterExpo/
+SmartUnitConverterRN/
+
+# Ignore security templates
+security-templates/
+
+# Ignore large documentation files
+*_GUIDE.md
+*_SUMMARY.md
+*_ROADMAP.md
