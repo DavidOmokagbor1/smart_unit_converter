@@ -2,10 +2,10 @@
 
 A powerful, unified unit converter project with multiple interfaces for every user:
 
-- **Python GUI** (main.py)
-- **Command-line Interface** (cli_converter.py)
-- **Web App (Basic)** (web_converter.html)
-- **Web App (Stunning/Advanced)** (stunning_converter.html)
+- **Python GUI** (smart_unit_converter/main.py)
+- **Command-line Interface** (smart_unit_converter/cli_converter.py)
+- **Web App (Basic)** (smart_unit_converter/web_converter.html)
+- **Web App (Stunning/Advanced)** (smart_unit_converter/stunning_converter_with_draggable.html)
 
 ---
 
@@ -32,24 +32,24 @@ Smart Unit Converter is a comprehensive, modern tool for converting between 15+ 
 
 ### 1. Python GUI
 
-- File: `main.py`
-- Run with: `python3 main.py`
+- File: `smart_unit_converter/main.py`
+- Run with: `python3 smart_unit_converter/main.py`
 - Modern Tkinter interface for desktop use
 
 ### 2. Command-Line Interface
 
-- File: `cli_converter.py`
-- Run with: `python3 cli_converter.py`
+- File: `smart_unit_converter/cli_converter.py`
+- Run with: `python3 smart_unit_converter/cli_converter.py`
 - Simple, fast, and works in any terminal
 
 ### 3. Web App (Basic)
 
-- File: `web_converter.html`
+- File: `smart_unit_converter/web_converter.html`
 - Open in any browser for a clean, responsive web interface
 
 ### 4. Web App (Stunning/Advanced)
 
-- File: `stunning_converter.html`
+- File: `smart_unit_converter/stunning_converter_with_draggable.html` or `stunning_converter.html`
 - Open in any browser for a visually stunning, feature-rich experience
 - Includes animated backgrounds, floating live info panel, dark/light mode, and more
 
@@ -60,10 +60,10 @@ Smart Unit Converter is a comprehensive, modern tool for converting between 15+ 
 1. **Clone or download this repository**
 2. **Navigate to the project folder**
 3. **Choose your preferred interface:**
-   - **Desktop GUI:** `python3 main.py`
-   - **Command Line:** `python3 cli_converter.py`
-   - **Web (Basic):** Open `web_converter.html` in your browser
-   - **Web (Stunning):** Open `stunning_converter.html` in your browser
+   - **Desktop GUI:** `python3 smart_unit_converter/main.py`
+   - **Command Line:** `python3 smart_unit_converter/cli_converter.py`
+   - **Web (Basic):** Open `smart_unit_converter/web_converter.html` in your browser
+   - **Web (Stunning):** Open `smart_unit_converter/stunning_converter_with_draggable.html` in your browser
 
 ---
 
