@@ -146,85 +146,102 @@ export default function HomeScreen() {
     }
   };
 
-  // Floating logo component with enhanced animation
+  // Floating logo component with enhanced multi-directional animation
   const FloatingLogo = ({ icon, top, left, delay = 0 }) => {
     const floatAnim = useRef(new Animated.Value(0)).current;
     const rotateAnim = useRef(new Animated.Value(0)).current;
     const translateXAnim = useRef(new Animated.Value(0)).current;
-    const scaleAnim = useRef(new Animated.Value(1)).current;
+    const diagonalAnim = useRef(new Animated.Value(0)).current;
 
     useEffect(() => {
       const startFloating = () => {
-        // Floating up and down animation (more pronounced)
+        // Create unique animation pattern for each icon based on delay
+        const baseDuration = 3000 + (delay % 5) * 500; // Vary duration 3-5.5s
+        const reverseDuration = baseDuration * 1.2;
+        
+        // Vertical floating (up and down)
         Animated.loop(
           Animated.sequence([
             Animated.timing(floatAnim, {
               toValue: 1,
-              duration: 2000 + delay * 150,
+              duration: baseDuration,
               useNativeDriver: true,
             }),
             Animated.timing(floatAnim, {
               toValue: 0,
-              duration: 2000 + delay * 150,
+              duration: reverseDuration,
               useNativeDriver: true,
             }),
           ])
         ).start();
 
-        // Horizontal movement (drifting left and right)
+        // Horizontal movement (left and right)
         Animated.loop(
           Animated.sequence([
             Animated.timing(translateXAnim, {
               toValue: 1,
-              duration: 4000 + delay * 300,
+              duration: baseDuration * 1.5,
               useNativeDriver: true,
             }),
             Animated.timing(translateXAnim, {
               toValue: 0,
-              duration: 4000 + delay * 300,
+              duration: baseDuration * 1.5,
               useNativeDriver: true,
             }),
           ])
         ).start();
 
-        // Gentle rotation animation
+        // Diagonal movement (circular-like path)
+        Animated.loop(
+          Animated.sequence([
+            Animated.timing(diagonalAnim, {
+              toValue: 1,
+              duration: baseDuration * 2,
+              useNativeDriver: true,
+            }),
+            Animated.timing(diagonalAnim, {
+              toValue: 0,
+              duration: baseDuration * 2,
+              useNativeDriver: true,
+            }),
+          ])
+        ).start();
+
+        // Slow, gentle rotation
         Animated.loop(
           Animated.timing(rotateAnim, {
             toValue: 1,
-            duration: 10000 + delay * 500,
+            duration: 15000 + delay * 1000, // 15-25 seconds for full rotation
             useNativeDriver: true,
           })
-        ).start();
-
-        // Pulsing scale animation
-        Animated.loop(
-          Animated.sequence([
-            Animated.timing(scaleAnim, {
-              toValue: 1.2,
-              duration: 1500 + delay * 100,
-              useNativeDriver: true,
-            }),
-            Animated.timing(scaleAnim, {
-              toValue: 1,
-              duration: 1500 + delay * 100,
-              useNativeDriver: true,
-            }),
-          ])
         ).start();
       };
 
       startFloating();
     }, [delay]);
 
-    const translateY = floatAnim.interpolate({
+    // Multi-directional movement interpolation
+    const translateY = Animated.add(
+      floatAnim.interpolate({
+        inputRange: [0, 1],
+        outputRange: [-25, 25], // Up and down
+      }),
+      diagonalAnim.interpolate({
       inputRange: [0, 1],
-      outputRange: [0, -30],
-    });
+        outputRange: [-15, 15], // Additional vertical component
+      })
+    );
 
-    const translateX = translateXAnim.interpolate({
+    const translateX = Animated.add(
+      translateXAnim.interpolate({
+        inputRange: [0, 1],
+        outputRange: [-30, 30], // Left and right
+      }),
+      diagonalAnim.interpolate({
       inputRange: [0, 1],
-      outputRange: [-20, 20],
-    });
+        outputRange: [-20, 20], // Additional horizontal component
+      })
+    );
 
     const rotate = rotateAnim.interpolate({
       inputRange: [0, 1],
@@ -242,7 +259,6 @@ export default function HomeScreen() {
               { translateY },
               { translateX },
               { rotate },
-              { scale: scaleAnim },
             ],
           },
         ]}
@@ -256,14 +272,14 @@ export default function HomeScreen() {
   // Grid-based position generator utilities
   const getGridConfig = (screenWidth, screenHeight) => {
     if (screenWidth < 768) {
-      // Mobile: 6 cols × 10 rows = 60 cells
-      return { cols: 6, rows: 10, minSpacing: 50, iconCount: 25 };
+      // Mobile: 8 cols × 12 rows = 96 cells (increased density for better alignment)
+      return { cols: 8, rows: 12, minSpacing: 45, iconCount: 28 };
     } else if (screenWidth < 1024) {
-      // Tablet: 8 cols × 12 rows = 96 cells
-      return { cols: 8, rows: 12, minSpacing: 60, iconCount: 28 };
+      // Tablet: 10 cols × 14 rows = 140 cells (increased density)
+      return { cols: 10, rows: 14, minSpacing: 55, iconCount: 32 };
     } else {
-      // Desktop: 10 cols × 14 rows = 140 cells
-      return { cols: 10, rows: 14, minSpacing: 70, iconCount: 30 };
+      // Desktop: 12 cols × 16 rows = 192 cells (increased density)
+      return { cols: 12, rows: 16, minSpacing: 65, iconCount: 35 };
     }
   };
 
@@ -424,7 +440,7 @@ export default function HomeScreen() {
     );
     
     return (
-      <View style={styles.floatingLogos} pointerEvents="none">
+    <View style={styles.floatingLogos} pointerEvents="none">
         {positions.map((pos, index) => (
           <FloatingLogo
             key={`floating-icon-${index}`}
@@ -434,8 +450,8 @@ export default function HomeScreen() {
             delay={index * 0.15}
           />
         ))}
-      </View>
-    );
+    </View>
+  );
   };
 
   const UnitDropdown = ({ visible, onClose, onSelect, selectedUnit, title }) => (
@@ -669,13 +685,13 @@ const styles = StyleSheet.create({
   },
   floatingLogo: {
     position: 'absolute',
-    fontSize: 36,
-    opacity: 0.4,
+    fontSize: 24, // Reduced from 36 to 24 (33% smaller)
+    opacity: 0.18, // Reduced from 0.4 to 0.18 (more faded/subtle)
     color: '#667eea',
-    textShadowColor: 'rgba(102, 126, 234, 0.8)',
+    textShadowColor: 'rgba(102, 126, 234, 0.4)', // Reduced shadow intensity
     textShadowOffset: { width: 0, height: 0 },
-    textShadowRadius: 20,
-    fontWeight: 'bold',
+    textShadowRadius: 8, // Reduced shadow radius
+    fontWeight: 'normal', // Changed from bold to normal for subtler look
   },
   header: {
     backgroundColor: '#1a1a2e',

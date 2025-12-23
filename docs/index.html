@@ -85,36 +85,52 @@
 
         .floating-logo {
             position: absolute;
-            font-size: 40px;
-            opacity: 0.35;
+            font-size: 28px; /* Reduced from 40px to 28px (30% smaller) */
+            opacity: 0.18; /* Reduced from 0.35 to 0.18 (more faded/subtle) */
             color: var(--primary);
-            text-shadow: 0 0 25px rgba(102, 126, 234, 0.9), 0 0 50px rgba(102, 126, 234, 0.5);
-            font-weight: bold;
+            text-shadow: 0 0 12px rgba(102, 126, 234, 0.4), 0 0 24px rgba(102, 126, 234, 0.2); /* Reduced shadow intensity */
+            font-weight: normal; /* Changed from bold to normal for subtler look */
             pointer-events: none;
-            animation: floatLogo 5s ease-in-out infinite;
+            animation: floatLogo 8s ease-in-out infinite;
             will-change: transform;
         }
 
         @keyframes floatLogo {
             0% { 
-                transform: translateY(0px) translateX(0px) rotate(0deg) scale(1); 
-                opacity: 0.35;
+                transform: translateY(0px) translateX(0px) rotate(0deg); 
+                opacity: 0.18;
+            }
+            12.5% { 
+                transform: translateY(-30px) translateX(20px) rotate(45deg); 
+                opacity: 0.2;
             }
             25% { 
-                transform: translateY(-40px) translateX(25px) rotate(90deg) scale(1.15); 
-                opacity: 0.45;
+                transform: translateY(-20px) translateX(35px) rotate(90deg); 
+                opacity: 0.18;
+            }
+            37.5% { 
+                transform: translateY(10px) translateX(25px) rotate(135deg); 
+                opacity: 0.2;
             }
             50% { 
-                transform: translateY(-20px) translateX(-25px) rotate(180deg) scale(1); 
-                opacity: 0.35;
+                transform: translateY(25px) translateX(-20px) rotate(180deg); 
+                opacity: 0.18;
+            }
+            62.5% { 
+                transform: translateY(15px) translateX(-35px) rotate(225deg); 
+                opacity: 0.2;
             }
             75% { 
-                transform: translateY(-40px) translateX(25px) rotate(270deg) scale(1.15); 
-                opacity: 0.45;
+                transform: translateY(-15px) translateX(-25px) rotate(270deg); 
+                opacity: 0.18;
+            }
+            87.5% { 
+                transform: translateY(-25px) translateX(10px) rotate(315deg); 
+                opacity: 0.2;
             }
             100% { 
-                transform: translateY(0px) translateX(0px) rotate(360deg) scale(1); 
-                opacity: 0.35;
+                transform: translateY(0px) translateX(0px) rotate(360deg); 
+                opacity: 0.18;
             }
         }
 
@@ -1683,14 +1699,14 @@
         // Grid-based position generator utilities
         function getGridConfig(width, height) {
             if (width < 768) {
-                // Mobile: 6 cols × 10 rows = 60 cells
-                return { cols: 6, rows: 10, minSpacing: 50, iconCount: 25 };
+                // Mobile: 8 cols × 12 rows = 96 cells (increased density for better alignment)
+                return { cols: 8, rows: 12, minSpacing: 45, iconCount: 28 };
             } else if (width < 1024) {
-                // Tablet: 8 cols × 12 rows = 96 cells
-                return { cols: 8, rows: 12, minSpacing: 60, iconCount: 28 };
+                // Tablet: 10 cols × 14 rows = 140 cells (increased density)
+                return { cols: 10, rows: 14, minSpacing: 55, iconCount: 32 };
             } else {
-                // Desktop: 10 cols × 14 rows = 140 cells
-                return { cols: 10, rows: 14, minSpacing: 70, iconCount: 30 };
+                // Desktop: 12 cols × 16 rows = 192 cells (increased density)
+                return { cols: 12, rows: 16, minSpacing: 65, iconCount: 35 };
             }
         }
 
@@ -1867,8 +1883,9 @@
                 logo.textContent = categoryIcons[index % categoryIcons.length];
                 logo.style.left = pos.x + 'px';
                 logo.style.top = pos.y + 'px';
-                logo.style.animationDelay = (index * 0.15) + 's';
-                logo.style.animationDuration = (4 + Math.random() * 2) + 's';
+                // Vary animation delay and duration for more natural, varied movement
+                logo.style.animationDelay = (index * 0.2) + 's';
+                logo.style.animationDuration = (6 + (index % 5) * 0.5) + 's'; // 6-8.5s duration
                 
                 particlesContainer.appendChild(logo);
             });
