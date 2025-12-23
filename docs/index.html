@@ -1680,31 +1680,165 @@
             }
         }
 
+        // Grid-based position generator utilities
+        function getGridConfig(width, height) {
+            if (width < 768) {
+                // Mobile: 6 cols × 10 rows = 60 cells
+                return { cols: 6, rows: 10, minSpacing: 50, iconCount: 25 };
+            } else if (width < 1024) {
+                // Tablet: 8 cols × 12 rows = 96 cells
+                return { cols: 8, rows: 12, minSpacing: 60, iconCount: 28 };
+            } else {
+                // Desktop: 10 cols × 14 rows = 140 cells
+                return { cols: 10, rows: 14, minSpacing: 70, iconCount: 30 };
+            }
+        }
+
+        function getExclusionZones(width, height) {
+            return [
+                // Header area (top 15% of screen)
+                {
+                    x: 0,
+                    y: 0,
+                    width: width,
+                    height: height * 0.15,
+                    padding: 20
+                },
+                // Category panel (left 25% of screen, below header)
+                {
+                    x: 0,
+                    y: height * 0.15,
+                    width: width * 0.25,
+                    height: height * 0.85,
+                    padding: 15
+                },
+                // Conversion panel (center-right, below header)
+                {
+                    x: width * 0.3,
+                    y: height * 0.15,
+                    width: width * 0.65,
+                    height: height * 0.45,
+                    padding: 20
+                }
+            ];
+        }
+
+        function isInExclusionZone(x, y, zones) {
+            return zones.some(zone => {
+                const expandedZone = {
+                    x: zone.x - zone.padding,
+                    y: zone.y - zone.padding,
+                    width: zone.width + (zone.padding * 2),
+                    height: zone.height + (zone.padding * 2)
+                };
+                return x >= expandedZone.x &&
+                       x <= expandedZone.x + expandedZone.width &&
+                       y >= expandedZone.y &&
+                       y <= expandedZone.y + expandedZone.height;
+            });
+        }
+
+        function isValidPosition(newPos, existingPositions, minDistance) {
+            if (existingPositions.length === 0) return true;
+            
+            for (const existing of existingPositions) {
+                const dx = newPos.x - existing.x;
+                const dy = newPos.y - existing.y;
+                const distance = Math.sqrt(dx * dx + dy * dy);
+                
+                if (distance < minDistance) {
+                    return false;
+                }
+            }
+            return true;
+        }
+
+        function calculatePosition(colIndex, rowIndex, width, height, cols, rows) {
+            const cellWidth = width / cols;
+            const cellHeight = height / rows;
+            
+            // Base position (grid center)
+            const gridX = (colIndex + 0.5) * cellWidth;
+            const gridY = (rowIndex + 0.5) * cellHeight;
+            
+            // Jitter (random offset within cell bounds - 30% of cell size)
+            const jitterRange = Math.min(cellWidth, cellHeight) * 0.3;
+            const jitterX = (Math.random() - 0.5) * jitterRange;
+            const jitterY = (Math.random() - 0.5) * jitterRange;
+            
+            return {
+                x: gridX + jitterX,
+                y: gridY + jitterY
+            };
+        }
+
+        function shuffleArray(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+        }
+
+        function generateIconPositions(iconCount, width, height, config) {
+            const { cols, rows, minSpacing } = config;
+            const positions = [];
+            const exclusionZones = getExclusionZones(width, height);
+            
+            // Generate candidate positions from grid
+            const candidates = [];
+            for (let row = 0; row < rows; row++) {
+                for (let col = 0; col < cols; col++) {
+                    const pos = calculatePosition(col, row, width, height, cols, rows);
+                    if (!isInExclusionZone(pos.x, pos.y, exclusionZones)) {
+                        candidates.push(pos);
+                    }
+                }
+            }
+            
+            // Shuffle candidates for random selection
+            shuffleArray(candidates);
+            
+            // Select positions with minimum spacing
+            for (const candidate of candidates) {
+                if (isValidPosition(candidate, positions, minSpacing)) {
+                    positions.push(candidate);
+                    if (positions.length >= iconCount) break;
+                }
+            }
+            
+            return positions;
+        }
+
         function createFloatingLogos() {
             const particlesContainer = document.getElementById('particles');
+            if (!particlesContainer) return;
+            
+            // Clear existing logos
+            particlesContainer.innerHTML = '';
             
             // Category icons (emojis matching the categories)
             const categoryIcons = [
                 '📏', '⚖️', '🌡️', '📐', '🧪', '⏰', '🚀', '💨', '⚡', '💾',
                 '💿', '🔋', '📡', '📻', '🥄', '🍽️', '🔥', '💵', '₿', '📊',
-                '🔬', '🌍', '🎯', '⭐', '💫', '🌟', '🔮', '🎨', '🎭', '🎪',
-                '📏', '⚖️', '🌡️', '📐', '🧪', '⏰', '🚀', '💨', '⚡', '💾'
+                '🔬', '🌍', '🎯', '⭐', '💫', '🌟', '🔮', '🎨', '🎭', '🎪'
             ];
 
             const viewportWidth = window.innerWidth;
             const viewportHeight = window.innerHeight;
-
-            categoryIcons.forEach((icon, index) => {
+            
+            // Get grid configuration based on screen size
+            const config = getGridConfig(viewportWidth, viewportHeight);
+            
+            // Generate positions using grid system
+            const positions = generateIconPositions(config.iconCount, viewportWidth, viewportHeight, config);
+            
+            // Create logo elements with grid-based positions
+            positions.forEach((pos, index) => {
                 const logo = document.createElement('div');
                 logo.className = 'floating-logo';
-                logo.textContent = icon;
-                
-                // Better distribution across the screen
-                const leftPercent = 5 + (index * 2.5) % 90; // Spread across 90% of width, starting at 5%
-                const topPercent = 5 + (index * 2.8) % 90; // Spread across 90% of height, starting at 5%
-                
-                logo.style.left = leftPercent + '%';
-                logo.style.top = topPercent + '%';
+                logo.textContent = categoryIcons[index % categoryIcons.length];
+                logo.style.left = pos.x + 'px';
+                logo.style.top = pos.y + 'px';
                 logo.style.animationDelay = (index * 0.15) + 's';
                 logo.style.animationDuration = (4 + Math.random() * 2) + 's';
                 
@@ -1812,6 +1946,15 @@
             if (searchInput) {
                 searchInput.addEventListener('input', filterCategories);
             }
+            
+            // Regenerate floating logos on window resize for responsive grid
+            let resizeTimeout;
+            window.addEventListener('resize', () => {
+                clearTimeout(resizeTimeout);
+                resizeTimeout = setTimeout(() => {
+                    createFloatingLogos();
+                }, 250); // Debounce resize events
+            });
         }
 
         function filterCategories() {

@@ -3,7 +3,7 @@
  * Modern interface with subtle background elements
  */
 
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useMemo } from 'react';
 import {
   View,
   Text,
@@ -253,41 +253,165 @@ export default function HomeScreen() {
     );
   };
 
-  const FloatingConversionLogos = () => (
-    <View style={styles.floatingLogos} pointerEvents="none">
-      {/* More logos distributed across the screen for better coverage */}
-      <FloatingLogo icon="📏" top={height * 0.05} left={width * 0.05} delay={0} />
-      <FloatingLogo icon="⚖️" top={height * 0.12} left={width * 0.85} delay={1} />
-      <FloatingLogo icon="🌡️" top={height * 0.18} left={width * 0.12} delay={2} />
-      <FloatingLogo icon="📐" top={height * 0.25} left={width * 0.88} delay={3} />
-      <FloatingLogo icon="🧪" top={height * 0.32} left={width * 0.08} delay={4} />
-      <FloatingLogo icon="⏰" top={height * 0.38} left={width * 0.82} delay={5} />
-      <FloatingLogo icon="🚀" top={height * 0.45} left={width * 0.15} delay={6} />
-      <FloatingLogo icon="💨" top={height * 0.52} left={width * 0.75} delay={7} />
-      <FloatingLogo icon="⚡" top={height * 0.58} left={width * 0.22} delay={8} />
-      <FloatingLogo icon="💾" top={height * 0.65} left={width * 0.68} delay={9} />
-      <FloatingLogo icon="💿" top={height * 0.72} left={width * 0.28} delay={10} />
-      <FloatingLogo icon="🔋" top={height * 0.78} left={width * 0.62} delay={11} />
-      <FloatingLogo icon="📡" top={height * 0.15} left={width * 0.35} delay={12} />
-      <FloatingLogo icon="📻" top={height * 0.22} left={width * 0.55} delay={13} />
-      <FloatingLogo icon="🥄" top={height * 0.28} left={width * 0.42} delay={14} />
-      <FloatingLogo icon="🍽️" top={height * 0.35} left={width * 0.48} delay={15} />
-      <FloatingLogo icon="🔥" top={height * 0.42} left={width * 0.48} delay={16} />
-      <FloatingLogo icon="💵" top={height * 0.48} left={width * 0.42} delay={17} />
-      <FloatingLogo icon="₿" top={height * 0.55} left={width * 0.55} delay={18} />
-      <FloatingLogo icon="📏" top={height * 0.62} left={width * 0.38} delay={19} />
-      <FloatingLogo icon="⚖️" top={height * 0.68} left={width * 0.62} delay={20} />
-      <FloatingLogo icon="🌡️" top={height * 0.75} left={width * 0.28} delay={21} />
-      <FloatingLogo icon="📐" top={height * 0.82} left={width * 0.68} delay={22} />
-      <FloatingLogo icon="🧪" top={height * 0.88} left={width * 0.15} delay={23} />
-      <FloatingLogo icon="⏰" top={height * 0.92} left={width * 0.75} delay={24} />
-      <FloatingLogo icon="🚀" top={height * 0.08} left={width * 0.72} delay={25} />
-      <FloatingLogo icon="💨" top={height * 0.15} left={width * 0.18} delay={26} />
-      <FloatingLogo icon="⚡" top={height * 0.25} left={width * 0.78} delay={27} />
-      <FloatingLogo icon="💾" top={height * 0.35} left={width * 0.25} delay={28} />
-      <FloatingLogo icon="💿" top={height * 0.45} left={width * 0.82} delay={29} />
-    </View>
-  );
+  // Grid-based position generator utilities
+  const getGridConfig = (screenWidth, screenHeight) => {
+    if (screenWidth < 768) {
+      // Mobile: 6 cols × 10 rows = 60 cells
+      return { cols: 6, rows: 10, minSpacing: 50, iconCount: 25 };
+    } else if (screenWidth < 1024) {
+      // Tablet: 8 cols × 12 rows = 96 cells
+      return { cols: 8, rows: 12, minSpacing: 60, iconCount: 28 };
+    } else {
+      // Desktop: 10 cols × 14 rows = 140 cells
+      return { cols: 10, rows: 14, minSpacing: 70, iconCount: 30 };
+    }
+  };
+
+  const getExclusionZones = (screenWidth, screenHeight) => {
+    return [
+      // Header area (top 15% of screen)
+      {
+        x: 0,
+        y: 0,
+        width: screenWidth,
+        height: screenHeight * 0.15,
+        padding: 20
+      },
+      // Category panel (left 25% of screen, below header)
+      {
+        x: 0,
+        y: screenHeight * 0.15,
+        width: screenWidth * 0.25,
+        height: screenHeight * 0.85,
+        padding: 15
+      },
+      // Conversion panel (center-right, below header)
+      {
+        x: screenWidth * 0.3,
+        y: screenHeight * 0.15,
+        width: screenWidth * 0.65,
+        height: screenHeight * 0.45,
+        padding: 20
+      }
+    ];
+  };
+
+  const isInExclusionZone = (x, y, zones) => {
+    return zones.some(zone => {
+      const expandedZone = {
+        x: zone.x - zone.padding,
+        y: zone.y - zone.padding,
+        width: zone.width + (zone.padding * 2),
+        height: zone.height + (zone.padding * 2)
+      };
+      return x >= expandedZone.x &&
+             x <= expandedZone.x + expandedZone.width &&
+             y >= expandedZone.y &&
+             y <= expandedZone.y + expandedZone.height;
+    });
+  };
+
+  const isValidPosition = (newPos, existingPositions, minDistance) => {
+    if (existingPositions.length === 0) return true;
+    
+    for (const existing of existingPositions) {
+      const dx = newPos.x - existing.x;
+      const dy = newPos.y - existing.y;
+      const distance = Math.sqrt(dx * dx + dy * dy);
+      
+      if (distance < minDistance) {
+        return false;
+      }
+    }
+    return true;
+  };
+
+  const calculatePosition = (colIndex, rowIndex, screenWidth, screenHeight, cols, rows) => {
+    const cellWidth = screenWidth / cols;
+    const cellHeight = screenHeight / rows;
+    
+    // Base position (grid center)
+    const gridX = (colIndex + 0.5) * cellWidth;
+    const gridY = (rowIndex + 0.5) * cellHeight;
+    
+    // Jitter (random offset within cell bounds - 30% of cell size)
+    const jitterRange = Math.min(cellWidth, cellHeight) * 0.3;
+    const jitterX = (Math.random() - 0.5) * jitterRange;
+    const jitterY = (Math.random() - 0.5) * jitterRange;
+    
+    return {
+      x: gridX + jitterX,
+      y: gridY + jitterY
+    };
+  };
+
+  const shuffleArray = (array) => {
+    for (let i = array.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [array[i], array[j]] = [array[j], array[i]];
+    }
+  };
+
+  const generateGridPositions = (iconCount, screenWidth, screenHeight) => {
+    const config = getGridConfig(screenWidth, screenHeight);
+    const { cols, rows, minSpacing } = config;
+    const positions = [];
+    const exclusionZones = getExclusionZones(screenWidth, screenHeight);
+    
+    // Generate candidate positions from grid
+    const candidates = [];
+    for (let row = 0; row < rows; row++) {
+      for (let col = 0; col < cols; col++) {
+        const pos = calculatePosition(col, row, screenWidth, screenHeight, cols, rows);
+        if (!isInExclusionZone(pos.x, pos.y, exclusionZones)) {
+          candidates.push(pos);
+        }
+      }
+    }
+    
+    // Shuffle candidates for random selection
+    shuffleArray(candidates);
+    
+    // Select positions with minimum spacing
+    for (const candidate of candidates) {
+      if (isValidPosition(candidate, positions, minSpacing)) {
+        positions.push(candidate);
+        if (positions.length >= iconCount) break;
+      }
+    }
+    
+    return positions;
+  };
+
+  const FloatingConversionLogos = () => {
+    // Icon list for background
+    const backgroundIcons = [
+      '📏', '⚖️', '🌡️', '📐', '🧪', '⏰', '🚀', '💨', '⚡', '💾',
+      '💿', '🔋', '📡', '📻', '🥄', '🍽️', '🔥', '💵', '₿', '📊',
+      '🔬', '🌍', '🎯', '⭐', '💫', '🌟', '🔮', '🎨', '🎭', '🎪'
+    ];
+
+    // Generate positions using grid system
+    const config = getGridConfig(width, height);
+    const positions = useMemo(() => 
+      generateGridPositions(config.iconCount, width, height), 
+      [width, height]
+    );
+    
+    return (
+      <View style={styles.floatingLogos} pointerEvents="none">
+        {positions.map((pos, index) => (
+          <FloatingLogo
+            key={`floating-icon-${index}`}
+            icon={backgroundIcons[index % backgroundIcons.length]}
+            top={pos.y}
+            left={pos.x}
+            delay={index * 0.15}
+          />
+        ))}
+      </View>
+    );
+  };
 
   const UnitDropdown = ({ visible, onClose, onSelect, selectedUnit, title }) => (
     <Modal
