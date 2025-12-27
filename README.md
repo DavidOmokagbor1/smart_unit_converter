@@ -6,6 +6,13 @@
 [![GitHub](https://img.shields.io/badge/GitHub-Repository-black?style=for-the-badge&logo=github)](https://github.com/DavidOmokagbor1/smart_unit_converter)
 [![License](https://img.shields.io/badge/License-MIT-blue?style=for-the-badge)](LICENSE)
 
+
+
+
+https://github.com/user-attachments/assets/1d24ec9b-c438-484d-b395-926fc9fee23a
+
+
+
 ---
 
 ## 📊 **Project Overview**
