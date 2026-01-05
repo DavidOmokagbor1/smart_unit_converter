@@ -1,5 +1,17 @@
 # Smart Unit Converter
 
+
+
+
+https://github.com/user-attachments/assets/34d06720-4722-4bff-9754-d4505f38264c
+
+
+
+
+
+
+
+
 ## Project Overview
 
 A production-ready, cross-platform unit conversion application featuring real-time currency and cryptocurrency rates, modern UI/UX design, and comprehensive conversion capabilities. Deployed across web, mobile, and desktop platforms.
